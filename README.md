@@ -22,3 +22,8 @@ Website ğŸš€ <a href="https://contributte.org">contributte.org</a> | Contact ğŸ‘
 ## Development
 
 - [Bare repository](https://github.com/contributte/bare)
+
+## Partners
+
+- [Add to patrons list](https://github.com/contributte/contributte/issues/new?template=Patron.md)
+- [Add to trusters list](https://github.com/contributte/contributte/issues/new?template=Truster.md)
