@@ -1,6 +1,6 @@
 ---
 name: New Truster 👨🏻‍💻
-about: I am using contributte ecosystem!
+about: I am company or group using contributte ecosystem!
 ---
 
 # New Truster
