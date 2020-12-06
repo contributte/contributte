@@ -12,6 +12,13 @@ Website ðŸš€ <a href="https://contributte.org">contributte.org</a> | Contact ðŸ‘
 
 -----
 
+## Stats
+
+<p>
+    <img src="https://badgen.net/https/label.now.sh/packagist/stats/contributte+apitte+ninjify+nettrine/dt">
+    <img src="https://badgen.net/https/label.now.sh/packagist/stats/contributte+apitte+ninjify+nettrine/dd">
+</p>
+
 ## Resources
 
 - [Website](https://contributte.org)
