@@ -34,8 +34,9 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.CONTRIBUTTE_PAT }}
-          title: ${{ github.github.workflow }}
+          title: ${{ github.workflow }}
           branch: ${{ env.branchName }}
+          delete-branch: true
           commit-message: ${{ env.commitMessage }}
           body: |
             Contributte standard. 👨🏻‍💻
