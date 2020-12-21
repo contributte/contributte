@@ -9,7 +9,7 @@ on:
 
 env:
   std: "std/001-editorconfig"
-  branchName: "feature/std-001-editorconfig"
+  branchName: "std/001-editorconfig"
   commitMessage: "Std [001]: editorconfig"
 
 jobs:

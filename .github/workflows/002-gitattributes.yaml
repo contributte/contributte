@@ -9,7 +9,7 @@ on:
 
 env:
   std: "std/002-gitattributes"
-  branchName: "feature/std-002-gitattributes"
+  branchName: "std/002-gitattributes"
   commitMessage: "Std [002]: gitattributes"
 
 jobs:

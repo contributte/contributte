@@ -9,7 +9,7 @@ on:
 
 env:
   std: "std/003-funding"
-  branchName: "feature/std-003-funding"
+  branchName: "std/003-funding"
   commitMessage: "Std [003]: funding"
 
 jobs:
