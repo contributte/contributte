@@ -10,7 +10,7 @@ Install it via `composer install` or update via `composer update`.
 
 List of missing packages.
 
-```
+```json
 	"contributte/qa": "*",
 	"contributte/mobilni-platby": "*",
 	"contributte/facebook": "*",
