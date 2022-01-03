@@ -27,7 +27,6 @@ $skipped = [
 	"contributte/firewall",
 	'contributte/console-extra',
 	'contributte/scheduler',
-	'contributte/social',
 ];
 
 $dependencies = ['php' => '>=8.0'];

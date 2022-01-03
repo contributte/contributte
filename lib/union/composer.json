@@ -72,6 +72,7 @@
         "contributte/replacus": "*",
         "contributte/security": "*",
         "contributte/seznamcaptcha": "*",
+        "contributte/social": "*",
         "contributte/tester": "*",
         "contributte/thepay": "*",
         "contributte/thepay-api": "*",
