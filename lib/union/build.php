@@ -21,12 +21,7 @@ $skipped = [
 	// @todo (facebook fork)
 	"contributte/facebook",
 	// @todo (idk)
-	"contributte/apitte",
-	// @todo upgrade nette
-	"contributte/mobilni-platby",
-	"contributte/firewall",
-	'contributte/console-extra',
-	'contributte/scheduler',
+	"contributte/apitte"
 ];
 
 $dependencies = ['php' => '>=8.0'];
