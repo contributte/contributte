@@ -9,6 +9,7 @@ $sources = [
 
 $skipped = [
 	// skeletons
+	"contributte/api-router-skeleton",
 	"contributte/apitte-skeleton",
 	"contributte/console-skeleton",
 	"contributte/datagrid-skeleton",
@@ -20,8 +21,6 @@ $skipped = [
 	"contributte/webpack-skeleton",
 	// @todo (facebook fork)
 	"contributte/facebook",
-	// @todo (idk)
-	"contributte/apitte"
 ];
 
 $dependencies = ['php' => '>=8.0'];
@@ -53,4 +52,5 @@ $composer = [
 	],
 ];
 
-file_put_contents('composer.json', json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+file_put_contents('composer.json', json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+

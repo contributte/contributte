@@ -13,7 +13,7 @@
         "contributte/aop": "*",
         "contributte/api-docu": "*",
         "contributte/api-router": "*",
-        "contributte/api-router-project": "*",
+        "contributte/apitte": "*",
         "contributte/application": "*",
         "contributte/bare": "*",
         "contributte/bootstrap": "*",
