@@ -1,26 +1,30 @@
 <?php declare(strict_types = 1);
 
 $sources = [
-	'https://packagist.org/packages/list.json?vendor=apitte&fields[]=abandoned',
 	'https://packagist.org/packages/list.json?vendor=contributte&fields[]=abandoned',
 	'https://packagist.org/packages/list.json?vendor=nettrine&fields[]=abandoned',
 	'https://packagist.org/packages/list.json?vendor=ninjify&fields[]=abandoned',
 ];
 
 $skipped = [
-	// skeletons
+	// Skeletons are on edge
 	"contributte/api-router-skeleton",
 	"contributte/apitte-skeleton",
 	"contributte/console-skeleton",
 	"contributte/datagrid-skeleton",
 	"contributte/doctrine-skeleton",
 	"contributte/gui-skeleton",
+	"contributte/embedded-skeleton",
 	"contributte/micro-skeleton",
 	"contributte/starter-skeleton",
 	"contributte/webapp-skeleton",
 	"contributte/webpack-skeleton",
-	// @todo (facebook fork)
+	// Facebook needs https://github.com/holyfork/facebook-graph-sdk
 	"contributte/facebook",
+	"contributte/apitte",
+	"contributte/sentry",
+	"contributte/nella",
+	"contributte/ui",
 ];
 
 $dependencies = ['php' => '>=8.0'];
