@@ -21,10 +21,8 @@ $skipped = [
 	"contributte/webpack-skeleton",
 	// Facebook needs https://github.com/holyfork/facebook-graph-sdk
 	"contributte/facebook",
-	"contributte/apitte",
-	"contributte/sentry",
-	"contributte/nella",
 	"contributte/ui",
+	"contributte/eet",
 ];
 
 $dependencies = ['php' => '>=8.0'];
