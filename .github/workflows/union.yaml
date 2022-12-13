@@ -3,7 +3,7 @@ name: "Lib: union"
 on:
   push:
   schedule:
-    - cron: "0 8 * * 1" # At 08:00 on Monday
+    - cron: "0 8 * * 1"
 
 env:
   extensions: "json"
@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: [ "7.4", "8.0" ]
+        php-version: [ "8.0", "8.1", "8.2" ]
         operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 
