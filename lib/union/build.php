@@ -3,7 +3,6 @@
 $sources = [
 	'https://packagist.org/packages/list.json?vendor=contributte&fields[]=abandoned',
 	'https://packagist.org/packages/list.json?vendor=nettrine&fields[]=abandoned',
-	'https://packagist.org/packages/list.json?vendor=ninjify&fields[]=abandoned',
 ];
 
 $skipped = [
