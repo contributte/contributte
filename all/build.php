@@ -12,15 +12,19 @@ $skipped = [
 	"contributte/console-skeleton",
 	"contributte/datagrid-skeleton",
 	"contributte/doctrine-skeleton",
-	"contributte/gui-skeleton",
+	"contributte/ddd-skeleton",
 	"contributte/embedded-skeleton",
+	"contributte/framex-skeleton",
+	"contributte/gui-skeleton",
 	"contributte/micro-skeleton",
+	"contributte/nella-skeleton",
 	"contributte/starter-skeleton",
+	"contributte/tester-skeleton",
+	"contributte/ui-skeleton",
 	"contributte/webapp-skeleton",
 	"contributte/webpack-skeleton",
 	// Facebook needs https://github.com/holyfork/facebook-graph-sdk
 	"contributte/facebook",
-	"contributte/ui",
 	"contributte/eet",
 ];
 

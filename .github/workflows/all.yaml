@@ -1,4 +1,4 @@
-name: "Lib: union"
+name: "Install all"
 
 on:
   push:
@@ -67,12 +67,12 @@ jobs:
 
       - name: "Install dependencies"
         run: "${{ env.composer-install }}"
-        working-directory: lib/union
+        working-directory: all
 
       - name: "List dependencies"
         run: "composer show"
-        working-directory: lib/union
+        working-directory: all
 
       - name: "Show outdated"
         run: "composer outdated"
-        working-directory: lib/union
+        working-directory: all

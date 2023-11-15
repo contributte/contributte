@@ -47,7 +47,6 @@
         "contributte/menu-control": "*",
         "contributte/middlewares": "*",
         "contributte/monolog": "*",
-        "contributte/nella": "*",
         "contributte/neonizer": "*",
         "contributte/newrelic": "*",
         "contributte/nextras-orm-events": "*",
@@ -56,6 +55,8 @@
         "contributte/oauth2-client": "*",
         "contributte/oauth2-server": "*",
         "contributte/pdf": "*",
+        "contributte/phpstan": "*",
+        "contributte/phpunit": "*",
         "contributte/psr11-container-interface": "*",
         "contributte/psr6-caching": "*",
         "contributte/psr7-http-message": "*",
@@ -76,6 +77,7 @@
         "contributte/translation": "*",
         "contributte/utils": "*",
         "contributte/validator": "*",
+        "contributte/vite": "*",
         "contributte/webpack": "*",
         "contributte/wordcha": "*",
         "nettrine/annotations": "*",
@@ -84,15 +86,11 @@
         "nettrine/extensions-atlantic18": "*",
         "nettrine/extensions-beberlei": "*",
         "nettrine/extensions-knplabs": "*",
-        "nettrine/extensions-oroinc": "*",
         "nettrine/fixtures": "*",
         "nettrine/migrations": "*",
         "nettrine/mongodb": "*",
         "nettrine/odm": "*",
-        "nettrine/orm": "*",
-        "ninjify/coding-standard": "*",
-        "ninjify/nunjuck": "*",
-        "ninjify/qa": "*"
+        "nettrine/orm": "*"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -100,7 +98,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "php-http/discovery": true
         }
     }
 }
