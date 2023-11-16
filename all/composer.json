@@ -29,7 +29,6 @@
         "contributte/firewall": "*",
         "contributte/flysystem": "*",
         "contributte/forms": "*",
-        "contributte/forms-bootstrap": "*",
         "contributte/forms-multiplier": "*",
         "contributte/forms-wizard": "*",
         "contributte/gosms": "*",
@@ -79,7 +78,7 @@
         "contributte/validator": "*",
         "contributte/vite": "*",
         "contributte/webpack": "*",
-        "contributte/wordcha": "*",
+        "contributte/wordcha": "0.4",
         "nettrine/annotations": "*",
         "nettrine/cache": "*",
         "nettrine/dbal": "*",
@@ -97,9 +96,8 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "composer/package-versions-deprecated": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "dealerdirect/phpcodesniffer-composer-installer": false
         }
     }
 }
