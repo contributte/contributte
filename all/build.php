@@ -24,8 +24,31 @@ $skipped = [
 	"contributte/webapp-skeleton",
 	"contributte/webpack-skeleton",
 	// Facebook needs https://github.com/holyfork/facebook-graph-sdk
-	"contributte/facebook",
+	"contributte/apitte",
+	"contributte/bus",
+	"contributte/code-checker",
+	"contributte/code-rules",
+	"contributte/czech-post",
 	"contributte/eet",
+	"contributte/elastica",
+	"contributte/facebook",
+	"contributte/forms-bootstrap",
+	"contributte/framex",
+	"contributte/image-storage",
+	"contributte/imagist",
+	"contributte/jsonrpc",
+	"contributte/kernel",
+	"contributte/latte-parsedown-extra",
+	"contributte/menu-control",
+	"contributte/messenger",
+	"contributte/nella",
+	"contributte/nextras-orm-generator",
+	"contributte/psr7-http-message",
+	"contributte/rabbitmq",
+	"contributte/ui",
+	"nettrine/extensions-knplabs",
+	"nettrine/extensions-oroinc",
+	"nettrine/extra",
 ];
 
 $dependencies = ['php' => '>=8.0'];
@@ -51,8 +74,8 @@ $composer = [
 	"config" => [
 		"sort-packages" => true,
 		"allow-plugins" => [
-			"composer/package-versions-deprecated" => true,
-			"dealerdirect/phpcodesniffer-composer-installer" => true,
+			"php-http/discovery" => true,
+			"dealerdirect/phpcodesniffer-composer-installer" => false,
 		],
 	],
 ];
