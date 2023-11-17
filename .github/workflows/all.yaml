@@ -63,9 +63,9 @@ jobs:
         working-directory: all
 
       - name: "List dependencies"
-        run: "composer show"
+        run: "composer show -l"
         working-directory: all
 
       - name: "Show outdated"
-        run: "composer outdated"
+        run: "composer show -o"
         working-directory: all

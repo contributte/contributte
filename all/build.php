@@ -44,7 +44,7 @@ $skipped = [
 	'nettrine/extensions-oroinc'
 ];
 
-$dependencies = ['php' => '>=8.0'];
+$dependencies = ['php' => '>=8.2'];
 
 foreach ($sources as $source) {
 	$data = (array) json_decode(file_get_contents($source), true);
