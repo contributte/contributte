@@ -25,29 +25,23 @@ $skipped = [
 	'contributte/webpack-skeleton',
 	// Facebook needs https://github.com/holyfork/facebook-graph-sdk
 	'contributte/apitte',
-	'contributte/bus',
 	'contributte/code-checker',
 	'contributte/code-rules',
 	'contributte/czech-post',
 	'contributte/eet',
 	'contributte/elastica',
-	'contributte/facebook',
 	'contributte/forms-bootstrap',
 	'contributte/image-storage',
 	'contributte/imagist',
 	'contributte/jsonrpc',
-	'contributte/kernel',
 	'contributte/latte-parsedown-extra',
-	'contributte/menu-control',
-	'contributte/messenger',
 	'contributte/nella',
 	'contributte/nextras-orm-generator',
 	'contributte/psr7-http-message',
 	'contributte/rabbitmq',
 	'contributte/ui',
 	'nettrine/extensions-knplabs',
-	'nettrine/extensions-oroinc',
-	'nettrine/extra',
+	'nettrine/extensions-oroinc'
 ];
 
 $dependencies = ['php' => '>=8.0'];
@@ -67,6 +61,9 @@ foreach ($sources as $source) {
 }
 
 $composer = [
+	"repositories" => [
+		["type" => "git", "url" => "https://github.com/holyfork/facebook-graph-sdk"],
+	],
 	'require' => $dependencies,
 	'conflict' => [
 		'mpdf/psr-http-message-shim' => '^2.0',
