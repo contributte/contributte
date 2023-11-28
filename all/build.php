@@ -37,7 +37,6 @@ $skipped = [
 	'contributte/latte-parsedown-extra',
 	'contributte/nella',
 	'contributte/nextras-orm-generator',
-	'contributte/psr7-http-message',
 	'contributte/rabbitmq',
 	'contributte/ui',
 	'nettrine/extensions-knplabs',
