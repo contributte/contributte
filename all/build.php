@@ -1,43 +1,17 @@
 <?php declare(strict_types = 1);
 
 $sources = [
-	'https://packagist.org/packages/list.json?vendor=contributte&fields[]=abandoned',
-	'https://packagist.org/packages/list.json?vendor=nettrine&fields[]=abandoned',
+	'https://packagist.org/packages/list.json?vendor=contributte&fields[]=abandoned&fields[]=type',
+	'https://packagist.org/packages/list.json?vendor=nettrine&fields[]=abandoned&fields[]=type',
 ];
 
 $skipped = [
-	// Skeletons are on edge
-	'contributte/api-router-skeleton',
-	'contributte/apitte-skeleton',
-	'contributte/console-skeleton',
-	'contributte/datagrid-skeleton',
-	'contributte/doctrine-skeleton',
-	'contributte/ddd-skeleton',
-	'contributte/embedded-skeleton',
-	'contributte/framex-skeleton',
-	'contributte/gui-skeleton',
-	'contributte/micro-skeleton',
-	'contributte/nella-skeleton',
-	'contributte/starter-skeleton',
-	'contributte/tester-skeleton',
-	'contributte/ui-skeleton',
-	'contributte/webapp-skeleton',
-	'contributte/webpack-skeleton',
-	// Facebook needs https://github.com/holyfork/facebook-graph-sdk
-	'contributte/apitte',
-	'contributte/code-checker',
-	'contributte/code-rules',
-	'contributte/czech-post',
-	'contributte/eet',
-	'contributte/elastica',
-	'contributte/forms-bootstrap',
+	// TODO
 	'contributte/image-storage',
 	'contributte/imagist',
-	'contributte/jsonrpc',
 	'contributte/latte-parsedown-extra',
 	'contributte/nella',
 	'contributte/nextras-orm-generator',
-	'contributte/rabbitmq',
 	'contributte/ui',
 	'nettrine/extensions-knplabs',
 	'nettrine/extensions-oroinc'
@@ -51,6 +25,8 @@ foreach ($sources as $source) {
 	foreach ($data['packages'] as $package => $meta) {
 		// Skip abandoned
 		if ($meta['abandoned'] !== false) continue;
+		// Skip other then library
+		if ($meta['type'] !== 'library') continue;
 
 		// Skip skipped
 		if (in_array($package, $skipped)) continue;
