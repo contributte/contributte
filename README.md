@@ -12,6 +12,18 @@ Website ðŸš€ <a href="https://contributte.org">contributte.org</a> | Contact ðŸ‘
 
 -----
 
+## Tiers
+
+| Tier | Description |
+|------|-------------|
+| Tier 1 | Focus maintenance |
+| Tier 2 | Active maintenance |
+| Tier 3 | App/skeleton/project maintenance |
+| Tier 4 | Outdated maintenance |
+| Tier 5 | Community maintenance |
+| Tier 6 | Deprecated maintenance |
+
+
 ## Stats
 
 <p>
