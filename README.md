@@ -38,7 +38,7 @@ Website ðŸš€ <a href="https://contributte.org">contributte.org</a> | Contact ðŸ‘
 - [Partners](https://contributte.org/partners.html)
 - [RFC](https://github.com/contributte/contributte/issues)
 
-## Development
+## Templates
 
 - [Bare repository](https://github.com/contributte/bare)
 
