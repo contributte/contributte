@@ -64,10 +64,10 @@ jobs:
           restore-keys: "${{ runner.os }}-composer-"
 
       - name: "Install dependencies"
-        run: "cd dev &&composer install"
+        run: "cd dev && composer install --ignore-platform-reqs"
 
       - name: "List dependencies"
-        run: "cd dev &&composer show -l"
+        run: "cd dev && composer show -l"
 
       - name: "Show outdated"
         run: "cd dev && composer show -o"
