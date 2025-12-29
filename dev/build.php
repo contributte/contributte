@@ -8,6 +8,8 @@ $sources = [
 $skipped = [
 	// TODO
 	'nettrine/extensions-knplabs',
+	'contributte/crafter',
+	'contributte/rabbitmq',
 ];
 
 $dependencies = ['php' => '>=8.2'];
