@@ -8,3 +8,9 @@ update:
 
 build:
 	php build.php
+
+outdated-direct:
+	composer show -o --direct
+
+outdated:
+	composer show -o
