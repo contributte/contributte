@@ -19,7 +19,13 @@
       "Bash(gh issue list:*)",
       "Bash(gh repo unarchive:*)",
       "Bash(gh issue close:*)",
-      "Bash(gh repo archive:*)"
+      "Bash(gh repo archive:*)",
+      "Bash(gh release list:*)",
+      "Bash(gh release view:*)",
+      "Bash(gh release create:*)",
+      "Bash(composer why-not:*)",
+      "Bash(gh repo list:*)",
+      "Bash(bun:*)"
     ],
     "deny": [],
     "ask": []
