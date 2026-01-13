@@ -10,7 +10,9 @@ $skipped = [
 	'nettrine/extensions-knplabs',
 	'contributte/crafter',
 	'contributte/rabbitmq',
-];
+	'nettrine/extensions-oroinc', # doctrine/dbal < 4.x
+	'nettrine/odm'
+ ];
 
 $dependencies = ['php' => '>=8.2'];
 

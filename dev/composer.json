@@ -93,12 +93,10 @@
         "nettrine/dbal": "*",
         "nettrine/extensions-atlantic18": "*",
         "nettrine/extensions-beberlei": "*",
-        "nettrine/extensions-oroinc": "*",
         "nettrine/extra": "*",
         "nettrine/fixtures": "*",
         "nettrine/migrations": "*",
         "nettrine/mongodb": "*",
-        "nettrine/odm": "*",
         "nettrine/orm": "*"
     },
     "conflict": {
