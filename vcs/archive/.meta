@@ -60,6 +60,7 @@
     "simple-blogger": "git@github.com:contributte/simple-blogger.git",
     "thumbator": "git@github.com:contributte/thumbator.git",
     "uniparser": "git@github.com:contributte/uniparser.git",
+    "vercel-bref": "git@github.com:contributte/vercel-bref.git",
     "webhosting-tools": "git@github.com:contributte/webhosting-tools.git",
     "webmaster-tools": "git@github.com:contributte/webmaster-tools.git"
   }

@@ -159,7 +159,6 @@
     "utils": "git@github.com:contributte/utils.git",
     "validator": "git@github.com:contributte/validator.git",
     "vercel": "git@github.com:contributte/vercel.git",
-    "vercel-bref": "git@github.com:contributte/vercel-bref.git",
     "vercel-examples": "git@github.com:contributte/vercel-examples.git",
     "vercel-runtimes": "git@github.com:contributte/vercel-runtimes.git",
     "vite": "git@github.com:contributte/vite.git",

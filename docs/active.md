@@ -1,6 +1,6 @@
 # Contributte Active Libraries
 
-> Last updated: 2025-12-05
+> Last updated: 2025-02-08
 
 | Repository | Description |
 |------------|-------------|
@@ -161,7 +161,6 @@
 | [utils](https://github.com/contributte/utils) | Extra contrib to nette/utils |
 | [validator](https://github.com/contributte/validator) | Validator (symfony/validator) to Nette Framework |
 | [vercel](https://github.com/contributte/vercel) | Vercel PHP framework |
-| [vercel-bref](https://github.com/contributte/vercel-bref) | Vercel bref runtime |
 | [vercel-runtimes](https://github.com/contributte/vercel-runtimes) | Vercel Runtimes by @f3l1x |
 | [vite](https://github.com/contributte/vite) | Vite adapter for Nette Framework |
 | [vuepress-plugin-smartlook](https://github.com/contributte/vuepress-plugin-smartlook) | Smartlook tracking plugin for VuePress |
@@ -173,4 +172,4 @@
 
 ---
 
-**Total: 167 active libraries**
+**Total: 166 active libraries**
