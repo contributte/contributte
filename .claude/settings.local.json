@@ -25,7 +25,9 @@
       "Bash(gh release create:*)",
       "Bash(composer why-not:*)",
       "Bash(gh repo list:*)",
-      "Bash(bun:*)"
+      "Bash(bun:*)",
+      "Bash(git clone:*)",
+      "Bash(claude --remote \"Fix CI errors in contributte/nextras-orm-query-object repository.\n\nRepository: https://github.com/contributte/nextras-orm-query-object\nCI Run: https://github.com/contributte/nextras-orm-query-object/actions/runs/21801163370\n\nSummary of failures:\n- PHP 8.2: 6 failures \\(Mockery deprecations + Nette reflection warnings\\)\n- PHP 8.3: 1 failure \\(SQL error: Unknown column ''*''\\)\n- PHP 8.4: 1 failure \\(SQL error: Unknown column ''*''\\)  \n- PHP 8.5: 2 failures \\(SQL error + setAccessible deprecation\\)\n\nRoot causes:\n1. Mockery uses deprecated ReflectionParameter::isArray\\(\\) - needs upgrade to ^1.6+\n2. Nette Reflection warnings - needs nette/utils and nette/di upgrade\n3. SQL Query error ''Unknown column *'' on PHP 8.3+ - needs nextras/orm and nextras/dbal upgrade\n4. setAccessible\\(\\) deprecation in PHP 8.5 - remove unnecessary calls in tests\n\nPlease clone the repo, analyze the composer.json, update dependencies, and fix the test issues.\")"
     ],
     "deny": [],
     "ask": []
