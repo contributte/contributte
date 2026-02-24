@@ -1,0 +1,35 @@
+#!/bin/bash
+set -euo pipefail
+
+# Team already imported
+# terraform import github_team.coder 16233567
+
+# Already imported
+# terraform import github_team_repository.coder_api_skeleton 16233567:api-skeleton
+# terraform import github_team_repository.coder_messenger_skeleton 16233567:messenger-skeleton
+# terraform import github_team_repository.coder_strapi_v3_skeleton 16233567:strapi-v3-skeleton
+# terraform import github_team_repository.coder_strapi_v4_skeleton 16233567:strapi-v4-skeleton
+# terraform import github_team_repository.coder_webapp_skeleton 16233567:webapp-skeleton
+
+# New repos (not yet on the team — terraform apply will add them)
+terraform import github_team_repository.coder_api_router_skeleton 16233567:api-router-skeleton
+terraform import github_team_repository.coder_apitte_skeleton 16233567:apitte-skeleton
+terraform import github_team_repository.coder_console_skeleton 16233567:console-skeleton
+terraform import github_team_repository.coder_datagrid_skeleton 16233567:datagrid-skeleton
+terraform import github_team_repository.coder_ddd_skeleton 16233567:ddd-skeleton
+terraform import github_team_repository.coder_doctrine_extra_skeleton 16233567:doctrine-extra-skeleton
+terraform import github_team_repository.coder_doctrine_skeleton 16233567:doctrine-skeleton
+terraform import github_team_repository.coder_embedded_skeleton 16233567:embedded-skeleton
+terraform import github_team_repository.coder_framex_skeleton 16233567:framex-skeleton
+terraform import github_team_repository.coder_fx_skeleton 16233567:fx-skeleton
+terraform import github_team_repository.coder_gui_skeleton 16233567:gui-skeleton
+terraform import github_team_repository.coder_mcp_skeleton 16233567:mcp-skeleton
+terraform import github_team_repository.coder_micro_skeleton 16233567:micro-skeleton
+terraform import github_team_repository.coder_nella_skeleton 16233567:nella-skeleton
+terraform import github_team_repository.coder_payments_skeleton 16233567:payments-skeleton
+terraform import github_team_repository.coder_sentry_skeleton 16233567:sentry-skeleton
+terraform import github_team_repository.coder_starter_skeleton 16233567:starter-skeleton
+terraform import github_team_repository.coder_tester_skeleton 16233567:tester-skeleton
+terraform import github_team_repository.coder_ui_skeleton 16233567:ui-skeleton
+terraform import github_team_repository.coder_vite_skeleton 16233567:vite-skeleton
+terraform import github_team_repository.coder_webpack_skeleton 16233567:webpack-skeleton
