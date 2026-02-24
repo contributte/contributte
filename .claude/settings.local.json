@@ -27,7 +27,8 @@
       "Bash(gh repo list:*)",
       "Bash(bun:*)",
       "Bash(git clone:*)",
-      "Bash(gh pr comment:*)"
+      "Bash(gh pr comment:*)",
+      "Bash(gh issue view:*)"
     ],
     "deny": [],
     "ask": []
