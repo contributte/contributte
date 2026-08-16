@@ -5,6 +5,9 @@ Contributte maintains separate README standards because a reusable library, a ru
 - [Library README Standard](readme-library-standard.md) for maintained reusable packages.
 - [Skeleton README Standard](readme-skeleton-standard.md) for starters, reference applications, demos, and integration projects.
 - [Deprecated Repository README Standard](readme-deprecated-standard.md) for archived, abandoned, superseded, or otherwise unsupported libraries.
+- [Spec-Driven Docs](spec-driven-docs.md) for evidence-based evaluation, scoring, and calibration.
+- [README Evaluation](readme-evaluation.md) for machine, human, and optional LLM review.
+- [README Generation Evaluation](readme-generation-evaluation.md) for pinned OpenCode prompt/model benchmarks.
 
 The keywords **MUST**, **SHOULD**, and **MAY** describe required, recommended, and optional practices. A repository uses the profile that matches its current maintenance state and intended user journey.
 
@@ -31,6 +34,6 @@ All profiles require clear technical English, typed code fences, relative reposi
 
 ## Exceptions
 
-The standards describe outcomes, not copy/paste templates. A repository MAY depart from a MUST when its runtime model or maintenance state makes the rule inapplicable. Explain the rule, repository-specific reason, alternate documentation location, and review date for temporary exceptions in the pull request description. A maintainer must approve the exception.
+The standards describe outcomes, not copy/paste templates. A rule that genuinely does not apply uses `not-applicable` with repository evidence, not an exception. A repository MAY temporarily depart from an applicable MUST only through the [Spec-Driven Docs exception format](spec-driven-docs.md#exceptions): rule ID, repository-specific reason, evidence, compensating control, owner, maintainer approval, and expiry date.
 
 Cross-repository exceptions require an RFC and an update to the relevant standard.

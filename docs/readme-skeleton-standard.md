@@ -2,7 +2,7 @@
 
 ## Profiles
 
-[Overview](readme-standard.md) | [Library](readme-library-standard.md) | [Skeleton](readme-skeleton-standard.md) | [Deprecated](readme-deprecated-standard.md)
+[Overview](readme-standard.md) | [Library](readme-library-standard.md) | [Skeleton](readme-skeleton-standard.md) | [Deprecated](readme-deprecated-standard.md) | [Evaluation](spec-driven-docs.md)
 
 ## Scope
 
@@ -59,6 +59,8 @@ Heading names and section boundaries MAY vary when the required information rema
 
 The first reader-facing onboarding path MUST preserve execution order: requirements, acquisition, dependency installation and any required local configuration, backing services/data/assets, runtime, then verification. Later operational sections MUST NOT be required to complete an earlier Quick start.
 
+Quick start MUST end with a copyable proof immediately after startup: an exact browser route and expected interaction for a web application, a request with expected status/body for an API, a command with representative output for a CLI, a dispatched message with consumer evidence for a worker, or a client/Inspector interaction for a protocol integration.
+
 The README MUST distinguish acquisition models:
 
 - A consumer-ready starter uses `composer create-project`.
@@ -70,6 +72,10 @@ A starter's Quick start MUST use `composer create-project` or an equivalent acqu
 ## Configuration and runtime paths
 
 The recommended route MUST have been run against the current tracked repository state and SHOULD be covered by an automated smoke or integration check when practical. Mark one route as recommended. Alternative host, Docker, or production-like routes MAY follow it and MUST identify their differing prerequisites, commands, ports, and success signal.
+
+When the recommended route requires a database, queue, cache, broker, or other backing service, it MUST start that service with its host, port, and development-only credentials, or make a self-contained Compose path the recommended route. Docker Compose is a requirement only when the recommended route uses it; otherwise label it as an alternative.
+
+Document `make init`, `make project`, `make build`, `composer install`, and frontend install/build commands only when they are required by the tracked targets, and preserve their required order. Do not assume `composer create-project` performs repository-defined post-install initialization unless it is verified.
 
 Document the minimum configuration needed for the recommended path: config file/environment source, local or gitignored status, values that must change, and values that differ in containers. Label demo credentials as development-only.
 
@@ -87,8 +93,8 @@ Use `http://localhost:<port>` or `http://127.0.0.1:<port>` for browser instructi
 
 - **API skeletons** MUST include the base URL, a health/ping endpoint, an API/OpenAPI discovery endpoint when available, and one copyable successful request. Explain authentication or development tokens.
 - **Worker/DDD skeletons** MUST state backing services, startup order, and consumer/worker commands when central to the example.
-- **Frontend skeletons** MUST state PHP and frontend runtime requirements, dependency installation, watch/build commands, and whether frontend and PHP processes run separately.
-- **MCP/protocol skeletons** MUST describe each transport separately, including its connection URL or STDIO command and required inspector/client workflow.
+- **Frontend skeletons** MUST state PHP and frontend runtime requirements, dependency installation, watch/build commands, and whether frontend and PHP processes run separately. State whether the browser uses the PHP application with watched/generated assets, a frontend dev-server URL/proxy, or a production asset build; show concurrently required terminal commands.
+- **MCP/protocol skeletons** MUST describe each transport separately, including its connection URL or STDIO command and required inspector/client workflow. Show the Inspector/client connection procedure and one callable capability with its expected result.
 - **CMS skeletons** MUST document install/development/build/start commands, local admin/bootstrap behavior, and configuration grouped by subsystem.
 - **Security-focused integrations** MUST state secure defaults, outbound-data boundaries, and credential handling before any opt-in configuration or command that can transmit data or use credentials.
 
@@ -113,6 +119,7 @@ Review before merge:
 - [ ] The quick-start sequence is complete and one route is clearly recommended.
 - [ ] The recommended route has been run against the current tracked state; record the verification command or CI/smoke-check reference in the pull request when it is not self-evident.
 - [ ] A concrete success signal is stated; alternate paths are correctly distinguished.
+- [ ] API examples include a successful request and required development authentication; protocol examples include a client-facing transport proof.
 - [ ] Configuration scope, development-only credentials, and security implications are clear.
 - [ ] Docker is complete when documented and omitted when it is not a supported user path.
 - [ ] Variant-specific API, worker, frontend, protocol, CMS, or security rules are covered.

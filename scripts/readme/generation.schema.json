@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Contributte README generation manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "repository", "revision", "readme", "readmeSha256", "profile", "prompt", "promptVersion", "model", "variant", "timeoutSeconds", "runs", "output"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$" },
+    "repository": { "type": "string", "minLength": 1 },
+    "revision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "readme": { "type": "string", "minLength": 1 },
+    "readmeSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "profile": { "enum": ["library", "skeleton", "deprecated"] },
+    "prompt": { "type": "string", "minLength": 1 },
+    "promptVersion": { "type": "string", "minLength": 1 },
+    "model": { "type": "string", "minLength": 1 },
+    "variant": { "type": "string", "minLength": 1 },
+    "timeoutSeconds": { "type": "integer", "minimum": 30, "maximum": 3600 },
+    "runs": { "type": "integer", "minimum": 1, "maximum": 10 },
+    "output": { "type": "string", "minLength": 1 }
+  }
+}

@@ -2,7 +2,7 @@
 
 ## Profiles
 
-[Overview](readme-standard.md) | [Library](readme-library-standard.md) | [Skeleton](readme-skeleton-standard.md) | [Deprecated](readme-deprecated-standard.md)
+[Overview](readme-standard.md) | [Library](readme-library-standard.md) | [Skeleton](readme-skeleton-standard.md) | [Deprecated](readme-deprecated-standard.md) | [Evaluation](spec-driven-docs.md)
 
 ## Scope
 
