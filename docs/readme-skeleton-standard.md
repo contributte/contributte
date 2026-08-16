@@ -1,8 +1,24 @@
 # Contributte Skeleton README Standard
 
+## Profiles
+
+[Overview](readme-standard.md) | [Library](readme-library-standard.md) | [Skeleton](readme-skeleton-standard.md) | [Deprecated](readme-deprecated-standard.md)
+
 ## Scope
 
-This standard applies to starters, reference applications, demos, and integration projects. A skeleton README is the shortest reliable route from discovery to a verified local success.
+This standard applies to starters, reference applications, demos, and integration projects. A skeleton README is a concise, complete route from obtaining the project to verifying it locally.
+
+## Writing style
+
+Write concise, factual developer-facing English. Prefer concrete subjects, verbs, commands, paths, versions, and observable outcomes. Preserve accurate project terminology, product names, command output, and established public wording; this standard does not require stylistic rewriting when existing language is clearer or more precise.
+
+In this standard, "factual" means verifiable from the repository, released package, or documented support policy. "Concrete" means naming the relevant command, path, version, URL, setting, or expected result. "Clear" means a reader can identify the action and outcome without promotional or implied claims.
+
+Prefer: `Open http://localhost:8080/health; it returns {"status":"ok"}.`
+
+Avoid: `Open the application and enjoy.`
+
+Examples illustrate the required information; they are not mandatory wording. Keep project-specific terminology where it is accurate and understandable.
 
 ## Required information
 
@@ -14,6 +30,8 @@ A skeleton README MUST state whether it is a starter, reference application, dem
 4. Required services, migrations, fixtures, or builds.
 5. Application, API, CLI, or protocol startup.
 6. A URL, request, command output, or client interaction that proves success.
+
+The README MUST begin with a single H1 followed immediately by a factual sentence that identifies the repository as a starter, reference application, demo, or integration demonstration. A `Purpose` section may expand this but MUST NOT be the first declaration of project type.
 
 Use this order as a default, omitting irrelevant sections:
 
@@ -37,17 +55,31 @@ One factual sentence describing the intended use and defining integrations.
 ## Further documentation
 ```
 
+Heading names and section boundaries MAY vary when the required information remains discoverable in the same reader order. `Quick start` MAY include the minimum local configuration and runtime commands when that is the complete recommended route; use a separate `Configuration` section when readers need it independently.
+
+The first reader-facing onboarding path MUST preserve execution order: requirements, acquisition, dependency installation and any required local configuration, backing services/data/assets, runtime, then verification. Later operational sections MUST NOT be required to complete an earlier Quick start.
+
 The README MUST distinguish acquisition models:
 
 - A consumer-ready starter uses `composer create-project`.
 - A checked-out example or integration uses `composer install`.
 - Document both only when both workflows are supported and their purposes are clear.
 
+A starter's Quick start MUST use `composer create-project` or an equivalent acquisition path. A checked-out reference or demo MUST state clone/template acquisition before `composer install` or `npm ci`. A consumer-ready starter MUST NOT present `composer install` alone as its acquisition route.
+
 ## Configuration and runtime paths
+
+The recommended route MUST have been run against the current tracked repository state and SHOULD be covered by an automated smoke or integration check when practical. Mark one route as recommended. Alternative host, Docker, or production-like routes MAY follow it and MUST identify their differing prerequisites, commands, ports, and success signal.
 
 Document the minimum configuration needed for the recommended path: config file/environment source, local or gitignored status, values that must change, and values that differ in containers. Label demo credentials as development-only.
 
 Document Docker only when it is a supported or recommended onboarding path. A Docker path MUST be complete: services, hostnames, ports, follow-up migrations/builds/workers, and user-facing URLs. Do not advertise Docker merely because a Make target or maintenance file exists.
+
+When Compose supplies only backing services, label it `Docker services` and state that the application or protocol runtime still starts separately. Put it after the local configuration needed to use those services unless it is the recommended first-success path.
+
+Quick start may name the local configuration creation/copy command. The `Configuration` section is the single detailed source for file ownership, ignored status, required values, and container differences. Do not repeat full configuration examples for each runtime unless values materially differ.
+
+State a canonical verification URL or request once in Quick start or the relevant variant section. Do not duplicate route or endpoint inventories across native and Docker paths; describe only host, port, or authentication differences in an alternate path. Move exhaustive routes to focused documentation.
 
 Use `http://localhost:<port>` or `http://127.0.0.1:<port>` for browser instructions. `0.0.0.0` is a bind address, not a reader-facing URL.
 
@@ -58,7 +90,7 @@ Use `http://localhost:<port>` or `http://127.0.0.1:<port>` for browser instructi
 - **Frontend skeletons** MUST state PHP and frontend runtime requirements, dependency installation, watch/build commands, and whether frontend and PHP processes run separately.
 - **MCP/protocol skeletons** MUST describe each transport separately, including its connection URL or STDIO command and required inspector/client workflow.
 - **CMS skeletons** MUST document install/development/build/start commands, local admin/bootstrap behavior, and configuration grouped by subsystem.
-- **Security-focused integrations** MUST state secure defaults and data-sharing or credential implications before opt-in instructions.
+- **Security-focused integrations** MUST state secure defaults, outbound-data boundaries, and credential handling before any opt-in configuration or command that can transmit data or use credentials.
 
 ## Links, visuals, and development
 
@@ -66,7 +98,11 @@ A maintained demo link SHOULD appear near the purpose section when it helps user
 
 Use relative links for repository-owned files and assets. Do not use `blob/master` URLs for local files. Keep architecture, troubleshooting, and exhaustive dependency material in focused documentation when it would obscure onboarding.
 
-Document canonical quality and test commands when the repository provides them. Prefer project entrypoints such as `make qa`, `make tests`, `composer test`, or `npm run test`. Describe commands accurately.
+Use `Commands` or `Development and quality checks` for canonical QA, tests, builds, watchers, migrations, and consumers. Reserve a final `Development` section for contribution, maintenance, and footer material. A generic footer MUST NOT displace operational documentation.
+
+The README MUST keep only information necessary to select the project and reach first success. Put architecture, complete route catalogs, extensive package lists, screenshots, troubleshooting, and deployment detail in `docs/` or `.docs/`, and link to it from `Further documentation`.
+
+Document canonical quality and test commands when the repository provides them. Prefer project entrypoints such as `make qa`, `make tests`, `composer test`, or `npm run test`. Describe commands accurately. A maintained repository MUST provide a contributor route: prefer a repository-local `CONTRIBUTING.md`; otherwise link to applicable maintained organization guidance.
 
 Avoid generic encouragement such as "Open the page and enjoy" without stating the expected route, interaction, or output.
 
@@ -75,7 +111,10 @@ Review before merge:
 - [ ] Project type, audience, and first success are clear.
 - [ ] Requirements, acquisition model, commands, services, ports, and URLs match tracked sources.
 - [ ] The quick-start sequence is complete and one route is clearly recommended.
+- [ ] The recommended route has been run against the current tracked state; record the verification command or CI/smoke-check reference in the pull request when it is not self-evident.
+- [ ] A concrete success signal is stated; alternate paths are correctly distinguished.
 - [ ] Configuration scope, development-only credentials, and security implications are clear.
 - [ ] Docker is complete when documented and omitted when it is not a supported user path.
 - [ ] Variant-specific API, worker, frontend, protocol, CMS, or security rules are covered.
+- [ ] The contributor route and canonical development commands are accurate.
 - [ ] Links and visual assets resolve; Markdown renders correctly on GitHub.

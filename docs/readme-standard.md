@@ -8,6 +8,14 @@ Contributte maintains separate README standards because a reusable library, a ru
 
 The keywords **MUST**, **SHOULD**, and **MAY** describe required, recommended, and optional practices. A repository uses the profile that matches its current maintenance state and intended user journey.
 
+Select the profile by the first supported journey presented to a new reader, not by the repository name or whether it is published on Packagist:
+
+- Use the Library profile when the README's supported first journey is installing the repository as a dependency.
+- Use the Skeleton profile when the README's supported first journey is obtaining or running the repository to start or evaluate an application. Maintained demos and examples use this profile.
+- Use the Deprecated profile for unsupported repositories regardless of their former type.
+
+A repository that supports both dependency installation and a runnable application MUST select one primary profile and link to the other supported journey without duplicating its full instructions.
+
 ## Shared evidence rules
 
 Before editing any README, verify machine facts in tracked sources:
