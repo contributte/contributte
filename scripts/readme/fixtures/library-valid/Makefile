@@ -1,0 +1,3 @@
+.PHONY: qa
+qa:
+	@true
