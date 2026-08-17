@@ -92,7 +92,7 @@ Heading labels are not gates. `Installation`, `Usage`, and `Configuration` are u
 | `SK-RQ-01` | Required runtimes, tools, and backing services are stated before use. |
 | `SK-CM-01` | Required commands correspond to tracked scripts, targets, or entry points. |
 | `SK-FS-01` | One ordered setup and startup path reaches an observable, verified result. |
-| `SK-RT-01` | Development, container, and production-like routes are not misleadingly conflated. |
+| `SK-RT-01` | The recommended development route is prioritized, and development, watch, container, and production-like routes are not misleadingly conflated. |
 
 ### Deprecated
 
@@ -139,9 +139,9 @@ No points are awarded for word count, badge count, image count, exact heading na
 | `Q-EX-02` | Examples | All | 30 | Success cannot be observed. | Result is stated but not independently verified. | Expected result is explicit and verified. |
 | `Q-IA-01` | Information architecture | All | 70 | Reader journey is blocked or mixed with unrelated reference. | Main path is discoverable with some duplication. | Content follows task order and cleanly delegates other modes. |
 | `Q-IA-02` | Information architecture | All | 30 | Canonical next documentation is missing or contradictory. | Useful destinations exist but boundaries are imperfect. | Guide, reference, migration, API, and internals have explicit ownership. |
-| `Q-CA-01` | Clarity and accessibility | All | 60 | Language or structure materially obscures action/meaning. | Understandable with minor ambiguity or accessibility debt. | Precise, consistent, rendered, and contextually accessibility-reviewed. |
+| `Q-CA-01` | Clarity and accessibility | All | 60 | Language or structure materially obscures action/meaning. | Understandable with minor ambiguity, dense multi-purpose prose, or accessibility debt. | Precise, consistent, scannable by reader action, rendered, and contextually accessibility-reviewed. |
 | `Q-CA-02` | Clarity and accessibility | All | 40 | Essential visual/link/code meaning is inaccessible. | Alternatives exist with minor contextual gaps. | All essential content has verified equivalent text and clear link purpose. |
-| `Q-MG-01` | Maintenance and governance | All | 60 | No reliable update, support, or ownership route. | Basic contributor/support route exists. | Docs ownership and change acceptance are integrated with releases. |
+| `Q-MG-01` | Maintenance and governance | All | 60 | No reliable maintenance, update, support, or ownership route. | A maintainer/team or repository/organization ownership route and a basic contributor/support route are identifiable. | Docs ownership and change acceptance are integrated with releases. |
 | `Q-MG-02` | Maintenance and governance | All | 40 | Examples and links have no repeatable checks. | Some deterministic checks exist. | Canonical examples, links, compatibility, and generated output are continuously verified. |
 
 Criterion weights are relative within their dimension. A criterion is applicable only to the listed profile and current repository capabilities. Capability-based exclusion requires evidence.
@@ -209,6 +209,9 @@ A semantic reviewer checks:
 - whether the result is observable;
 - whether terminology is accurate and consistent;
 - whether claims are unambiguous and evidence-backed;
+- whether independently actionable URLs, runtime behavior, and configuration overrides are separated for scanning;
+- whether the canonical development mode appears before secondary watcher/build variants;
+- whether maintenance ownership and contribution routes are identifiable without inferring a maintainer from commit history;
 - whether detail is in the correct README, guide, reference, migration, API, or internal layer.
 
 The reviewer MUST cite the affected span and state the reader action or conclusion affected by a defect.

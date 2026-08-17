@@ -61,6 +61,9 @@ Check deterministic terminology first. Then review:
 - pronouns with clear antecedents;
 - versioned terms instead of ambiguous `latest`, `current`, or `recent`;
 - concrete claims instead of unsupported adjectives;
+- separate sentences, paragraphs, or list items for URLs, runtime behavior, and configuration overrides that readers use independently;
+- recommended runtime or development mode before secondary watcher, build, container, or production variants;
+- an evidence-backed maintainer, team, repository-owner, or organization ownership route plus contribution guidance for maintained repositories;
 - preserved upstream and public terminology where rewriting would reduce accuracy.
 
 Readability, passive voice, long sentences, grammar tools, and inclusive-language scanners are advisory. Confirm each finding in context.

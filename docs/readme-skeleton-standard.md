@@ -93,7 +93,7 @@ Use `http://localhost:<port>` or `http://127.0.0.1:<port>` for browser instructi
 
 - **API skeletons** MUST include the base URL, a health/ping endpoint, an API/OpenAPI discovery endpoint when available, and one copyable successful request. Explain authentication or development tokens.
 - **Worker/DDD skeletons** MUST state backing services, startup order, and consumer/worker commands when central to the example.
-- **Frontend skeletons** MUST state PHP and frontend runtime requirements, dependency installation, watch/build commands, and whether frontend and PHP processes run separately. State whether the browser uses the PHP application with watched/generated assets, a frontend dev-server URL/proxy, or a production asset build; show concurrently required terminal commands.
+- **Frontend skeletons** MUST state PHP and frontend runtime requirements, dependency installation, dev-server/watch/build commands, and whether frontend and PHP processes run separately. When an interactive frontend dev server with hot reload or proxying is supported, present it as the primary development route before a passive watcher unless repository evidence identifies the watcher as canonical. State whether the browser uses the PHP application with watched/generated assets, a frontend dev-server URL/proxy, or a production asset build; show concurrently required terminal commands. Put the browser URL, proxy behavior, and environment overrides in separate sentences or list items when a reader may need to scan or copy them independently.
 - **MCP/protocol skeletons** MUST describe each transport separately, including its connection URL or STDIO command and required inspector/client workflow. Show the Inspector/client connection procedure and one callable capability with its expected result.
 - **CMS skeletons** MUST document install/development/build/start commands, local admin/bootstrap behavior, and configuration grouped by subsystem.
 - **Security-focused integrations** MUST state secure defaults, outbound-data boundaries, and credential handling before any opt-in configuration or command that can transmit data or use credentials.
@@ -108,7 +108,7 @@ Use `Commands` or `Development and quality checks` for canonical QA, tests, buil
 
 The README MUST keep only information necessary to select the project and reach first success. Put architecture, complete route catalogs, extensive package lists, screenshots, troubleshooting, and deployment detail in `docs/` or `.docs/`, and link to it from `Further documentation`.
 
-Document canonical quality and test commands when the repository provides them. Prefer project entrypoints such as `make qa`, `make tests`, `composer test`, or `npm run test`. Describe commands accurately. A maintained repository MUST provide a contributor route: prefer a repository-local `CONTRIBUTING.md`; otherwise link to applicable maintained organization guidance.
+Document canonical quality and test commands when the repository provides them. Prefer project entrypoints such as `make qa`, `make tests`, `composer test`, or `npm run test`. Describe commands accurately. A maintained repository MUST identify a reliable maintenance or ownership route and provide a contributor route. Ownership may be a named maintainer/team, a repository owner with an active support or issue route, or maintained organization guidance; do not invent personal attribution from commit history. Prefer a repository-local `CONTRIBUTING.md` for contribution instructions, otherwise link to applicable maintained organization guidance.
 
 Avoid generic encouragement such as "Open the page and enjoy" without stating the expected route, interaction, or output.
 
@@ -123,5 +123,6 @@ Review before merge:
 - [ ] Configuration scope, development-only credentials, and security implications are clear.
 - [ ] Docker is complete when documented and omitted when it is not a supported user path.
 - [ ] Variant-specific API, worker, frontend, protocol, CMS, or security rules are covered.
-- [ ] The contributor route and canonical development commands are accurate.
+- [ ] The recommended frontend development route appears before secondary watch/build modes, and dense URL/proxy/override guidance is scannable.
+- [ ] The maintenance/ownership route, contributor route, and canonical development commands are accurate.
 - [ ] Links and visual assets resolve; Markdown renders correctly on GitHub.
