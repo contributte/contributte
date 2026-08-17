@@ -110,7 +110,7 @@ export function parseEvents(events: string): Pick<GenerationRunResult, "candidat
     }
   }
 
-  const combined = texts.join("").replaceAll("\r\n", "\n");
+  const combined = (texts.at(-1) ?? "").replaceAll("\r\n", "\n");
   const matches = [...combined.matchAll(/README_CANDIDATE_BEGIN\s*\n([\s\S]*?)\nREADME_CANDIDATE_END/g)];
   const candidate = matches.length === 1 && combined.replace(matches[0][0], "").trim() === "" && matches[0][1].trim()
     ? `${matches[0][1].trimEnd()}\n`

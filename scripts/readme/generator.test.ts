@@ -30,6 +30,14 @@ describe("README generation benchmark", () => {
     expect(extractCandidate(JSON.stringify({ type: "text", text: `Preface\n${candidate}` })).candidate).toBeUndefined();
   });
 
+  test("extracts only the final assistant response after progress text", () => {
+    const events = [
+      JSON.stringify({ type: "text", part: { type: "text", text: "Inspecting repository facts." } }),
+      JSON.stringify({ type: "text", part: { type: "text", text: "README_CANDIDATE_BEGIN\n# Package\nREADME_CANDIDATE_END" } }),
+    ].join("\n");
+    expect(extractCandidate(events).candidate).toBe("# Package\n");
+  });
+
   test("produces stable SHA-256 hashes", () => {
     expect(sha256("README\n")).toBe("57bb905d0f2ccecbb9d81d40daa17e1e05b109c833ddc766edb0b59561088f20");
   });

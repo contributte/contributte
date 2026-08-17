@@ -3,6 +3,7 @@
 This benchmark evaluates README generation through the OpenCode CLI. It extends [Spec-Driven Docs](spec-driven-docs.md): document gates and quality remain authoritative, while generation metrics measure whether a prompt/model workflow produces reliable improvements.
 
 See the [exploratory GPT 5.6 pilot](readme-generation-pilot.md) for one pinned report-only run.
+See the [GPT 5.6 model comparison](readme-generation-comparison.md) for the prompt-v2 Sol, Terra, and Luna experiment.
 
 Draft `0.1` is report-only. Generated files MUST NOT be pushed or merged automatically.
 
@@ -80,7 +81,7 @@ Evaluate source and candidate independently before comparison. Then compare sour
 
 Order disagreement is `uncertain`. Pairwise preference MUST NOT override an absolute gate failure.
 
-The generator model MUST NOT be the sole judge of its own output. Prefer a human or a different model family; if the same family is unavoidable, disclose it and require human confirmation.
+The generator model MUST NOT be the sole judge of its own output. Prefer a human or a different model family; if the same family is unavoidable, disclose it and require human confirmation. Always run deterministic evaluation before semantic preference: a broken link or other gate failure rejects a polished candidate.
 
 ### System outcome
 
