@@ -167,54 +167,7 @@ Additional directories may be present depending on the skeleton's purpose (e.g.,
 
 ## Composer Configuration
 
-### composer.json Structure
-
-```json
-{
-  "name": "contributte/{name}-skeleton",
-  "description": "Skeleton project description",
-  "license": "MIT",
-  "type": "project",
-  "authors": [
-    {
-      "name": "Milan Felix Sulc",
-      "homepage": "https://f3l1x.io"
-    }
-  ],
-  "require": {
-    "php": ">=8.2",
-    "nette/application": "^3.2",
-    "nette/bootstrap": "^3.2",
-    "nette/di": "^3.2",
-    "tracy/tracy": "^2.10",
-    "latte/latte": "^3.0"
-  },
-  "require-dev": {
-    "contributte/qa": "^0.4",
-    "contributte/phpstan": "^0.1",
-    "nette/tester": "^2.5",
-    "mockery/mockery": "^1.6"
-  },
-  "autoload": {
-    "psr-4": {
-      "App\\": "app"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests"
-    }
-  },
-  "config": {
-    "sort-packages": true,
-    "allow-plugins": {
-      "dealerdirect/phpcodesniffer-composer-installer": true
-    }
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
-}
-```
+`composer.json`, version policy and development dependencies are described in [COMPOSER.md](COMPOSER.md).
 
 ## Makefile
 
@@ -409,50 +362,11 @@ parameters:
 
 ## PHPStan Configuration
 
-### phpstan.neon
-
-```neon
-includes:
-    - vendor/contributte/phpstan/phpstan.neon
-
-parameters:
-    level: 9
-    phpVersion: 80200
-
-    scanDirectories:
-        - app
-
-    fileExtensions:
-        - php
-
-    paths:
-        - app
-        - .docs
-
-    ignoreErrors:
-```
+See [phpstan.neon](COMPOSER.md#phpstanneon) in COMPOSER.md.
 
 ## Coding Standards
 
-### ruleset.xml
-
-```xml
-<?xml version="1.0"?>
-<ruleset>
-    <rule ref="./vendor/contributte/qa/ruleset-8.2.xml"/>
-
-    <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
-        <properties>
-            <property name="rootNamespaces" type="array">
-                <element key="app" value="App"/>
-                <element key="tests" value="Tests"/>
-            </property>
-        </properties>
-    </rule>
-
-    <exclude-pattern>/tests/tmp</exclude-pattern>
-</ruleset>
-```
+`ruleset.xml` is described in [COMPOSER.md](COMPOSER.md#rulesetxml). PHP code conventions are described in [CODE.md](CODE.md).
 
 ## Application Entry Point
 
@@ -519,27 +433,7 @@ exit(App\Bootstrap::boot()
 
 ## Testing
 
-### tests/bootstrap.php
-
-```php
-<?php declare(strict_types = 1);
-
-require __DIR__ . '/../vendor/autoload.php';
-
-Tester\Environment::setup();
-```
-
-### Test Organization
-
-```
-tests/
-├── Cases/
-│   ├── E2E/              # End-to-end tests
-│   ├── Integration/      # Integration tests
-│   └── Unit/             # Unit tests
-├── Fixtures/             # Test data and fixtures
-└── bootstrap.php         # Test bootstrap
-```
+Test layout, bootstrap and E2E tests are described in [TESTS.md](TESTS.md).
 
 ## Documentation
 
@@ -584,34 +478,7 @@ Skeleton READMEs follow the [Skeleton README Template](DOCS.md#skeleton-readme-t
 
 ## Git Configuration
 
-### .gitignore
-
-```
-# Composer
-/vendor/
-composer.lock
-
-# Local configuration
-/config/local.neon
-
-# Runtime
-/var/log/*
-!/var/log/.gitignore
-/var/tmp/*
-!/var/tmp/.gitignore
-
-# Data
-/.data/
-
-# Coverage
-coverage.html
-coverage.xml
-
-# IDE
-.idea/
-.vscode/
-*.swp
-```
+See [.gitignore](COMPOSER.md#gitignore) in COMPOSER.md.
 
 ## Checklist for New Skeletons
 
