@@ -2,7 +2,7 @@
 
 This document describes how `README.md`, the `.docs` folder and `LICENSE` are written in Contributte repositories.
 It extends the short [Documentation](LIBRARY.md#documentation) section in LIBRARY.md and the
-[README.md Structure](SKELETON.md#documentation) section in SKELETON.md.
+[Documentation](SKELETON.md#documentation) section in SKELETON.md.
 
 ## Table of Contents
 
