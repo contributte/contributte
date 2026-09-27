@@ -218,43 +218,47 @@ Additional directories may be present depending on the skeleton's purpose (e.g.,
 
 ## Makefile
 
-Skeleton projects have extended Makefile with project management tasks:
+Skeleton projects have extended Makefile with project management tasks. Running `make` without a target prints the help, see [MAKEFILE.md](MAKEFILE.md). If the project needs environment variables, add `-include .env` and `export` at the top of the Makefile (see [Environment](MAKEFILE.md#environment)).
 
 ```makefile
-#
-# Project
-#
+.DEFAULT_GOAL := help
+
+##@ Help
+
+.PHONY: help
+help: ## Show this help
+	@awk 'BEGIN {FS = ":.*##"; printf "Usage: make \033[36m<target>\033[0m\n"} /^[a-zA-Z0-9_.-]+:.*##/ { sub(/^ +/, "", $$2); printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) }' $(firstword $(MAKEFILE_LIST))
+
+##@ Project
 
 .PHONY: project
-project: install setup
+project: install setup ## Install and set up project
 
 .PHONY: init
-init:
+init: ## Create local config
 	cp config/local.neon.dist config/local.neon
 
 .PHONY: install
-install:
+install: ## Install dependencies
 	composer install
 
 .PHONY: setup
-setup:
+setup: ## Create runtime directories
 	mkdir -p var/tmp var/log
 	chmod -R 0777 var/tmp var/log
 
 .PHONY: clean
-clean:
+clean: ## Remove temporary files and logs
 	find var/tmp -mindepth 1 ! -name '.gitignore' -type f,d -exec rm -rf {} + 2>/dev/null; true
 	find var/log -mindepth 1 ! -name '.gitignore' -type f,d -exec rm -rf {} + 2>/dev/null; true
 
-#
-# QA
-#
+##@ QA
 
 .PHONY: qa
-qa: phpstan cs
+qa: phpstan cs ## Run all QA checks
 
 .PHONY: cs
-cs:
+cs: ## Check code style
 ifdef GITHUB_ACTION
 	vendor/bin/phpcs --standard=ruleset.xml --encoding=utf-8 --extensions=php,phpt --colors -nsp -q --report=checkstyle app tests | cs2pr
 else
@@ -262,57 +266,52 @@ else
 endif
 
 .PHONY: csf
-csf:
+csf: ## Fix code style
 	vendor/bin/phpcbf --standard=ruleset.xml --encoding=utf-8 --extensions=php,phpt --colors -nsp app tests
 
 .PHONY: phpstan
-phpstan:
+phpstan: ## Run static analysis
 	vendor/bin/phpstan analyse -c phpstan.neon
 
 .PHONY: tests
-tests:
+tests: ## Run tests
 	vendor/bin/tester -s -p php --colors 1 -C tests/Cases
 
 .PHONY: coverage
-coverage:
+coverage: ## Generate code coverage
 ifdef GITHUB_ACTION
 	vendor/bin/tester -s -p phpdbg --colors 1 -C --coverage coverage.xml --coverage-src app tests/Cases
 else
 	vendor/bin/tester -s -p phpdbg --colors 1 -C --coverage coverage.html --coverage-src app tests/Cases
 endif
 
-#
-# Dev
-#
+##@ Development
 
 .PHONY: dev
-dev:
+dev: ## Start development server
 	NETTE_DEBUG=1 php -S 0.0.0.0:8000 -t www
 
-#
-# Docker
-#
+##@ Docker
 
 .PHONY: docker-up
-docker-up:
+docker-up: ## Start Docker services
 	docker compose up -d
 
-#
-# Deploy
-#
+##@ Deployment
 
 .PHONY: build
-build:
+build: ## Build project
 	# Add build steps here
 
 .PHONY: deploy
-deploy: clean project build clean
+deploy: clean project build clean ## Build for deployment
 ```
 
 ### Available Commands
 
 | Command | Description |
 |---------|-------------|
+| `make` / `make help` | Show available commands |
 | `make project` | Full project setup (install + setup) |
 | `make init` | Copy local config template |
 | `make install` | Install Composer dependencies |
