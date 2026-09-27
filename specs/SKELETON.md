@@ -545,17 +545,7 @@ tests/
 
 ### README.md Structure
 
-Skeleton READMEs should include:
-
-1. **Title and badges** - Name, build status, coverage
-2. **Description** - What the skeleton demonstrates
-3. **Screenshots** - Visual preview (in `.docs/assets/`)
-4. **Requirements** - PHP, Docker, etc.
-5. **Installation** - Step-by-step guide
-6. **Configuration** - Environment setup
-7. **Usage** - How to run the application
-8. **Development** - How to contribute
-9. **License** - MIT
+Skeleton READMEs follow the [Skeleton README Template](DOCS.md#skeleton-readme-template) in DOCS.md.
 
 ### Installation Section Example
 
