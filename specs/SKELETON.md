@@ -304,7 +304,11 @@ build: ## Build project
 	# Add build steps here
 
 .PHONY: deploy
-deploy: clean project build clean ## Build for deployment
+deploy: ## Build for deployment
+	$(MAKE) clean
+	$(MAKE) project
+	$(MAKE) build
+	$(MAKE) clean
 ```
 
 ### Available Commands
