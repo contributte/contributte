@@ -49,6 +49,9 @@ Website ðŸš€ <a href="https://contributte.org">contributte.org</a> | Contact ðŸ‘
 - [Makefile](specs/MAKEFILE.md)
 - [Workflows](specs/WORKFLOWS.md)
 - [Docs](specs/DOCS.md)
+- [Code](specs/CODE.md)
+- [Tests](specs/TESTS.md)
+- [Composer](specs/COMPOSER.md)
 
 ## Connecting
 
