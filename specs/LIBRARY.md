@@ -643,16 +643,7 @@ Documentation is stored in the `.docs` directory:
 
 ### README.md Template
 
-The main README.md should include:
-
-1. Package name and badges
-2. Brief description
-3. Documentation link
-4. Installation instructions
-5. Quick usage example
-6. Version compatibility matrix
-7. Development section
-8. License information
+The root README and `.docs/README.md` follow [DOCS.md](DOCS.md).
 
 ## Versioning
 
