@@ -42,6 +42,12 @@ Website ðŸš€ <a href="https://contributte.org">contributte.org</a> | Contact ðŸ‘
 
 - [Bare repository](https://github.com/contributte/bare)
 
+## Specs
+
+- [Library](specs/LIBRARY.md)
+- [Skeleton](specs/SKELETON.md)
+- [Makefile](specs/MAKEFILE.md)
+
 ## Connecting
 
 - [Add to patrons list](https://github.com/contributte/contributte/issues/new?template=Patron.md)
