@@ -52,6 +52,11 @@ Website ðŸš€ <a href="https://contributte.org">contributte.org</a> | Contact ðŸ‘
 - [Code](specs/CODE.md)
 - [Tests](specs/TESTS.md)
 - [Composer](specs/COMPOSER.md)
+- [Agents](specs/AGENTS.md)
+- [Design](specs/DESIGN.md)
+- [PRD](specs/PRD.md)
+- [Tech](specs/TECH.md)
+- [Tone](specs/TONE.md)
 
 ## Connecting
 
