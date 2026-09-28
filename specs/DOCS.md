@@ -43,6 +43,11 @@ It extends the short [Documentation](LIBRARY.md#documentation) section in LIBRAR
 | `{name}` | Extension name in NEON | `utils` |
 | `{Library}` | Integrated library, if any | `Symfony Console` |
 | `{library-url}` | Link to the integrated library | `https://symfony.com/doc/current/console.html` |
+| `{php}` | Lowest PHP version in `composer.json` `require` | `8.2` |
+| `{nette}` | Lowest Nette version the `nette/*` constraints in `require` allow | `3.2` |
+
+Replace every placeholder with facts from the repository; delete lines that don't apply. Text in `{...}` that is
+a sentence (`{One sentence on what it gives you.}`) is a hint for what to write, not text to keep.
 
 ## Header
 
@@ -105,6 +110,8 @@ Website 🚀 <a href="https://contributte.org">contributte.org</a> | Contact �
 
 {Name} integrates [{Library}]({library-url}) into Nette Framework. {One sentence on what it gives you.}
 
+<!-- optional: one screenshot or GIF from .docs/assets/ for a package with visual output -->
+
 ## Usage
 
 To install the latest version of `{package}`, use [Composer](https://getcomposer.org):
@@ -113,7 +120,7 @@ To install the latest version of `{package}`, use [Composer](https://getcomposer
 composer require {package}
 ```
 
-Requires PHP 8.2 or later and Nette 3.2.
+Requires PHP {php} or later and Nette {nette}.
 
 Register the extension in your `config.neon`:
 
@@ -137,7 +144,7 @@ For details on how to use this package, check out the [documentation](.docs).
 
 See [how to contribute](https://contributte.org/contributing.html) to this package.
 
-This package is currently maintained by these authors.
+This package is maintained by these authors.
 
 <a href="https://github.com/f3l1x">
   <img width="80" height="80" src="https://avatars2.githubusercontent.com/u/538058?v=3&s=80">
@@ -154,13 +161,18 @@ Section order is fixed: description, **Usage**, **Documentation**, **Versions**,
 - The **description** is one to three sentences without a heading, between the links line and `## Usage`. The first
   sentence says what the package is, the second why you would want it. Packages that don't integrate another
   library start with what they are: "Contributte Utils is a set of small helpers for Nette Framework."
-- **Usage** holds the install command, one requirements sentence that matches the Versions table, and the smallest
-  working example (usually the extension registration). Longer examples go to `.docs/README.md`.
+- A package with visual output (a component, a Tracy panel, a console screen) may show one screenshot or GIF from
+  `.docs/assets/` right after the description, before `## Usage`.
+- **Usage** holds the install command, one requirements sentence and the smallest working example. The
+  requirements come from `composer.json` `require`; when the Versions table says something else, fix the table in
+  the same change. The example is the extension registration, plus the one step that makes it do something
+  visible when registration alone does nothing (one command, one component). Longer examples go to
+  `.docs/README.md`.
 - **Versions** has the columns `State | Version | Branch | Nette | PHP`, newest first. Packages that don't depend on
   Nette drop the `Nette` column. An extra column (e.g. `Symfony`, `Bootstrap`) is fine when it matters.
 - **Development** lists maintainers as 80×80 GitHub avatars linking to their profiles.
-- The footer is a `-----` rule followed by the two support lines. Older READMEs with "currently maintaining by"
-  or "Consider to support" are updated to the template text.
+- The footer is a `-----` rule followed by the two support lines. Older READMEs with "currently maintaining by",
+  "currently maintained by" or "Consider to support" are updated to the template text.
 
 ## Skeleton README Template
 
@@ -169,6 +181,8 @@ the project instead of an install command, and there's no `.docs/README.md`.
 
 ````markdown
 <!-- header, badge rows and links line, same as the library template -->
+
+{Name} is {what the skeleton is: framework, main packages, database}. {One sentence on what a new project gets.}
 
 <p align=center>
   <img src="https://api.microlink.io?url=https%3A%2F%2Fexamples.contributte.org%2F{repo}%2F&overlay.browser=light&screenshot=true&meta=false&embed=screenshot.url"></img>
@@ -190,6 +204,8 @@ https://examples.contributte.org/{repo}/
 composer create-project -s dev {package} acme
 ```
 
+Requires PHP {php} or later and {the services from docker-compose.yml, e.g. PostgreSQL}.
+
 ## Startup
 
 ```bash
@@ -201,9 +217,14 @@ make dev
 <!-- same as the library template, then the footer -->
 ````
 
+- The description of one or two sentences comes right after the links line, before the screenshot, as in libraries.
+  fxnorm checks it with `common/readme-description`.
 - Section order: **Goal**, **Demo**, **Installation**, **Startup**, optional **Features** / **Screenshots**,
   **Development**.
-- Screenshots are stored in `.docs/assets/` and linked from the README.
+- Screenshots are stored in `.docs/assets/` and linked from the README. A `## Screenshots` section has one line per
+  image, a short caption and then the image ([DESIGN.md](DESIGN.md#screenshots)).
+- The Installation and Startup commands are the real ones: a `make` target that exists, the real port. Delete the
+  Startup block when the Makefile has no `dev` target and write the command that starts the project.
 
 ## .docs Folder
 
@@ -326,7 +347,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy
 - [ ] Two badge rows with the nine badgen badges in order, pointing to `contributte/{repo}` and `{package}`
 - [ ] Coverage badge is Codecov
 - [ ] Website / Contact / Twitter links line
-- [ ] A description of one to three sentences before `## Usage` (libraries)
+- [ ] A description of one to three sentences before `## Usage` (libraries) or before the screenshot (skeletons)
 - [ ] Sections: Usage, Documentation, Versions, Development (skeletons: Goal, Demo, Installation, Startup, Development)
 - [ ] Usage has the install command, a requirements sentence and a working example
 - [ ] Documentation links to `.docs`
