@@ -33,6 +33,8 @@ file says what the project is for, who uses it and what it must and must not do.
 | Demo or playground | `playground`, `*-demo` | yes, short |
 | Library (`"type": "library"`) | `datagrid`, `console` | no |
 
+fxnorm checks this with `contributte/prd-md-exists` for every `composer.json` with `"type": "project"`.
+
 For a skeleton, the product is the starter template itself. Its users are developers who run
 `composer create-project`, and its success is measured by what they get working without reading the code.
 
@@ -48,7 +50,8 @@ Use these `##` sections in this order:
 6. `## Scope` - features as user stories ("As a developer, I can ...") or plain bullets, grouped by area.
 7. `## Success Criteria` - observable facts: commands that pass, pages that render, times, numbers.
 8. `## Out of Scope` - things users ask for that belong elsewhere, with a pointer to where.
-9. `## Open Questions` - dated bullets; remove each when it is decided and record the decision in `TECH.md`.
+9. `## Open Questions` - bullets dated with the day the question was written down; remove each when it is decided
+   and record the decision in `TECH.md` (a dated entry, see [TECH.md](TECH.md#decisions)).
 
 Non-goals are what the product will not try to be. Out of scope is what users expect but will find in another
 repository or tool.
@@ -62,63 +65,50 @@ repository or tool.
 
 ## Template
 
-A filled example for `contributte/webapp-skeleton`. Replace the facts, keep the order.
+`{...}` marks a placeholder: replace it with facts from the repository; delete lines that don't apply. Scope and
+success criteria describe what the code does today, checked by running it, not what the template or the old
+README claims.
 
 ````markdown
-# Webapp Skeleton PRD
+# {Name} PRD
 
-Webapp Skeleton is a Nette Framework starter project with Doctrine ORM, an admin module, console, mailing and
-PDF output, all wired and tested.
+{Name} is {what the project is, one sentence: framework, main features, what is wired}.
 
 ## Problem
 
-Starting a Nette application means choosing and wiring about 20 packages: DI extensions, Doctrine, console,
-logging, mail, tests and QA. Each new project repeats that work and repeats the same mistakes in config.
+{2 to 4 sentences: what a developer has to do without this project, and what goes wrong.}
 
 ## Users
 
-- Developers who know PHP and basic Nette and start a new web application.
-- Maintainers of Contributte packages who need a real app to test integrations against.
+- {Who uses it and what they already know.}
+- {A second group, if there is one.}
 
 ## Goals
 
-- `composer create-project` plus `docker compose up` gives a running app with a database.
-- Every bundled package is used at least once, so the wiring is shown, not described.
-- `make qa` and `make tests` pass on a fresh copy.
-- The code is small enough to read in one sitting and delete what you don't need.
+- {A checkable goal: a command that works on a fresh copy.}
+- {A checkable goal about what the project shows or keeps small.}
 
 ## Non-goals
 
-- Not a CMS or admin generator - the admin module is a sign-in example, not a product.
-- No frontend build pipeline - plain CSS and JS in `www/assets/`, so there is nothing to compile.
-- No multi-tenant or API setup - that is a different skeleton.
+- {What it will not try to be} - {the reason in one clause}.
 
 ## Scope
 
-- Front module: home page and error pages (4xx, 500).
-- Admin module: sign-in, sign-out, secured home page.
-- Users: Doctrine entity, repository, query object, create facade, fixtures.
-- Console: `bin/console` with an example `HelloCommand`, migrations and fixtures commands.
-- Mailing: templated e-mail from `resources/mail/`.
-- PDF: example document from `resources/pdf/`.
-- Events: Symfony event dispatcher with request and order log subscribers.
-- QA: CodeSniffer, PHPStan and Nette Tester configured and passing in CI.
+- {Area}: {features that exist today, with the module or folder}.
+- {Area}: {features}.
 
 ## Success Criteria
 
-- A fresh copy reaches the sign-in page at `http://localhost:8080` with Docker in under 5 minutes.
-- CI runs code style, PHPStan, tests and database workflows green on `master`.
-- The demo at `examples.contributte.org/webapp-skeleton/` runs the current `master`.
+- {Observable fact: a URL that answers after the README steps, with the real port and the time it takes.}
+- {The CI workflows that pass on `master`.}
 
 ## Out of Scope
 
-- Per-package usage - see each package's `.docs/README.md`.
-- Doctrine-only setup without the UI - see `contributte/doctrine-skeleton`.
-- Messenger and queues - see `contributte/messenger-skeleton`.
+- {What users ask for} - see {the repository or document where it lives}.
 
 ## Open Questions
 
-- 2026-09-28: Keep the PDF module in the default install or move it to a recipe?
+- {YYYY-MM-DD}: {A question that is not decided yet.}
 ````
 
 ## Checklist
@@ -130,4 +120,5 @@ logging, mail, tests and QA. Each new project repeats that work and repeats the 
 - [ ] Out of scope items point to where the thing lives
 - [ ] Open questions are dated; decided ones are removed and recorded in `TECH.md`
 - [ ] Scope matches what the code does today
+- [ ] No placeholder and no template fact is left
 - [ ] The file is 50 to 150 lines and has no emoji or marketing words
