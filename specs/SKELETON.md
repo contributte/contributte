@@ -138,7 +138,7 @@ Skeleton projects serve as:
 Each skeleton project is different based on its purpose. The following is a high-level overview of common directories:
 
 ```
-├── .docs/                    # Documentation and screenshots
+├── .docs/assets/             # Screenshots used by the README
 ├── .github/                  # GitHub workflows
 ├── app/                      # Application source code
 ├── bin/                      # Console scripts
@@ -161,8 +161,8 @@ Additional directories may be present depending on the skeleton's purpose (e.g.,
 
 ## Requirements
 
-- **PHP Version**: 8.2+ (minimum 8.3 recommended)
-- **Nette Framework**: 3.2+
+- **PHP Version**: PHP 8.4 or later (`"php": ">=8.4"`, see [COMPOSER.md](COMPOSER.md#version-policy))
+- **Nette Framework**: 3.2 or later
 - **Docker**: For local development services
 
 ## Composer Configuration
@@ -189,7 +189,7 @@ project: install setup ## Install and set up project
 
 .PHONY: init
 init: ## Create local config
-	cp config/local.neon.dist config/local.neon
+	cp config/local.neon.example config/local.neon
 
 .PHONY: install
 install: ## Install dependencies
@@ -346,9 +346,10 @@ services:
 
 ## Configuration
 
-### config/local.neon.dist
+### config/local.neon.example
 
-Template for local environment configuration:
+Template for local environment configuration. It is committed; `make init` copies it to `config/local.neon`,
+which is listed in `.gitignore`. Use the `.example` suffix, not `.dist`:
 
 ```neon
 parameters:
@@ -455,7 +456,7 @@ Skeleton READMEs follow the [Skeleton README Template](DOCS.md#skeleton-readme-t
 2. Copy configuration template:
    ```bash
    make init
-   # or: cp config/local.neon.dist config/local.neon
+   # or: cp config/local.neon.example config/local.neon
    ```
 
 3. Start Docker services:
@@ -490,7 +491,7 @@ See [.gitignore](COMPOSER.md#gitignore) in COMPOSER.md.
 - [ ] Add `.editorconfig`
 - [ ] Add `.gitignore`
 - [ ] Create `docker-compose.yml`
-- [ ] Add `config/local.neon.dist` template
+- [ ] Add `config/local.neon.example` template
 - [ ] Create `app/Bootstrap.php`
 - [ ] Create `www/index.php` entry point
 - [ ] Create `bin/console` for CLI
