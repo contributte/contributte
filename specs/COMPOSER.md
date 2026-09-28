@@ -320,7 +320,7 @@ ruleset.xml export-ignore
 tests export-ignore
 ```
 
-- Add every other development-only path in the root: `AGENTS.md`, `CLAUDE.md`, `.claude`, `phpunit.xml`,
+- Add every other development-only path in the root: `AGENTS.md`, `CLAUDE.md`, `.claude`, `DESIGN.md`, `phpunit.xml`,
   `examples`, `phpstan-*.neon`.
 - Remove entries for files that don't exist anymore (most often `.travis.yml`).
 - Never export-ignore `src`, `composer.json` or `LICENSE`.
