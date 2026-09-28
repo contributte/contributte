@@ -77,7 +77,7 @@ This document describes how we write in Contributte repositories: `README.md`, `
 | Avoid | Use instead |
 |-------|-------------|
 | awesome, great, super, amazing, ultimate, first class | Say what it does, with a fact |
-| blazing fast, lightning fast, tiny, tiniest | A number: "adds 0.2 ms per request", "one class" |
+| blazing fast, lightning fast, tiny, tiniest, lightweight | A number: "adds 0.2 ms per request", "one class" |
 | seamless, effortless, painless, magic | Describe the step the reader no longer takes |
 | simply, just, easily, obviously | Leave it out. If it were simple, the reader wouldn't be reading |
 | powerful, robust, modern, cutting-edge | Name the feature |
@@ -155,6 +155,10 @@ with these additions:
 - Correct wrong assumptions directly: "`console.url` is used only in CLI mode, not in HTTP requests."
 - Describe the current state. No plans, TODO lists or "we are working on…".
 - Imperatives are short and absolute: "Never edit a released migration."
+- The templates in these specs are outlines. `{...}` marks a placeholder; every fact comes from the repository,
+  and a line that doesn't apply is deleted, not kept as a guess.
+- Dates are real. A decision or screenshot whose date is unknown is marked (`(recorded)`, `undated`), never
+  given an invented date.
 
 ## Commit Messages
 
