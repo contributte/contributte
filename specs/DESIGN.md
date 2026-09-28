@@ -11,6 +11,7 @@ documentation in [DOCS.md](DOCS.md).
 - [When It Is Required](#when-it-is-required)
 - [Sections](#sections)
 - [Writing Style](#writing-style)
+- [Screenshots](#screenshots)
 - [Template](#template)
 - [Checklist](#checklist)
 
@@ -24,7 +25,9 @@ documentation in [DOCS.md](DOCS.md).
   never becomes a second copy of the values.
 - It is updated in the same pull request as the change that makes it wrong. A stale `DESIGN.md` is a bug.
 - Libraries list `DESIGN.md` in `.gitattributes` as `export-ignore` (see [COMPOSER.md](COMPOSER.md)).
-- Screenshots live in `.docs/assets/` and are replaced when the UI they show changes.
+- Screenshots live in `.docs/assets/` (never in the `.docs` root or the repository root) and are replaced when the
+  UI they show changes.
+- Every screenshot is listed in `## Screenshots` with the date it was taken (see [Screenshots](#screenshots)).
 
 ## When It Is Required
 
@@ -39,6 +42,9 @@ A repository needs `DESIGN.md` when it renders something a human looks at:
 | Library without visual output | `di`, `console`, `utils` | no |
 
 When in doubt, ask: does a change in this repository show up in someone's browser? If yes, write the file.
+
+fxnorm checks this with `contributte/design-md-exists`: a repository renders a UI when it ships Latte or PHTML
+templates or CSS in `src/`, `app/`, `resources/`, `templates/` or `www/`, or CSS or JS in `assets/`.
 
 ## Sections
 
@@ -55,7 +61,7 @@ Use these `##` sections in this order. Leave a section out only when it does not
 8. `## Accessibility` - the baseline the UI meets and known gaps.
 9. `## Dark Mode` - supported or not, and how it is switched.
 10. `## Responsive` - breakpoints and what changes at each.
-11. `## Screenshots` - list of files in `.docs/assets/` and how to regenerate them.
+11. `## Screenshots` - every file in `.docs/assets/`, what it shows, when it was taken, how to retake it.
 12. `## Changing the UI` - the traps: what downstream code depends on and must not break.
 13. `## Checklist` - 4 to 8 items to verify before merging a UI change.
 
@@ -68,93 +74,91 @@ Use these `##` sections in this order. Leave a section out only when it does not
 - State what is not supported: "No keyboard navigation between cells."
 - No emoji, no marketing words, no future plans. Plans go to issues.
 
+## Screenshots
+
+- One bullet per file: path, what it shows, the date it was taken and the version it shows:
+  "`.docs/assets/inline-edit.gif` - inline edit of one row, 2026-09-28, `v7.1.0`."
+- A screenshot whose date is unknown is listed as `undated`. Compare it with the current UI: retake it when it
+  shows an old name, layout or feature, otherwise date it on the day you checked it and add `(checked)`.
+- An outdated screenshot that can't be retaken now is a known gap; say what differs in one clause.
+- In the README, a gallery of more than one screenshot has one line per image: a short caption, then the image.
+  Screenshots of variants of the same screen (themes, sizes) may be a row of thumbnails in one `<p align=center>`.
+- New images are named after what they show (`admin-sign-in.png`), not numbered (`screenshot3.png`).
+
 ## Template
 
-A filled example for `contributte/datagrid`. Replace the facts, keep the order.
+`{...}` marks a placeholder: replace it with facts from the repository; delete lines that don't apply. Keep the
+section order. Every claim is checked in the templates, CSS and JS, not taken from the template or the README:
+whether `dist/` is committed, which breakpoints exist, whether dark mode is followed.
 
 ````markdown
-# Datagrid Design
+# {Name} Design
 
-Datagrid renders a data table with filters, sorting, pagination, inline editing and group actions inside a
-Nette application page. Developers embed it; their users see it.
+{What the UI is and who sees it, in one or two sentences.}
 
 ## Principles
 
-- **Markup is Bootstrap 5, nothing else.** Host apps theme it with their own Bootstrap build; we ship no
-  competing design language.
-- **Server renders, JS enhances.** Every action works as a plain link or form; `naja` turns it into AJAX
-  snippets.
-- **Templates are an API.** Apps extend `datagrid.latte` blocks; renaming a block breaks them.
-- **Icons come from one prefix.** `Datagrid::$iconPrefix` (default `fas fa-`) swaps the icon set.
+- **{A constraint that decides real choices, e.g. the CSS framework the markup uses}.** {Why.}
+- **{How server rendering and JS split the work}.** {What works without JS.}
+- **{What downstream code depends on, e.g. template blocks}.** {What breaks when it changes.}
 
 ## Inventory
 
-- Grid table, toolbar, pagination, per-page select: `src/templates/datagrid.latte`
-- Tree view: `src/templates/datagrid_tree.latte`
-- Filters (text, select, date, date range, range): `src/templates/datagrid_filter_*.latte`
-- Status column and multi-action column: `src/templates/column_status.latte`, `column_multi_action.latte`
-- Client behaviour (inline edit, sortable rows, datepicker, tom-select): `assets/plugins/`
+- {Screen, component or template}: `{source file}`
+- {Client behaviour}: `{folder or file}`
 
 ## Layout
 
-- The grid fills its container; width is set by the host page.
-- Toolbar above the table, pagination and per-page select below.
-- Spacing uses Bootstrap utilities; custom rules are in `assets/css/datagrid.css`.
+- {What sets the width and the containers.}
+- {Where custom spacing rules are defined: `{css file}`.}
 
 ## Typography
 
-- Inherits the host page font and size. The grid sets no `font-family`.
+- {Font stack and sizes, with the file, or "Inherits the host page font and size."}
 
 ## Colors and Tokens
 
-- Source of truth: `assets/css/datagrid.css`, bundled as `datagrid-full.css`.
-- Button classes come from `Datagrid::$btnSecondaryClass`; do not hard-code `btn-secondary` in templates.
-- Row flash after inline edit: green `#A6E2A9` (saved), red `#E8AAA4` (error), fading to transparent.
+- Source of truth: `{css or template file}`, bundled as `{built file}` when there is a build step.
+- {The few values that carry meaning, with the option or class that controls them.}
 
 ## States
 
-- Empty: `{block noItems}` renders one row with the translated "no items" text.
-- Loading: no spinner of our own; `naja` requests keep the old content until the snippet arrives.
-- Error: failed inline edit flashes the row red; validation messages come from Nette Forms.
+- Empty: {how it looks, with the block or template}.
+- Loading: {spinner or not, and what shows meanwhile}.
+- Error: {how errors show}.
 
 ## Accessibility
 
-- Dropdowns carry `aria-haspopup` and `aria-expanded` from Bootstrap.
-- Sort links and filters are real links and inputs, reachable by keyboard.
-- Known gap: icon-only buttons have no text label unless the app sets a title.
+- {What the markup provides.}
+- Known gap: {what is missing}.
 
 ## Dark Mode
 
-- Follows the host page Bootstrap theme (`data-bs-theme`). `datagrid.css` defines no dark palette.
+- {Supported or not, and what decides it, checked in the CSS.}
 
 ## Responsive
 
-- One breakpoint in `datagrid.css`: `min-width: 768px`. Below it the table scrolls horizontally.
+- {Breakpoints from the CSS and what changes at each, or what happens on a narrow screen.}
 
 ## Screenshots
 
-- `.docs/assets/*.gif` show inline edit, group actions, hideable columns and status.
-- Record a new GIF from the demo when the matching feature changes; keep it under 2 MB.
+- `.docs/assets/{file}` - {what it shows}, {YYYY-MM-DD or undated}, {version}.
+- {How to retake them.}
 
 ## Changing the UI
 
-- Block names in `datagrid.latte` are public; add blocks, never rename or remove them in a minor release.
-- CSS class names are used by app stylesheets; treat renames as breaking and list them in `UPGRADE.md`.
-- After changing `assets/`, run `npm run build` and check `dist/datagrid-full.js` and
-  `dist/datagrid-full.css`; the CDN serves those two files.
+- {What is public: block names, CSS classes, options; what a rename breaks.}
+- {Build step after changing assets, and which files it produces; whether they are committed.}
 
 ## Checklist
 
-- [ ] Existing template blocks keep their names
-- [ ] New strings go through the translator
-- [ ] Works without JS (links and forms still submit)
-- [ ] Checked at 375 px and 1280 px width
+- [ ] {4 to 8 checks before merging a UI change, e.g. widths to test, translations, no-JS behaviour}
 - [ ] Screenshots in `.docs/assets/` updated if the UI changed
 ````
 
-For a skeleton (`webapp-skeleton`), the Inventory lists modules and layouts (`app/UI/Modules/Front`,
-`Admin`, `Base` layouts, `resources/mail/@layout.latte`, `resources/pdf/example.latte`, Tracy error page
-`resources/tracy/500.phtml`), and Principles say what the starter UI must show a new developer.
+For a skeleton, the Inventory lists modules and layouts (`app/UI/Modules/{Module}`), mail and PDF templates, and
+every error page (4xx and 500 templates, and the Tracy error page when there is one), each with its file.
+Principles say what the starter UI must show a new developer.
 
 ## Checklist
 
@@ -164,6 +168,7 @@ For a skeleton (`webapp-skeleton`), the Inventory lists modules and layouts (`ap
 - [ ] Colors and tokens point to the CSS or template file that defines them
 - [ ] Empty, loading and error states are described
 - [ ] Accessibility gaps are listed, not hidden
-- [ ] Screenshots are in `.docs/assets/`
+- [ ] Screenshots are in `.docs/assets/` and each is listed with its date (or `undated`)
+- [ ] No placeholder and no template fact is left
 - [ ] The file is 50 to 150 lines and has no emoji
 - [ ] Libraries export-ignore `DESIGN.md`
