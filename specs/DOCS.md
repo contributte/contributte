@@ -2,7 +2,8 @@
 
 This document describes how `README.md`, the `.docs` folder and `LICENSE` are written in Contributte repositories.
 It extends the short [Documentation](LIBRARY.md#documentation) section in LIBRARY.md and the
-[Documentation](SKELETON.md#documentation) section in SKELETON.md.
+[Documentation](SKELETON.md#documentation) section in SKELETON.md. How to write the text is described in
+[TONE.md](TONE.md).
 
 ## Table of Contents
 
@@ -20,7 +21,8 @@ It extends the short [Documentation](LIBRARY.md#documentation) section in LIBRAR
 ## Rules
 
 - Every repository has a `README.md` (uppercase) and a `LICENSE` file in the root.
-- The root `README.md` is short: header, install command, link to docs, versions table, maintainers, footer.
+- The root `README.md` is short: header, description, install command, link to docs, versions table, maintainers,
+  footer.
 - Libraries keep the full documentation in `.docs/README.md`. The root README only links to it.
 - The root README links to the docs as `[documentation](.docs)`. Don't link to contributte.org instead.
 - Images used in docs or READMEs live in `.docs/assets/`.
@@ -39,6 +41,8 @@ It extends the short [Documentation](LIBRARY.md#documentation) section in LIBRAR
 | `{Name}` | Human readable name | `Utils`, `Doctrine ORM` |
 | `{Extension}` | DI extension class | `Contributte\Utils\DI\UtilsExtension` |
 | `{name}` | Extension name in NEON | `utils` |
+| `{Library}` | Integrated library, if any | `Symfony Console` |
+| `{library-url}` | Link to the integrated library | `https://symfony.com/doc/current/console.html` |
 
 ## Header
 
@@ -99,17 +103,28 @@ Nine badges in two `<p align=center>` rows, always in this order. Each badge is 
 Website 🚀 <a href="https://contributte.org">contributte.org</a> | Contact 👨🏻‍💻 <a href="https://f3l1x.io">f3l1x.io</a> | Twitter 🐦 <a href="https://twitter.com/contributte">@contributte</a>
 </p>
 
+{Name} integrates [{Library}]({library-url}) into Nette Framework. {One sentence on what it gives you.}
+
 ## Usage
 
-To install the latest version of `{package}` use [Composer](https://getcomposer.org).
+To install the latest version of `{package}`, use [Composer](https://getcomposer.org):
 
 ```bash
 composer require {package}
 ```
 
+Requires PHP 8.2 or later and Nette 3.2.
+
+Register the extension in your `config.neon`:
+
+```neon
+extensions:
+	{name}: {Extension}
+```
+
 ## Documentation
 
-For details on how to use this package, check out our [documentation](.docs).
+For details on how to use this package, check out the [documentation](.docs).
 
 ## Versions
 
@@ -130,17 +145,22 @@ This package is currently maintained by these authors.
 
 -----
 
-Consider to [support](https://contributte.org/partners.html) **contributte** development team.
-Also thank you for using this package.
+Consider [supporting](https://contributte.org/partners.html) the **contributte** development team.
+Thank you for using this package.
 ````
 
-Section order is fixed: **Usage**, **Documentation**, **Versions**, **Development**, then the footer.
+Section order is fixed: description, **Usage**, **Documentation**, **Versions**, **Development**, then the footer.
 
-- **Usage** only holds the install command. Longer examples go to `.docs/README.md`.
+- The **description** is one to three sentences without a heading, between the links line and `## Usage`. The first
+  sentence says what the package is, the second why you would want it. Packages that don't integrate another
+  library start with what they are: "Contributte Utils is a set of small helpers for Nette Framework."
+- **Usage** holds the install command, one requirements sentence that matches the Versions table, and the smallest
+  working example (usually the extension registration). Longer examples go to `.docs/README.md`.
 - **Versions** has the columns `State | Version | Branch | Nette | PHP`, newest first. Packages that don't depend on
   Nette drop the `Nette` column. An extra column (e.g. `Symfony`, `Bootstrap`) is fine when it matters.
 - **Development** lists maintainers as 80×80 GitHub avatars linking to their profiles.
-- The footer is a `-----` rule followed by the two support lines.
+- The footer is a `-----` rule followed by the two support lines. Older READMEs with "currently maintaining by"
+  or "Consider to support" are updated to the template text.
 
 ## Skeleton README Template
 
@@ -215,13 +235,13 @@ Short description, with a link to the integrated library if there is one.
 
 ## Setup
 
-Install package using composer.
+Install the package with [Composer](https://getcomposer.org):
 
 ```bash
 composer require {package}
 ```
 
-Register prepared [compiler extension](https://doc.nette.org/en/dependency-injection/nette-container) in your `config.neon` file.
+Register the [compiler extension](https://doc.nette.org/en/dependency-injection/nette-container) in your `config.neon`:
 
 ```neon
 extensions:
@@ -245,6 +265,8 @@ extensions:
 ```
 
 ## Usage
+
+Inject the service where you need it:
 
 ```php
 use Contributte\{Name}\ExampleService;
@@ -276,6 +298,7 @@ final class HomePresenter extends Presenter
 - `## Examples` points to [contributte/playground](https://github.com/contributte/playground), a skeleton or
   [contributte.org/examples](https://contributte.org/examples.html).
 - Use NEON with tabs, `bash` for shell commands, and GitHub alerts (`> [!NOTE]`, `> [!TIP]`) for hints.
+- Every code block has a lead-in sentence that ends with a colon ([TONE.md](TONE.md#formatting)).
 
 ## LICENSE
 
@@ -303,10 +326,13 @@ Permission is hereby granted, free of charge, to any person obtaining a copy
 - [ ] Two badge rows with the nine badgen badges in order, pointing to `contributte/{repo}` and `{package}`
 - [ ] Coverage badge is Codecov
 - [ ] Website / Contact / Twitter links line
+- [ ] A description of one to three sentences before `## Usage` (libraries)
 - [ ] Sections: Usage, Documentation, Versions, Development (skeletons: Goal, Demo, Installation, Startup, Development)
+- [ ] Usage has the install command, a requirements sentence and a working example
 - [ ] Documentation links to `.docs`
 - [ ] Versions table with `State | Version | Branch | Nette | PHP`
-- [ ] Maintainer avatars and the support footer
+- [ ] Maintainer avatars and the support footer ("Consider supporting …")
+- [ ] Text follows [TONE.md](TONE.md)
 - [ ] `.docs/README.md` with `# Contributte {Name}`, `## Content`, `## Setup` (libraries)
 - [ ] Images in `.docs/assets/`
 - [ ] `LICENSE` file (MIT, with holder and year), same license as `composer.json`
