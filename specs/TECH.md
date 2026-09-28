@@ -12,6 +12,7 @@ built and tested, and which decisions shaped it. Product intent is in [PRD.md](P
 - [When It Is Required](#when-it-is-required)
 - [Sections](#sections)
 - [Decisions](#decisions)
+- [Undated Decisions](#undated-decisions)
 - [Writing Style](#writing-style)
 - [Template](#template)
 - [Checklist](#checklist)
@@ -32,6 +33,7 @@ built and tested, and which decisions shaped it. Product intent is in [PRD.md](P
 
 `TECH.md` is required in the same repositories as `PRD.md`: skeletons, applications, sites and demos. Libraries
 don't have one; their design notes go to `.docs/` and their decisions to the changelog or the pull request.
+fxnorm checks this with `contributte/tech-md-exists` for every `composer.json` with `"type": "project"`.
 
 ## Sections
 
@@ -69,104 +71,108 @@ and marks the old one `Superseded by YYYY-MM-DD`.
 When the list passes about 10 entries or an entry needs more than 10 lines, move entries to
 `.docs/decisions/YYYY-MM-DD-slug.md` with the same headings and keep a one-line index here.
 
+### Undated Decisions
+
+A `TECH.md` written for an existing project records decisions that were made before the file existed. Their date
+is often unknown.
+
+- Take the date from git: the commit that introduced the change (`git log --diff-filter=A --format=%as -- {file}`
+  for a new file, `git log -S '{text}' --format=%as` for a line). Write it as the entry date.
+- When git can't tell (a shallow clone, a squashed import), use the date the entry is written and add
+  `(recorded)` after the title: `### 2026-09-28 Doctrine ORM instead of nette/database (recorded)`. The marker says
+  the decision is older than the date.
+- Never invent a date and never leave the heading without one. Sorting and `Superseded by` both need it.
+- `(recorded)` entries keep the Context line short and say what is known: "Chosen before 2020; no discussion is
+  recorded."
+
 ## Writing Style
 
 - Facts first, reason second: "**Only `www/` is public.** `app/`, `config/` and `var/` are outside the web root."
 - Code spans for every file, class, command and variable.
 - Versions as ranges from the manifest (`php >=8.4`), not "latest".
+- Name one config template everywhere: `config/local.neon.example` (not `.dist`), or `.env.example`.
 - No emoji, no marketing words, no future tense except in `Known Limits`.
 
 ## Template
 
-A filled example for `contributte/webapp-skeleton`. Replace the facts, keep the order.
+`{...}` marks a placeholder: replace it with facts from the repository; delete lines that don't apply. Text
+outside braces is the fixed structure. No fact is kept because it is in the template: every version, port, folder
+and command comes from `composer.json`, `docker-compose.yml`, the `Makefile` and the code.
 
 ````markdown
-# Webapp Skeleton Tech
+# {Name} Tech
 
-A Nette Framework application with Doctrine ORM on PostgreSQL, served by Nginx and PHP-FPM in Docker.
+{What the system is, technically, in one sentence: framework, database, how it is served.}
 
 ## Architecture
 
 ```
-browser -> nginx (:8080) -> php-fpm -> www/index.php -> App\Bootstrap::runWeb()
-                                                          -> Nette Application -> presenter -> Latte
-bin/console -> App\Bootstrap::runCli() -> Symfony Console -> command
-php-fpm / console -> PostgreSQL (database)
+{entry point} -> {process or service} -> {next hop}
+{CLI entry point} -> {bootstrap method} -> {command}
+{process} -> {database or external service}
 ```
 
-- One DI container for web and CLI; the static parameter `scope` is `web` or `cli`.
-- No queue or worker; everything runs inside a request or a console command.
+- {How web and CLI share or split the container, from app/Bootstrap.php.}
+- {What does not exist, e.g. "No queue or worker; everything runs inside a request or a console command."}
 
 ## Stack
 
-- PHP >=8.4, Nette 3, Latte 3, `contributte/*` integrations
-- Doctrine ORM via `nettrine/orm`, `nettrine/dbal`, `nettrine/migrations`, `nettrine/fixtures`
-- Symfony Console and EventDispatcher via `contributte/console`, `contributte/event-dispatcher`
-- QA: `contributte/qa` (CodeSniffer), `contributte/phpstan`, `contributte/tester`
+- PHP `{php constraint}`, {Nette and Latte majors from composer.json}
+- {Database layer packages with their constraints}
+- QA: {QA packages from require-dev, as they are}
 
 ## Layout
 
 ```
-app/Bootstrap.php     # container setup, web and CLI entry
-app/Domain/           # entities, repositories, facades, subscribers (User, Order, Http)
-app/Model/            # infrastructure: database, security, router, latte, utils
-app/UI/               # modules (Front, Admin, Base, Mailing, Pdf), controls, forms
-config/               # app/, env/, ext/ and local.neon (not committed)
-db/                   # Migrations/, Fixtures/
-resources/            # mail, pdf and Tracy error templates
-www/                  # public web root: index.php, assets/
+{file or folder}      # {what it holds}
+{file or folder}      # {what it holds}
 ```
 
 ## Configuration
 
-- Load order: `config/env/base.neon` via `dev.neon` or `prod.neon` (`NETTE_ENV=dev` picks dev), then
-  `config/local.neon`.
-- `config/local.neon` is created by `make init` from `config/local.neon.example`; it holds database and SMTP.
-- `NETTE_DEBUG=1` enables Tracy. Environment variables are added to `parameters` at compile time.
+- Load order: {config files in the order app/Bootstrap.php loads them, and what picks the environment}.
+- `config/local.neon` is created by `{make target or copy command}` from `config/local.neon.example`; it holds
+  {what it holds}.
+- {Environment variables the app reads, and where.}
 
 ## Data Model
 
-- `User` (`app/Domain/User/User.php`) with `TId`, `TCreatedAt`, `TUpdatedAt` traits.
-- Schema changes only through a new file in `db/Migrations/`; never edit an applied migration.
-- Fixtures in `db/Fixtures/`, loaded by `make build`.
+- {Entity or table} (`{file}`) {with its relations or traits}.
+- Schema changes only through a new file in `{migrations folder}`; never edit an applied migration.
+- Fixtures in `{fixtures folder}`, loaded by `{command}`.
 
 ## Services
 
-- `nginx` (8080, 8443), `php` (FPM, runs migrations and fixtures on start), `database` (PostgreSQL).
-- Local credentials `contributte` / `contributte`; for development only.
+- {Compose service} ({host port}:{container port}), {what it runs on start}.
+- Local credentials `{user}` / `{password}`; for development only.
 
 ## Request Flow
 
-- HTTP: `www/index.php` -> `Bootstrap::runWeb()` -> `RouterFactory` (Mailing, Pdf, `admin/...`, Front) ->
-  presenter -> Latte template from the module `templates/` folder.
-- CLI: `bin/console` -> `Bootstrap::runCli()` -> command service.
+- HTTP: `{public entry}` -> {bootstrap} -> {router} -> presenter -> {template location}.
+- CLI: `bin/console` -> {bootstrap} -> command service.
 
 ## Build and Deploy
 
-- `make build` drops the schema, runs migrations and loads fixtures. It destroys data; local only.
-- `make deploy` runs `clean`, `project`, `build`, `clean`. The demo is deployed from `master`.
+- `make build` {what it does, read from the Makefile; say when it destroys data}.
+- `make deploy` {what it does}. {Where the demo or production runs, if anywhere.}
 
 ## Testing
 
-- `tests/Cases/Unit` - plain classes (`Model/Utils`).
-- `tests/Cases/E2E` - booted container: Doctrine mapping is valid, every `*.latte` in `app/` compiles, entry
-  points start.
-- CI workflows: `codesniffer`, `phpstan`, `tests`, `coverage`, `database`.
-- Not tested: rendered HTML and JS in `www/assets/`.
+- `{test folder}` - {what it covers}.
+- CI workflows: {files in .github/workflows/}.
+- Not tested: {what no test covers}.
 
 ## Decisions
 
-### 2026-09-28 Doctrine ORM instead of nette/database
+### {YYYY-MM-DD} {Decision title, then "(recorded)" when the date is not the decision date}
 
-- **Context:** The skeleton must show entities, repositories and migrations.
-- **Decision:** Use `nettrine/*` for ORM, migrations and fixtures.
-- **Consequences:** (+) one toolset for schema and data; (-) heavier boot.
+- **Context:** {Why a choice was needed.}
+- **Decision:** {What was chosen.}
+- **Consequences:** (+) {gain}; (-) {cost}.
 
 ## Known Limits
 
-- `docker-compose.yml` uses `dockette/postgres:10`, which is out of upstream support; `make docker-postgres`
-  uses 12. Align both before the next release.
-- `docker-compose.yml` still has the obsolete `version:` key.
+- {What is wrong or outdated today, with the file, and why it is not fixed yet.}
 ````
 
 ## Checklist
@@ -176,6 +182,8 @@ www/                  # public web root: index.php, assets/
 - [ ] The architecture diagram matches `docker-compose.yml` and the entry points
 - [ ] Versions match `composer.json`, `package.json` and compose images
 - [ ] Configuration links the committed example file (`config/local.neon.example` or `.env.example`)
-- [ ] Every decision has a date, context, decision and consequences
+- [ ] Every decision has a date, context, decision and consequences; a date that is not the real decision date is
+      marked `(recorded)`
+- [ ] No placeholder and no template fact is left
 - [ ] Known limits are listed, not hidden
 - [ ] The file is 50 to 150 lines and has no emoji
