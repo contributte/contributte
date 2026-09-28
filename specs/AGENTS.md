@@ -12,10 +12,13 @@ code rules from [CODE.md](CODE.md).
 - [Files](#files)
 - [Sections](#sections)
 - [Writing Bullets](#writing-bullets)
+- [Placeholders](#placeholders)
+- [Commands and CI](#commands-and-ci)
 - [Library Template](#library-template)
 - [Skeleton Template](#skeleton-template)
 - [Project Documents](#project-documents)
 - [What Not to Include](#what-not-to-include)
+- [Checking with fxnorm](#checking-with-fxnorm)
 - [Checklist](#checklist)
 
 ## Rules
@@ -31,7 +34,7 @@ code rules from [CODE.md](CODE.md).
 - The text is vendor neutral: "AI coding agent", not the name of one tool. No tool-specific syntax in shared text.
 - Plain Markdown: `##` sections, bullets, one fenced command block, inline code for every identifier, file and
   command. No tables, no emoji, no headings below `###`.
-- Libraries export-ignore every agent file in `.gitattributes` (see [.gitattributes](#gitattributes)).
+- Libraries export-ignore every agent file and `fxnorm.yml` in `.gitattributes` (see [.gitattributes](#gitattributes)).
 - A pull request that changes a command, the PHP version, the folder layout or a documented trap updates
   `AGENTS.md` in the same pull request.
 
@@ -45,8 +48,9 @@ code rules from [CODE.md](CODE.md).
 | `TECH.md` | skeletons, applications, sites, demos | How it is built and why, see [TECH.md](TECH.md) |
 | `DESIGN.md` | repositories that render a UI | How the UI looks and behaves, see [DESIGN.md](DESIGN.md) |
 | `.claude/` | no | Shared agent settings and subagents. `settings.local.json` is never committed |
+| `fxnorm.yml` | yes | The fxnorm preset and rule settings, written by `fxnorm init`, see [Checking with fxnorm](#checking-with-fxnorm) |
 
-- All files are in the root and use uppercase names.
+- All files are in the root. The agent and project documents use uppercase names; `fxnorm.yml` is lowercase.
 - Don't add other agent files (`.cursorrules`, `.github/copilot-instructions.md`, `GEMINI.md`, `llms.txt`). If a
   tool needs its own file, it imports or links `AGENTS.md`.
 
@@ -61,6 +65,8 @@ CLAUDE.md export-ignore
 DESIGN.md export-ignore
 PRD.md export-ignore
 TECH.md export-ignore
+fxnorm.yml export-ignore
+fxnorm-baseline.json export-ignore
 ```
 
 Skeletons have no `.gitattributes` and commit the files as they are.
@@ -83,7 +89,9 @@ Sections, in this order. Headings use the exact names below.
 - The title is the name from the README: `# Contributte Console`, `# Nettrine ORM`, `# Webapp Skeleton`.
 - The purpose line is always: `Instructions for AI coding agents working in this repository.`
 - `## Commands` uses the [target names](MAKEFILE.md#target-names). Add a raw command only when there is no target
-  (a single test file, a code generator).
+  (a single test file, a code generator). What to write when targets or tests are missing is in
+  [Commands and CI](#commands-and-ci).
+- The PHP version, package and namespace go to `## Overview` in libraries and to `## Stack` in skeletons.
 - `## Traps` is the most useful section. When a repository has nothing surprising, keep it short, but don't fill it
   with general advice.
 - The last bullet of `## Traps` says what is not in the file and where it is: "Usage, configuration and examples
@@ -112,30 +120,60 @@ Bad:
 - Mark generated files and give the command that regenerates them.
 - Use imperatives only as the consequence of a fact: "Don't edit `tests/tmp`; it is recreated on every run."
 
+## Placeholders
+
+The templates below are outlines, not examples to copy. Fixed wording is written out; everything in `{...}` is a
+placeholder with a hint of what goes there.
+
+- Replace every placeholder with facts from the repository: `composer.json`, the `Makefile`, `phpstan.neon`,
+  `.github/workflows/`, the code and the tests. Check each fact in the file named in the hint.
+- Delete lines that don't apply. A library without a DI extension has no **Extension** line; a skeleton without
+  Docker has no Docker command.
+- Never keep a fact because it is in the template. A command, port, folder or version the repository doesn't have
+  is a bug in `AGENTS.md`.
+- The finished file has no placeholders left. Braces that belong to the content (NEON parameters, Latte tags)
+  are not placeholders; a placeholder always holds a hint in plain words.
+
+## Commands and CI
+
+- `## Commands` lists only targets that exist in the `Makefile` today. Never write a target the repository doesn't
+  have, even when the specs require it.
+- When the `Makefile` deviates from [MAKEFILE.md](MAKEFILE.md) (no `help`, `test` instead of `tests`,
+  `codesniffer` instead of `phpcs`), write the real names. Fixing the `Makefile` is its own change; when the same
+  pull request fixes it, `AGENTS.md` uses the new names.
+- A repository without a `tests/` folder has no `tests` and `coverage` targets, and the `Makefile` doesn't add
+  empty ones. `## Commands` shows `make qa` and says so in one line under the block: "There are no tests; `make qa`
+  (code style and PHPStan) is the only check." Skeletons need at least the container test
+  ([TESTS.md](TESTS.md#skeleton-tests)), so a skeleton adds `tests/` and both targets instead.
+- The single-test command is shown only when tests exist, with a real file from `tests/Cases`.
+- The line under the command block says what CI runs, read from `.github/workflows/`. When a workflow runs
+  something other than a `make` target, name the workflow and its command.
+
 ## Library Template
 
-A filled example for `contributte/console`. Replace every fact with the repository's own. About 60 lines is typical.
+About 60 lines is typical when filled. `{...}` marks a placeholder: replace it with facts from the repository;
+delete lines that don't apply (see [Placeholders](#placeholders)).
 
 ````markdown
-# Contributte Console
+# {Name from the README title, e.g. Contributte Console}
 
 Instructions for AI coding agents working in this repository.
 
 ## Overview
 
-`contributte/console` integrates Symfony Console into Nette Framework. Every service that extends
-`Symfony\Component\Console\Command\Command` becomes a lazy-loaded command. It is a library with one DI
-extension, not an application.
+`{package}` {what it is, one sentence: "integrates Symfony Console into Nette Framework"}. {What it does, as a
+fact from the code.} It is a library with {what it registers, e.g. one DI extension}, not an application.
 
-- **PHP**: 8.2 to 8.5 (`>=8.2` in `composer.json`)
-- **Package**: `contributte/console`, namespace `Contributte\Console\`
-- **Extension**: `Contributte\Console\DI\ConsoleExtension`
-- **Integrates**: `symfony/console` 7.x and 8.x, `nette/di` 3.1+
+- **PHP**: {versions CI tests, e.g. 8.2 to 8.5} (`{php constraint}` in `composer.json`)
+- **Package**: `{package}`, namespace `{Namespace}\`
+- **Extension**: `{DI extension class}`
+- **Integrates**: `{vendor/library}` {majors allowed in composer.json}, `nette/di` {constraint in composer.json}
 
 ## Documentation
 
 - `.docs/README.md` is the user documentation and the page on contributte.org. Update it in the same pull request
   when configuration or behaviour changes.
+- {`DESIGN.md` when the library renders a UI, with one line on when to read it.}
 - Organization rules for code, tests and tooling are in
   [contributte/contributte specs](https://github.com/contributte/contributte/tree/master/specs).
 
@@ -145,7 +183,7 @@ extension, not an application.
 # Install dependencies
 make install
 
-# Run all checks (code style + PHPStan level 9)
+# Run all checks (code style + PHPStan level {level in phpstan.neon})
 make qa
 
 # Fix code style
@@ -153,90 +191,75 @@ make csf
 
 # Run all tests, or one file
 make tests
-vendor/bin/tester -s -p php --colors 1 -C tests/Cases/DI/ConsoleExtension.phpt
+vendor/bin/tester -s -p php --colors 1 -C tests/Cases/{path of a real test file}
 ```
 
-CI runs the tests on PHP 8.2 to 8.5 and once with `--prefer-lowest`.
+{What CI runs, from .github/workflows/, e.g. "CI runs the tests on PHP 8.2 to 8.5 and once with `--prefer-lowest`."}
 
 ## Conventions
 
-- Tests are Nette Tester `.phpt` files in `tests/Cases`, with `Toolkit::test()` and containers built by
-  `ContainerBuilder` from `contributte/tester`. Test commands live in `tests/Fixtures`.
-- Extension tests are split by feature: `ConsoleExtension.lazy.phpt`, `ConsoleExtension.tags.phpt`.
-- Exception messages are asserted in tests. Changing a message means changing its test.
+- {How tests are written here: framework, helpers, where fixtures live. Take it from `tests/`, not from TESTS.md.}
+- {A convention that differs from the specs or needs a reminder, with the file that shows it.}
 
 ## Traps
 
-- **The extension does nothing outside CLI mode.** It is registered as
-  `ConsoleExtension(%consoleMode%)`; with `false` no service is added, so tests must pass `true`.
-- **Command names are resolved at compile time.** The extension reads the `console.command` tag, then
-  `#[AsCommand]`; a command with neither fails the container build, not the first run.
-- **Commands are lazy.** `ContainerCommandLoader` creates a command only when it runs. Don't add code that needs
-  every command instance at boot.
-- **`console.url` replaces `http.requestFactory` only when it is the default `RequestFactory`.** With a custom
-  factory the build fails on purpose; keep that error.
+- **{Bold claim about a non-obvious invariant, found in the code or the tests}.** {The rule that follows and the
+  reason; name the file or class to read.}
+- **{Bold claim}.** {Rule and reason.}
 - Usage, configuration and examples for users live in `.docs/README.md`, not here.
 ````
 
 Library specifics:
 
-- `## Overview` names the integrated library and its supported majors. Packages without a DI extension drop the
-  **Extension** bullet.
+- `## Overview` names the integrated library and the majors `composer.json` allows. Packages without a DI extension
+  drop the **Extension** line.
 - `## Documentation` lists `DESIGN.md` when the library renders a UI (templates, assets, a Tracy panel).
 - Namespaces follow [CODE.md](CODE.md#files-and-namespaces): `Contributte\`, `Nettrine\`, `Apitte\`.
+- The traps in [Writing Bullets](#writing-bullets) show the tone. Don't copy them into another repository.
 
 ## Skeleton Template
 
-A filled example for `contributte/webapp-skeleton`. Skeletons are applications, so they add `## Stack` and
-`## Ground Rules`. 70 to 100 lines is typical.
+Skeletons are applications, so they add `## Stack` and `## Ground Rules`. 70 to 100 lines is typical when filled.
+`{...}` marks a placeholder: replace it with facts from the repository; delete lines that don't apply (see
+[Placeholders](#placeholders)).
 
 ````markdown
-# Webapp Skeleton
+# {Name from the README title, e.g. Webapp Skeleton}
 
 Instructions for AI coding agents working in this repository.
 
 ## Overview
 
-A Nette application skeleton with a front module, an admin module, Doctrine ORM and a PostgreSQL database in
-Docker Compose. It is a starting point that users copy with `composer create-project`, not a library. Every
-change must keep a fresh copy working.
+{What the skeleton is, one sentence: framework, main packages, database.} It is a starting point that users copy
+with `composer create-project`, not a library. Every change must keep a fresh copy working.
 
 ## Documentation
 
 - `PRD.md` says what the skeleton demonstrates and what it leaves out on purpose. Read it before adding a feature.
-- `TECH.md` explains the bootstrap, the configuration layers and the database setup.
-- `DESIGN.md` holds the rules for templates, layouts and assets in `app/UI` and `www/`.
+- `TECH.md` explains {what it covers, e.g. the bootstrap, the configuration layers and the database setup}.
+- `DESIGN.md` holds the rules for {templates, layouts and assets, with their folders}.
 - Organization rules are in [contributte/contributte specs](https://github.com/contributte/contributte/tree/master/specs).
 
 ## Stack
 
-- **PHP**: 8.4 and later (`>=8.4`), Nette 3.2, Latte 3
-- **Database**: PostgreSQL via `nettrine/orm` and `nettrine/migrations`
-- **Tests**: Nette Tester with `contributte/tester`; PHPStan level 9
+- **PHP**: {PHP version in prose} (`{php constraint}` in `composer.json`), {Nette and Latte majors from composer.json}
+- **Database**: {engine and version from docker-compose.yml, and the packages that talk to it}
+- **Tests**: {test framework and helpers}; PHPStan level {level in phpstan.neon}
 
 ```
-app/
-├── Bootstrap.php     # container setup, picks config/env/{dev,prod}.neon
-├── Domain/           # entities and repositories, by domain (Order/, User/)
-├── Model/            # infrastructure: database, router, security, Latte
-└── UI/Modules/       # presenters and templates, by module (Admin/, Front/)
-config/               # app/, ext/, env/; local.neon is created by make init
-db/                   # Migrations/ and Fixtures/
-www/                  # the only public directory
+{top-level folder}/   # {what it holds, only when the name doesn't say it}
+├── {subfolder}/      # {what it holds}
+{next top-level folder}/
 ```
 
 ## Commands
 
 ```bash
-# Install dependencies, create var/ folders and config/local.neon
-make project
-make init
+# {What the setup targets do, from the Makefile}
+make {setup targets, e.g. project, init}
 
-# Start nginx, PHP and PostgreSQL in Docker (http://localhost:8080)
-make docker-up
-
-# Or run the built-in server on http://localhost:8000
-make dev
+# {How to start it, with the URL and port; a raw `docker compose up -d` when there is no target}
+{start command}
 
 # Run all checks, fix code style, run tests
 make qa
@@ -244,36 +267,36 @@ make csf
 make tests
 ```
 
+{What CI runs, from .github/workflows/.}
+
 ## Conventions
 
-- A presenter lives in `app/UI/Modules/{Module}/{Name}/{Name}Presenter.php`, its templates in `templates/` next
-  to it. Layouts are `templates/@layout.latte` in the module folder.
-- Schema changes go through a new file in `db/Migrations`. Never edit a migration that has been released.
-- `composer.lock` is committed; update it together with `composer.json`.
+- {Where a presenter and its templates live, as in app/UI/.}
+- {How schema changes are made, as in db/ or migrations/.}
 
 ## Traps
 
-- **`NETTE_ENV=dev` loads `config/env/dev.neon`; any other value loads `prod.neon`.** `config/local.neon` is
-  loaded last and wins. `make dev` sets `NETTE_ENV=dev`, a plain `php -S` does not.
-- **`make build` drops the whole database** (`orm:schema-tool:drop --full-database`), then migrates and loads
-  fixtures. Never point it at a database with real data.
-- **The Docker `php` container runs migrations and loads fixtures on every start.** Fixtures must stay
-  idempotent.
-- **`var/` is created by `make setup`.** Don't commit anything from it and don't hard-code its path.
+- **{Bold claim about the configuration load order, from app/Bootstrap.php}.** {What wins and which command sets it.}
+- **{Bold claim about a destructive target or container start, from the Makefile or docker-compose.yml}.** {What
+  it destroys and where it must never run.}
+- **{Bold claim}.** {Rule and reason.}
 - Features for users and screenshots are described in `README.md`; product scope is in `PRD.md`, not here.
 
 ## Ground Rules
 
-- **Only `www/` is public.** `app/`, `config/`, `db/` and `var/` must never be served.
+- **Only `www/` is public.** {Folders that must never be served, e.g. `app/`, `config/`, `db/` and `var/`.}
 - Secrets live in `config/local.neon` or environment variables and are never committed.
-- Tracy debug mode is on only through `NETTE_DEBUG=1` in development.
+- {How debug mode is switched on, from app/Bootstrap.php, and that it is for development only.}
 ````
 
 Skeleton specifics:
 
 - The folder tree shows only the top two levels, with a comment on each line that isn't obvious.
 - `## Ground Rules` holds rules whose violation is a security or data problem. Everything else is a trap.
-- If the skeleton uses Docker, say which services run and on which ports, in `## Commands` or `## Stack`.
+- If the skeleton uses Docker, say which services run and on which host ports, in `## Commands` or `## Stack`.
+  Two services on the same host port is a trap.
+- Traps come from reading the code: what `make build` drops, what a container runs on start, which config file is
+  never loaded. Don't write "fixtures are idempotent" or "runs on port 8080" without checking.
 
 ## Project Documents
 
@@ -306,18 +329,54 @@ Don't repeat their content in `AGENTS.md`. A trap that is explained in `TECH.md`
 - Plans, TODO lists, status notes and references to work in progress. Describe the current state.
 - Links to documents outside the repository, other than these specs and upstream documentation.
 
+## Checking with fxnorm
+
+`fxnorm` checks a repository against these specs and reports each deviation with the file, the line and the id of
+the rule that found it. Set it up once per repository, then check after every change:
+
+```bash
+# Detect the kind of repository and write fxnorm.yml (preset contributte-library or contributte-skeleton)
+fxnorm init
+
+# Report deviations, or apply the safe fixes and report what is left
+fxnorm check
+fxnorm fix
+```
+
+- `fxnorm.yml` is committed in the root. It names the preset and, when needed, rule settings. A setting that
+  turns a rule off or lowers its severity has a comment with the reason.
+- `fxnorm fix` writes `CLAUDE.md` (`common/claude-md-import`) and the Makefile help block. Everything else is
+  fixed by hand.
+- The rules for this document are `common/agents-md-exists`, `common/agents-md-length` (50 to 100 lines),
+  `common/agents-md-no-emoji`, `common/claude-md-import` and `common/tone-words` (`README.md` and `AGENTS.md`).
+  `contributte/design-md-exists`, `contributte/prd-md-exists` and `contributte/tech-md-exists` check the project
+  documents.
+- Fix the file instead of silencing the rule. A finding you accept gets `<!-- fxnorm:ignore {rule id} -->` on the
+  line above it, with the reason in the same comment.
+- `fxnorm explain {rule id}` shows what a rule checks and which section of these specs it enforces. When a rule
+  and these specs disagree, the specs win; report the rule.
+- Libraries export-ignore `fxnorm.yml`, `AGENTS.md` and `CLAUDE.md` (see [.gitattributes](#gitattributes)).
+  Skeletons commit them as they are.
+- `AGENTS.md` doesn't list `fxnorm` in `## Commands`. It is the same in every repository and belongs in these
+  specs.
+
 ## Checklist
 
 - [ ] `AGENTS.md` exists in the root and has 50 to 100 lines
 - [ ] `CLAUDE.md` contains only `@AGENTS.md`
 - [ ] Sections in order: title and purpose line, Overview, Documentation, (Stack), Commands, Conventions, Traps,
       (Ground Rules)
-- [ ] Overview states the PHP version, package, namespace and, for libraries, the DI extension
-- [ ] Commands use the Makefile target names and show how to run a single test
+- [ ] Overview (libraries) or Stack (skeletons) states the PHP version, package, namespace and, for libraries,
+      the DI extension
+- [ ] Every fact comes from the repository; no placeholder and no template fact is left
+- [ ] Commands exist in the `Makefile` today, use the target names and show how to run a single test (when tests
+      exist)
+- [ ] The line under the commands says what CI runs
 - [ ] Every trap opens with a bold claim and says why or where to read more
 - [ ] The last trap bullet points to `.docs/README.md`, `README.md` or `PRD.md`
 - [ ] No generic advice, no emoji, no tables, no tool-specific wording
 - [ ] `PRD.md`, `TECH.md` and `DESIGN.md` exist where [Project Documents](#project-documents) requires them and are
       linked from `## Documentation`
-- [ ] Libraries export-ignore `AGENTS.md`, `CLAUDE.md`, `.claude` and the project documents
+- [ ] Libraries export-ignore `AGENTS.md`, `CLAUDE.md`, `.claude`, `fxnorm.yml` and the project documents
+- [ ] `fxnorm check` reports no findings in `AGENTS.md` and `CLAUDE.md`
 - [ ] `.claude/settings.local.json` is not committed
