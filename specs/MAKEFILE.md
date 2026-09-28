@@ -13,6 +13,7 @@ specific targets are described in [LIBRARY.md](LIBRARY.md#makefile) and [SKELETO
 - [Library Template](#library-template)
 - [Skeleton Template](#skeleton-template)
 - [Target Names](#target-names)
+- [Checking with fxnorm](#checking-with-fxnorm)
 - [Checklist](#checklist)
 
 ## Rules
@@ -193,6 +194,49 @@ These names are used across the organization. Use them instead of inventing new 
 
 Avoid the older variants `coverage-clover`, `coverage-html`, `test` and `vendor/bin/codesniffer`/`codefixer`.
 
+Required targets:
+
+- Libraries and applications: `install`, `qa`, `cs`, `csf`, `phpstan`, `tests`, `coverage`.
+- Skeletons add `project`, `setup`, `clean`, `dev`, `build` and `deploy`. `init` is needed only when there is a
+  local config template (`config/local.neon.example`), `docker-up` only when there is a `docker-compose.yml`.
+- A repository without a `tests/` folder has no `tests` and `coverage` targets. Don't add a target that only
+  prints a message (`echo "NO TESTS"`); `AGENTS.md` says there are no tests instead (see
+  [AGENTS.md](AGENTS.md#commands-and-ci)). Skeletons need at least the container test
+  ([TESTS.md](TESTS.md#skeleton-tests)), so they add `tests/` and both targets.
+- A repository that still has `test` renames it to `tests`, and updates `AGENTS.md`, the workflows and the README
+  in the same pull request.
+
+## Checking with fxnorm
+
+`fxnorm check` checks the Makefile against this document. `fxnorm fix` adds `.DEFAULT_GOAL := help` and the
+[help block](#help) when they are missing; the other findings are fixed by hand.
+
+```bash
+# Once per repository: write fxnorm.yml with the contributte-library or contributte-skeleton preset
+fxnorm init
+
+# Check, or fix what can be fixed and check again
+fxnorm check
+fxnorm fix
+```
+
+| Rule | Checks |
+|------|--------|
+| `common/makefile-help` | `.DEFAULT_GOAL := help` and a `help` target (fixable) |
+| `common/makefile-target-descriptions` | Every public target has a `## Description` comment |
+| `contributte/makefile-phony` | Every target has its own `.PHONY` line directly above it |
+| `contributte/makefile-required-targets` | The [required targets](#target-names) for a library or a skeleton |
+| `contributte/makefile-ci-output` | `cs` and `coverage` switch on `ifdef GITHUB_ACTION` |
+| `contributte/makefile-no-legacy` | No `test`, `coverage-clover`, `coverage-html`, `codesniffer` or `codefixer` |
+| `contributte/makefile-tester-php` | Nette Tester runs with `-p php`, not `-p phpdbg` |
+
+- `fxnorm.yml` is committed in the root. Libraries export-ignore it (see [COMPOSER.md](COMPOSER.md#gitattributes)),
+  together with `AGENTS.md` and `CLAUDE.md`.
+- The Makefile has no `fxnorm` target. fxnorm is not a Composer dependency and runs the same way in every
+  repository.
+- `fxnorm explain {rule id}` shows what a rule checks. When a rule and this document disagree, this document wins;
+  report the rule.
+
 ## Checklist
 
 - [ ] `make` prints the help
@@ -201,3 +245,5 @@ Avoid the older variants `coverage-clover`, `coverage-html`, `test` and `vendor/
 - [ ] Targets are grouped with `##@` sections
 - [ ] `.env` is included (`-include .env` + `export`) if the Makefile needs environment variables
 - [ ] `.env.example` lists the required variables and `.env` is in `.gitignore`
+- [ ] The required targets exist; `tests` and `coverage` only when `tests/` exists
+- [ ] `fxnorm check` reports no findings in the `Makefile`
