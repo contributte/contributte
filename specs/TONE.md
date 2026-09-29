@@ -149,7 +149,9 @@ Use GitHub alerts. Don't use bold labels, brackets or emoji for hints.
 `AGENTS.md`, `PRD.md`, `TECH.md` and `DESIGN.md` are read by people and AI coding agents. The rules above apply,
 with these additions:
 
-- State facts first, then the rule that follows: "Commands are lazy. Don't add code that needs every command
+- `AGENTS.md` is short and high level: plain bullets for the stack and the principles, a short comment on each
+  command. No traps, bold claims, folder trees or internals (see [AGENTS.md](AGENTS.md)).
+- In `PRD.md`, `TECH.md` and `DESIGN.md`, state facts first, then the rule that follows: "Commands are lazy. Don't add code that needs every command
   at boot."
 - Give the reason in one clause: "…because tests assert on the message".
 - Correct wrong assumptions directly: "`console.url` is used only in CLI mode, not in HTTP requests."
@@ -234,10 +236,9 @@ Real text from our repositories, rewritten in the house style.
 
 **AGENTS.md bullet**
 
-> Before: Be careful when changing the extension, commands can break.
+> Before: Be careful when changing the extension and always make sure everything works.
 
-> After: **Command names are resolved at compile time.** A command without a `console.command` tag or
-> `#[AsCommand]` fails the container build, not the first run.
+> After: Every change comes with a test; `make qa tests` must pass before a commit.
 
 **Commit message**
 
