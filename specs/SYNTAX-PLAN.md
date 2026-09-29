@@ -302,3 +302,38 @@ bash stats/run-all.sh
 ```
 
 The lists and scripts live next to this plan in the analysis workspace; the inventory above is the checked-in snapshot.
+
+## Evaluation results (2026-09-28/29)
+
+Repository: `contributte/event-dispatcher` at HEAD (baseline `make qa` and `make tests` green; contributte/bus also
+prepared and green; contributte/messenger excluded because its phpstan baseline already fails under current
+dependency versions).
+
+1. **Implementation from SYNTAX.md alone.** A Claude Sonnet 5.5 implementer, given only SYNTAX.md as its style source,
+   added an "explicit listeners" feature (schema option, `beforeCompile` wiring through `LazyListener`, library
+   exception, 7 Toolkit tests, `.docs` section). `make qa` (phpstan level 9 + phpcs) and `make tests` were green on the
+   first complete run. The implementer reported 15 ambiguities in the guide.
+2. **Grilling review of the generated code** (Claude Opus 5.5, acting as maintainer): "would not merge as submitted",
+   no blocker; two design problems (a half-supported `Statement` config value and a hand-rolled service lookup that
+   failed for interfaces and non-autowired services) and several tells (mixed static/non-static closures, glued
+   `NEON));`, `Assert::same` in an `Assert::equal` repository). 9 of the 15 implementer gaps were confirmed as
+   defects of the guide; 16 text fixes were proposed and applied (notably the "local convention wins" rule and the
+   "service-or-class values are passed through as `Statement`" rule).
+3. **Grilling review of dialect A against the Contributte code** (Opus 5.5): 33 findings. Confirmed by tool runs: the
+   DI skeleton failed phpstan level 9 (tag payload on `mixed`), the canonical test failed at runtime (Nette Schema
+   joins paths with non-breaking spaces around `›`), `$x += 1` and mixed `use function` ordering are phpcs errors,
+   `@copyright` is forbidden, and several rules were one repository's habit presented as org-wide (exception
+   directory, `Interface`/`Trait` suffix opt-outs, `private` vs `private readonly` promotion, hook docblocks, service
+   id construction, TestCase usage, composer constraints, CI callers). All 33 were applied; the corrected skeleton,
+   test and golden file now pass phpcs, phpstan level 9 and run green.
+4. **Grilling review of dialect B against the Nette code** (Opus 5.5): 23 findings. Confirmed by tool runs: a
+   single-expression closure must be `fn()` (both the released `ecs` and DressCode), a paragraphed `if` chain needs a
+   blank line before every closing brace, an unused catch variable is an error, class docblocks keep a blank line
+   before `@property`/`@method`, `sprintf` is the norm in nette/di, app presenters use constructor injection, and the
+   DI-test NEON example needed a real line break. CI in 16 of 18 repositories runs the released
+   `nette/coding-standard ^3`, not DressCode. All 23 were applied; the section-3 samples pass DressCode, `ecs` v3 and
+   code-checker.
+
+Verdicts after fixes: both reviewers judged that code produced from the corrected document looks like the respective
+author's code and passes the toolchains; residual risk is in repository-specific habits, which the document now
+delegates to "local convention wins".
