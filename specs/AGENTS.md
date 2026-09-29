@@ -1,6 +1,6 @@
 # Contributte AGENTS.md Specification
 
-This document describes how `AGENTS.md` and `CLAUDE.md` are written in Contributte repositories. `AGENTS.md` is a
+This document describes how `AGENTS.md` is written in Contributte repositories. `AGENTS.md` is a
 short development guide for AI coding agents and people: the stack, the commands and the principles. Everything
 else lives in the README, `.docs/` and these specs. How to write the text is described in [TONE.md](TONE.md);
 commands come from [MAKEFILE.md](MAKEFILE.md).
@@ -22,7 +22,7 @@ commands come from [MAKEFILE.md](MAKEFILE.md).
 - Only facts that are true for the repository: every command must exist.
 - It stays high level. It does not describe the file or folder structure, architecture internals, traps, history,
   planned changes, TODOs or "what is changing".
-- `CLAUDE.md` contains exactly one line: `@AGENTS.md`.
+- `AGENTS.md` is the only agent file; no `CLAUDE.md`.
 - Don't add other agent files (`.cursorrules`, `.github/copilot-instructions.md`, `GEMINI.md`, `llms.txt`).
 - `AGENTS.md` doesn't link `PRD.md`, `TECH.md` or `DESIGN.md`. The README links them when they exist.
 - Libraries export-ignore the agent files in `.gitattributes`. Projects commit them as they are:
@@ -30,7 +30,6 @@ commands come from [MAKEFILE.md](MAKEFILE.md).
 ```
 .claude export-ignore
 AGENTS.md export-ignore
-CLAUDE.md export-ignore
 fxnorm.yml export-ignore
 fxnorm-baseline.json export-ignore
 ```
@@ -139,11 +138,11 @@ fxnorm fix
 
 - `fxnorm.yml` is committed in the root. A setting that turns a rule off or lowers its severity has a comment
   with the reason.
-- `fxnorm fix` writes `CLAUDE.md` (`common/claude-md-import`) and the Makefile help block. Everything else is
-  fixed by hand.
+- `fxnorm fix` writes the Makefile help block and deletes a `CLAUDE.md` that only imports `@AGENTS.md`
+  (`common/no-claude-md`). Everything else is fixed by hand.
 - The rules for this document are `common/agents-md-exists`, `common/agents-md-length` (20 to 45 lines),
   `common/agents-md-sections`, `common/agents-md-no-structure`, `common/agents-md-no-emoji`,
-  `common/claude-md-import` and `common/tone-words`.
+  `common/no-claude-md` and `common/tone-words`.
 - Fix the file instead of silencing the rule. A finding you accept gets `<!-- fxnorm:ignore {rule id} -->` on the
   line above it, with the reason in the same comment.
 - `fxnorm explain {rule id}` shows what a rule checks. When a rule and these specs disagree, the specs win; report
@@ -157,6 +156,6 @@ fxnorm fix
 - [ ] Every command in `## Development` exists in the `Makefile` today
 - [ ] No folder structure, architecture, traps, history, plans or TODOs
 - [ ] No emoji, no tables, no placeholder left
-- [ ] `CLAUDE.md` contains only `@AGENTS.md`
-- [ ] Libraries export-ignore `AGENTS.md`, `CLAUDE.md`, `.claude` and `fxnorm.yml`
-- [ ] `fxnorm check` reports no findings in `AGENTS.md` and `CLAUDE.md`
+- [ ] No `CLAUDE.md`; `AGENTS.md` is the only agent file
+- [ ] Libraries export-ignore `AGENTS.md`, `.claude` and `fxnorm.yml`
+- [ ] `fxnorm check` reports no findings in `AGENTS.md`
