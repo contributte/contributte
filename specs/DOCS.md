@@ -21,10 +21,15 @@ It extends the short [Documentation](LIBRARY.md#documentation) section in LIBRAR
 ## Rules
 
 - Every repository has a `README.md` (uppercase) and a `LICENSE` file in the root.
-- The root `README.md` is short: header, description, install command, link to docs, versions table, maintainers,
-  footer.
+- The root `README.md` is short: header, description, Usage (install command, smallest example, link to docs),
+  versions table, Development (a few `make` commands, maintainers), footer.
 - Libraries keep the full documentation in `.docs/README.md`. The root README only links to it.
-- The root README links to the docs as `[documentation](.docs)`. Don't link to contributte.org instead.
+- The root README links to the docs as `[documentation](.docs)` at the end of `## Usage`. Don't link to
+  contributte.org instead.
+- `## Usage` is short and flexible: one or two code blocks. No configuration reference, option lists, multiple
+  variants or step-by-step walkthroughs; those belong in `.docs/README.md`.
+- `## Development` stays high level: 3 to 5 `make` commands with short comments, then "Run `make` to list every
+  target." No options, paths or environment variables.
 - Images used in docs or READMEs live in `.docs/assets/`.
 - All badges come from [badgen.net](https://badgen.net). Don't use shields.io, Travis, Scrutinizer or GitHub `badge.svg`.
 - Badges, links and the header point to the repository's current home, `contributte/{repo}`, not to an old
@@ -120,8 +125,6 @@ To install the latest version of `{package}`, use [Composer](https://getcomposer
 composer require {package}
 ```
 
-Requires PHP {php} or later and Nette {nette}.
-
 Register the extension in your `config.neon`:
 
 ```neon
@@ -129,9 +132,7 @@ extensions:
 	{name}: {Extension}
 ```
 
-## Documentation
-
-For details on how to use this package, check out the [documentation](.docs).
+Requires PHP {php} or later and Nette {nette}. See the [documentation](.docs) for configuration and more examples.
 
 ## Versions
 
@@ -142,7 +143,13 @@ For details on how to use this package, check out the [documentation](.docs).
 
 ## Development
 
-See [how to contribute](https://contributte.org/contributing.html) to this package.
+```bash
+make install   # install dependencies
+make qa        # PHPStan and code style
+make tests     # run all tests
+```
+
+Run `make` to list every target. See [how to contribute](https://contributte.org/contributing.html) to this package.
 
 This package is maintained by these authors.
 
@@ -156,21 +163,25 @@ Consider [supporting](https://contributte.org/partners.html) the **contributte**
 Thank you for using this package.
 ````
 
-Section order is fixed: description, **Usage**, **Documentation**, **Versions**, **Development**, then the footer.
+Section order is fixed: description, **Usage**, **Versions**, **Development**, then the footer.
 
 - The **description** is one to three sentences without a heading, between the links line and `## Usage`. The first
   sentence says what the package is, the second why you would want it. Packages that don't integrate another
   library start with what they are: "Contributte Utils is a set of small helpers for Nette Framework."
 - A package with visual output (a component, a Tracy panel, a console screen) may show one screenshot or GIF from
   `.docs/assets/` right after the description, before `## Usage`.
-- **Usage** holds the install command, one requirements sentence and the smallest working example. The
-  requirements come from `composer.json` `require`; when the Versions table says something else, fix the table in
-  the same change. The example is the extension registration, plus the one step that makes it do something
-  visible when registration alone does nothing (one command, one component). Longer examples go to
-  `.docs/README.md`.
+- **Usage** is simple and flexible: the install command, the smallest working example, then one sentence with the
+  requirements and the link to the [documentation](.docs). One or two code blocks, no more. The example is the
+  extension registration; add one line (one command, one component) only when registration alone does nothing
+  visible. Configuration samples, option lists, variants and walkthroughs go to `.docs/README.md`.
+- The requirements come from `composer.json` `require`; when the Versions table says something else, fix the table
+  in the same change.
 - **Versions** has the columns `State | Version | Branch | Nette | PHP`, newest first. Packages that don't depend on
   Nette drop the `Nette` column. An extra column (e.g. `Symfony`, `Bootstrap`) is fine when it matters.
-- **Development** lists maintainers as 80×80 GitHub avatars linking to their profiles.
+- **Development** is high level: one `bash` block of 3 to 5 `make` commands that exist in the `Makefile`, each with
+  a short comment, then "Run `make` to list every target." and the contributing link. No options (`VERSION=`),
+  paths, single-test commands or environment variables; those live in `AGENTS.md` and the Makefile help. Then the
+  maintainers as 80×80 GitHub avatars linking to their profiles.
 - The footer is a `-----` rule followed by the two support lines. Older READMEs with "currently maintaining by",
   "currently maintained by" or "Consider to support" are updated to the template text.
 
@@ -214,7 +225,16 @@ make dev
 
 ## Development
 
-<!-- same as the library template, then the footer -->
+```bash
+make install   # install dependencies
+make dev       # start the development server
+make qa        # PHPStan and code style
+make tests     # run all tests
+```
+
+Run `make` to list every target.
+
+<!-- then the contributing link, maintainers and footer, same as the library template -->
 ````
 
 - The description of one or two sentences comes right after the links line, before the screenshot, as in libraries.
@@ -223,8 +243,13 @@ make dev
   **Development**.
 - Screenshots are stored in `.docs/assets/` and linked from the README. A `## Screenshots` section has one line per
   image, a short caption and then the image ([DESIGN.md](DESIGN.md#screenshots)).
-- The Installation and Startup commands are the real ones: a `make` target that exists, the real port. Delete the
-  Startup block when the Makefile has no `dev` target and write the command that starts the project.
+- Installation and Startup have one code block each: `composer create-project` and the command that starts the
+  project. No numbered step-by-step walkthrough, no config samples; a local config step (`make init`) is one line
+  in the Startup block when the project needs it.
+- The commands are the real ones: a `make` target that exists. Delete the Startup block when the Makefile has no
+  `dev` target and write the command that starts the project.
+- **Development** follows the library rule: 3 to 5 `make` commands with short comments, then "Run `make` to list
+  every target."
 
 ## .docs Folder
 
@@ -348,9 +373,11 @@ Permission is hereby granted, free of charge, to any person obtaining a copy
 - [ ] Coverage badge is Codecov
 - [ ] Website / Contact / Twitter links line
 - [ ] A description of one to three sentences before `## Usage` (libraries) or before the screenshot (skeletons)
-- [ ] Sections: Usage, Documentation, Versions, Development (skeletons: Goal, Demo, Installation, Startup, Development)
-- [ ] Usage has the install command, a requirements sentence and a working example
-- [ ] Documentation links to `.docs`
+- [ ] Sections: Usage, Versions, Development (skeletons: Goal, Demo, Installation, Startup, Development)
+- [ ] Usage has the install command, the smallest working example, a requirements sentence and the
+  `[documentation](.docs)` link; one or two code blocks, no config reference or walkthrough
+- [ ] Development has 3 to 5 `make` commands with comments and "Run `make` to list every target."; no options,
+  paths or env vars
 - [ ] Versions table with `State | Version | Branch | Nette | PHP`
 - [ ] Maintainer avatars and the support footer ("Consider supporting …")
 - [ ] Text follows [TONE.md](TONE.md)

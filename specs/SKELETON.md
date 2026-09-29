@@ -442,39 +442,37 @@ Test layout, bootstrap and E2E tests are described in [TESTS.md](TESTS.md).
 
 Skeleton READMEs follow the [Skeleton README Template](DOCS.md#skeleton-readme-template) in DOCS.md.
 
-### Installation Section Example
+### Installation and Startup Example
+
+Installation and Startup stay short: one code block each, no numbered walkthrough and no config samples. Details
+belong in `.docs/` or in the Makefile help.
 
 ````markdown
 ## Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/contributte/example-skeleton.git
-   cd example-skeleton
-   ```
+```bash
+composer create-project -s dev contributte/example-skeleton acme
+```
 
-2. Copy configuration template:
-   ```bash
-   make init
-   # or: cp config/local.neon.example config/local.neon
-   ```
+Requires PHP 8.4 or later and PostgreSQL.
 
-3. Start Docker services:
-   ```bash
-   make docker-up
-   ```
+## Startup
 
-4. Install dependencies:
-   ```bash
-   make install
-   ```
+```bash
+make init docker-up dev
+```
 
-5. Start development server:
-   ```bash
-   make dev
-   ```
+The project runs on http://localhost:8000.
 
-6. Open in browser: http://localhost:8000
+## Development
+
+```bash
+make install   # install dependencies
+make qa        # PHPStan and code style
+make tests     # run all tests
+```
+
+Run `make` to list every target.
 ````
 
 ## Git Configuration
@@ -496,7 +494,7 @@ See [.gitignore](COMPOSER.md#gitignore) in COMPOSER.md.
 - [ ] Create `www/index.php` entry point
 - [ ] Create `bin/console` for CLI
 - [ ] Add `LICENSE` (MIT)
-- [ ] Create `README.md` with screenshots
+- [ ] Create `README.md` with screenshots, one-block Installation and Startup and a short `make` Development block
 - [ ] Add documentation in `.docs`
 - [ ] Write tests
 - [ ] Verify all CI checks pass
