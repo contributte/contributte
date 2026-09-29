@@ -18,6 +18,7 @@ documentation in [DOCS.md](DOCS.md).
 ## Rules
 
 - `DESIGN.md` lives in the repository root, next to `README.md` and `AGENTS.md`.
+- The README links it. `AGENTS.md` doesn't link it; it covers development only.
 - It is 50 to 150 lines. Longer material moves to `.docs/` and is linked.
 - It is written for the next person or agent who edits the UI. It is not user documentation.
 - It links instead of repeating: the README for installation, `.docs/` for usage, `AGENTS.md` for commands.
