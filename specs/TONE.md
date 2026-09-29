@@ -136,11 +136,14 @@ Use GitHub alerts. Don't use bold labels, brackets or emoji for hints.
 
 ## README and Docs
 
-- The root README follows [DOCS.md](DOCS.md): header, a description of one to three sentences, Usage,
-  Documentation, Versions, Development, footer.
+- The root README follows [DOCS.md](DOCS.md): header, a description of one to three sentences, Usage, Versions,
+  Development, footer.
 - The description answers two questions: what it is and why you would want it.
-- `## Usage` has the install command, one requirements sentence ("Requires PHP 8.2 or later.") and the smallest
-  working example.
+- `## Usage` is simple and flexible: the install command, the smallest working example, one requirements sentence
+  ("Requires PHP 8.2 or later.") and a link to the [documentation](.docs). One or two code blocks. Configuration
+  samples, option lists, variants and step-by-step walkthroughs go to `.docs/README.md`.
+- `## Development` is high level: 3 to 5 `make` commands with a short comment each, then "Run `make` to list every
+  target." No options, paths or environment variables.
 - In `.docs/README.md`, grow examples step by step: the minimal case, then "You can also…", then "Optionally…".
 - A tutorial may tell a small story ("Let's build a command that sends a newsletter.") and follow it through.
 
@@ -228,6 +231,51 @@ Real text from our repositories, rewritten in the house style.
 > (code block)
 > Register the extension in your `config.neon`:
 
+**dockette/pgbouncer, Usage (the same rule applies to library READMEs)**
+
+> Before: a port, a container name, a pinned tag, a full config sample and a second variant:
+>
+> ````markdown
+> Run PgBouncer on port `6432` with your own `pgbouncer.ini` from the current folder:
+>
+> ```sh
+> docker run --name some-pgbouncer -p 6432:6432 \
+>   -v "$(pwd)/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro" \
+>   dockette/pgbouncer:1.26.0
+> ```
+>
+> A minimal `pgbouncer.ini` looks like this. Adjust `host`, the auth settings and the pool sizes for your database:
+>
+> ```ini
+> [databases]
+> * = host=postgres port=5432
+>
+> [pgbouncer]
+> listen_addr = 0.0.0.0
+> listen_port = 6432
+> auth_type = md5
+> auth_file = /etc/pgbouncer/userlist.txt
+> pool_mode = transaction
+> ```
+>
+> The config above reads users from `auth_file`. Mount your userlist next to the config:
+> (a second `docker run` with one more `-v`)
+> ````
+
+> After: the one essential argument, the untagged image and a link to the reference:
+>
+> ````markdown
+> Mount your own `pgbouncer.ini` and run it:
+>
+> ```sh
+> docker run -v ./pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro dockette/pgbouncer
+> ```
+>
+> The image is upstream PgBouncer with nothing added: no default config, no environment variables. Everything is
+> set in `pgbouncer.ini` (plus `userlist.txt` if you use `auth_file`), see the
+> [configuration reference](https://www.pgbouncer.org/config.html).
+> ````
+
 **Footer**
 
 > Before: Consider to support **contributte** development team. Also thank you for using this package.
@@ -253,6 +301,8 @@ Real text from our repositories, rewritten in the house style.
 - [ ] "you" for the reader; no "I", "our" or "us"
 - [ ] Every code block has a lead-in sentence ending with a colon
 - [ ] Requirements are stated in one sentence
+- [ ] `## Usage` has one or two code blocks and ends with a link to the docs; `## Development` is 3 to 5 `make`
+  commands
 - [ ] Hints use GitHub alerts; no emoji outside the README links line
 - [ ] Limits and dangers are stated plainly
 - [ ] Commit summaries are `{Area}: {imperative}` and at most 50 characters
