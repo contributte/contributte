@@ -444,7 +444,7 @@ Skeleton READMEs follow the [Skeleton README Template](DOCS.md#skeleton-readme-t
 
 ### Installation Section Example
 
-```markdown
+````markdown
 ## Installation
 
 1. Clone the repository:
@@ -475,7 +475,7 @@ Skeleton READMEs follow the [Skeleton README Template](DOCS.md#skeleton-readme-t
    ```
 
 6. Open in browser: http://localhost:8000
-```
+````
 
 ## Git Configuration
 
