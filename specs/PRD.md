@@ -16,6 +16,7 @@ file says what the project is for, who uses it and what it must and must not do.
 ## Rules
 
 - `PRD.md` lives in the repository root, next to `README.md`, `TECH.md` and `AGENTS.md`.
+- The README links it. `AGENTS.md` doesn't link it; it covers development only.
 - It is 50 to 150 lines. It is a short product document, not a backlog.
 - It describes the current product. Plans and ideas go to issues; open questions go to its last section.
 - It links instead of repeating: installation is in the README, stack and commands are in `TECH.md` and
