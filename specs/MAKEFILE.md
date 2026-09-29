@@ -231,7 +231,7 @@ fxnorm fix
 | `contributte/makefile-tester-php` | Nette Tester runs with `-p php`, not `-p phpdbg` |
 
 - `fxnorm.yml` is committed in the root. Libraries export-ignore it (see [COMPOSER.md](COMPOSER.md#gitattributes)),
-  together with `AGENTS.md` and `CLAUDE.md`.
+  together with `AGENTS.md`.
 - The Makefile has no `fxnorm` target. fxnorm is not a Composer dependency and runs the same way in every
   repository.
 - `fxnorm explain {rule id}` shows what a rule checks. When a rule and this document disagree, this document wins;
