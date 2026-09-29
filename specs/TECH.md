@@ -20,6 +20,7 @@ built and tested, and which decisions shaped it. Product intent is in [PRD.md](P
 ## Rules
 
 - `TECH.md` lives in the repository root, next to `README.md`, `PRD.md` and `AGENTS.md`.
+- The README links it. `AGENTS.md` doesn't link it; it covers development only.
 - It is 50 to 150 lines. Detail about one subsystem goes to `.docs/` and is linked from here.
 - It describes the code as it is today. It is not a proposal and not a tutorial.
 - It links instead of repeating: commands are in `AGENTS.md` and the `Makefile`, install steps in the README,
