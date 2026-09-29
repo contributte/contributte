@@ -201,7 +201,7 @@ Required targets:
   local config template (`config/local.neon.example`), `docker-up` only when there is a `docker-compose.yml`.
 - A repository without a `tests/` folder has no `tests` and `coverage` targets. Don't add a target that only
   prints a message (`echo "NO TESTS"`); `AGENTS.md` says there are no tests instead (see
-  [AGENTS.md](AGENTS.md#commands-and-ci)). Skeletons need at least the container test
+  [AGENTS.md](AGENTS.md#sections)). Skeletons need at least the container test
   ([TESTS.md](TESTS.md#skeleton-tests)), so they add `tests/` and both targets.
 - A repository that still has `test` renames it to `tests`, and updates `AGENTS.md`, the workflows and the README
   in the same pull request.
