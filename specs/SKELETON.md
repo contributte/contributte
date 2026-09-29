@@ -161,7 +161,7 @@ Additional directories may be present depending on the skeleton's purpose (e.g.,
 
 ## Requirements
 
-- **PHP Version**: 8.2+ (minimum 8.3 recommended)
+- **PHP Version**: 8.4+ (current skeletons require `>=8.4`)
 - **Nette Framework**: 3.2+
 - **Docker**: For local development services
 
@@ -182,7 +182,7 @@ Additional directories may be present depending on the skeleton's purpose (e.g.,
     }
   ],
   "require": {
-    "php": ">=8.2",
+    "php": ">=8.4",
     "nette/application": "^3.2",
     "nette/bootstrap": "^3.2",
     "nette/di": "^3.2",
@@ -230,7 +230,7 @@ project: install setup
 
 .PHONY: init
 init:
-	cp config/local.neon.dist config/local.neon
+	cp config/local.neon.example config/local.neon
 
 .PHONY: install
 install:
@@ -251,7 +251,7 @@ clean:
 #
 
 .PHONY: qa
-qa: phpstan cs
+qa: cs phpstan
 
 .PHONY: cs
 cs:
@@ -295,7 +295,7 @@ dev:
 
 .PHONY: docker-up
 docker-up:
-	docker compose up -d
+	docker compose up
 
 #
 # Deploy
@@ -390,7 +390,7 @@ services:
 
 ## Configuration
 
-### config/local.neon.dist
+### config/local.neon.example
 
 Template for local environment configuration:
 
@@ -431,12 +431,14 @@ parameters:
 
 ## Coding Standards
 
+The PHP syntax, naming, layout and testing conventions (including application code: Bootstrap, presenters, entities, NEON) are described in [SYNTAX.md](SYNTAX.md) section 2.13; read it before writing code.
+
 ### ruleset.xml
 
 ```xml
 <?xml version="1.0"?>
 <ruleset>
-    <rule ref="./vendor/contributte/qa/ruleset-8.2.xml"/>
+    <rule ref="./vendor/contributte/qa/ruleset-8.4.xml"/>
 
     <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
         <properties>
@@ -473,28 +475,29 @@ App\Bootstrap::boot()
 
 namespace App;
 
-use Nette\Bootstrap\Configurator;
+use Contributte\Bootstrap\ExtraConfigurator;
+use Contributte\Nella\Boot\Bootloader;
+use Contributte\Nella\Boot\Preset\NellaPreset;
+use Nette\Application\Application;
 
 final class Bootstrap
 {
-    public static function boot(): Configurator
-    {
-        $configurator = new Configurator();
-        $appDir = dirname(__DIR__);
 
-        $configurator->setDebugMode(true);
-        $configurator->enableTracy($appDir . '/var/log');
-        $configurator->setTempDirectory($appDir . '/var/tmp');
+	public static function boot(): ExtraConfigurator
+	{
+		return Bootloader::create()
+			->use(NellaPreset::create(__DIR__))
+			->boot();
+	}
 
-        $configurator->createRobotLoader()
-            ->addDirectory(__DIR__)
-            ->register();
+	public static function run(): void
+	{
+		self::boot()
+			->createContainer()
+			->getByType(Application::class)
+			->run();
+	}
 
-        $configurator->addConfig($appDir . '/config/common.neon');
-        $configurator->addConfig($appDir . '/config/local.neon');
-
-        return $configurator;
-    }
 }
 ```
 
@@ -568,7 +571,7 @@ Skeleton READMEs should include:
 2. Copy configuration template:
    ```bash
    make init
-   # or: cp config/local.neon.dist config/local.neon
+   # or: cp config/local.neon.example config/local.neon
    ```
 
 3. Start Docker services:
@@ -630,7 +633,7 @@ coverage.xml
 - [ ] Add `.editorconfig`
 - [ ] Add `.gitignore`
 - [ ] Create `docker-compose.yml`
-- [ ] Add `config/local.neon.dist` template
+- [ ] Add `config/local.neon.example` template
 - [ ] Create `app/Bootstrap.php`
 - [ ] Create `www/index.php` entry point
 - [ ] Create `bin/console` for CLI
