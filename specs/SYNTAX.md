@@ -11,11 +11,17 @@ classes, Nette Tester) but disagree on nearly every layout detail. **Pick one di
 
 | You are writing in… | Dialect | Enforced by |
 |---|---|---|
-| any `contributte/*`, `nettrine/*`, `apitte/*` repository, or a project built on Contributte skeletons | **A — f3l1x** | `contributte/qa` (phpcs + Slevomat), `contributte/phpstan` (level 9 + strict rules) |
+| any `contributte/*`, `nettrine/*`, `apitte/*` repository whose `ruleset.xml` extends `contributte/qa` (123 of 163), or a project built on Contributte skeletons | **A — f3l1x** | `contributte/qa` (phpcs + Slevomat), `contributte/phpstan` (level 9 in most, 8 in apitte/openapi; strict rules). Check the repo's `<exclude>`s and phpstan level before applying a rule. |
 | any `nette/*`, `latte/*`, `tracy/*` repository, or a project built on `nette/web-project` | **B — dg** | Nette Coding Standard (`nette/coding-standard`, DressCode), `nette/code-checker`, PHPStan level 8 |
 
 If nothing tells you which, default to **A** for Contributte work and **B** for Nette work. Section 1 is the cheat
 sheet of the differences; sections 2 and 3 are the complete dialect descriptions; section 4 is the checklist.
+
+**Local convention wins.** When the file or repository you edit already has a convention for the same construct, copy
+it even where this guide shows another variant: the exception class and message template for the same condition,
+`addSetup` argument shape, static vs non-static closures, `Assert::same` vs `Assert::equal`, `NEON` / `));` layout,
+`Exception/` vs `Exceptions/`, `$this->config` vs `$this->getConfig()`, private helper naming, trailing commas,
+constructor promotion. The guide decides only when the repository is silent.
 
 ## 1. The two dialects side by side
 
@@ -41,12 +47,12 @@ sheet of the differences; sections 2 and 3 are the complete dialect descriptions
 | Nullable | `?T` (93%) | `?T` for one type, `A\|B\|null` for unions, null last |
 | Exception messages | `sprintf('Service "%s" not found', $name)`; no interpolation (enforced) | `"Service '$name' not found."` interpolation; sprintf only for number formats |
 | Exception base classes | own `LogicalException` / `RuntimeException` per library in `Exception/` | `Nette\InvalidStateException`, `Nette\InvalidArgumentException`, … from `exceptions.php` |
-| `match` | practically unused (43 in 1,935 files); `switch`/`if` | used freely (205 in 779 files), `match (true)` for dispatch |
+| `match` | practically unused (about a dozen in 1,935 files); `switch`/`if` | used freely (205 in 779 files), `match (true)` for dispatch |
 | Enums | none in libraries (0) | rare (15); constants in a `final class` preferred |
 | `readonly class` | none | `final readonly class` for value objects |
 | Numeric separators | forbidden (`1000000`) | used from 7 digits (`1_000_000`) |
 | Method docblock layout | description, blank ` *` line, tags | description, no blank line, `@param  type  $x` with two spaces |
-| PHPStan | level 9 + strict rules; `// @phpstan-ignore-line` inline | level 8; `ignoreErrors` in `phpstan.neon` with a reason comment; no inline ignores |
+| PHPStan | level 9 in most libraries (8 in apitte/openapi) + strict rules; inline `// @phpstan-ignore-*` or `ignoreErrors` in `phpstan.neon` (44% of repos) | level 8; `ignoreErrors` in `phpstan.neon` with a reason comment; no inline ignores |
 | Member order | consts → props → ctor → public → protected → private → magic (enforced) | traits → consts → props → ctor → methods in any order (helpers next to their caller) |
 | Tests | `Toolkit::test(function (): void { … });` in `tests/Cases/*.phpt` | `test('title', function () { … });` in `tests/<Dir>/Class.aspect.phpt` |
 | Commit subject | `Area: imperative lowercase phrase` (`Composer: require PHP 8.2`) | `added X` / `Class::method() past-tense phrase` (`requires PHP 8.2`) |
@@ -62,9 +68,11 @@ sheet of the differences; sections 2 and 3 are the complete dialect descriptions
   and adds `SlevomatCodingStandard.Files.TypeNameMatchesFileName` with `src => Vendor\Package`, `tests => Tests`.
   `ruleset-8.x.xml` files differ only in `php_version`; all 185 sniffs live in `ruleset.xml`.
 - `phpstan.neon` includes `vendor/contributte/phpstan/phpstan.neon` (phpstan-strict-rules, phpstan-nette,
-  deprecation rules), `level: 9`, `phpVersion: 80200`, paths `src` and `.docs`.
+  deprecation rules), `level: 9` (79 of 100 repos; 8 in apitte/openapi), `phpVersion` = the repo's minimum PHP
+  (80200 for libraries, 80400 for skeletons), paths `src` and `.docs`. 44% of repos carry `ignoreErrors` entries.
 - `make qa` = `make phpstan` + `make cs`; `make csf` auto-fixes; `make tests` runs Nette Tester over `tests/Cases`.
-  phpcs runs over `src tests` with `--extensions="php,phpt"`: **test files obey every rule below too.**
+  phpcs runs over `src tests` with `--extensions="php,phpt"` and `-n` (errors only; warnings do not fail CI):
+  **test files obey every rule below too.**
 - Consequences of strict rules at level 9 that shape the code: only real booleans in conditions (`if ($x !== null)`,
   never `if ($x)` on a nullable object, never `if (count($a))`), no `empty()`, no `==`, no short ternary `?:`,
   `in_array(..., true)`, no implicit array creation, no dynamic property or method names.
@@ -112,16 +120,17 @@ Rules:
 1. Line 1 is exactly `<?php declare(strict_types = 1);` — one line, spaces around `=`. No BOM, LF endings, one
    trailing newline, never a closing `?>`. No file-level docblock, no license header, no `@author`.
 2. One blank line, `namespace Vendor\Package\Sub;`, one blank line, the `use` block, one blank line, the type.
-3. `use` block: one import per line, **alphabetical by full name, case-insensitive**, classes and `use function`
-   sorted together, no blank lines inside, no grouping by vendor, no `use A\{B, C}`, no leading backslash, no
+3. `use` block: one import per line, **alphabetical by full name, case-insensitive**; class imports first, then
+   `use function …;`, then `use const …;` (each group alphabetical, no blank lines between groups), no blank lines inside, no grouping by vendor, no `use A\{B, C}`, no leading backslash, no
    unused imports (annotations count as usage). Global classes are **imported** (`use stdClass;`, `use Throwable;`,
-   `use ReflectionClass;`, `use LogicException;`), never written `\stdClass` in code. Only when a class collides with
-   its own name is the parent fully qualified: `class RuntimeException extends \RuntimeException`.
+   `use ReflectionClass;`, `use LogicException;`); phpcs also accepts `\Foo`, but the habit is to import (fully
+   qualified globals occur mainly in imported code such as rabbitmq/jsonrpc). When a class collides with its own
+   name the parent is fully qualified or aliased: `class RuntimeException extends \RuntimeException`.
 4. Aliases only to disambiguate, named vendor-prefix + name or role suffix: `use Nette\Http\IRequest as HttpRequest;`,
    `use Tracy\ILogger as TracyLogger;`, `use Nette\Utils\Arrays as NetteArrays;`,
    `use Doctrine\DBAL\Driver as DriverInterface;`.
-5. Global functions are called bare (`sprintf(...)`, `count(...)`); `use function` appears in 57 of 1,935 files and is
-   not the style. Never `\count(`.
+5. Global functions are called bare (`sprintf(...)`, `count(...)`); `use function` appears in 18 of 1,935 files (57
+   statements) and is not the style. Never `\count(`.
 6. One type per file; file name equals type name; `src/` mirrors the namespace 1:1 (PSR-4 root `src`, dev root
    `tests` => `Tests`).
 7. Indentation is one tab per level everywhere (PHP, NEON, Latte, Makefile); JSON, YAML and Markdown use 2 spaces.
@@ -156,14 +165,18 @@ final class Foo extends Bar implements Baz
 
 	public function run(): void
 	{
+		$this->prepare();
+		$this->finish();
 	}
 
 	protected function prepare(): void
 	{
+		// Override in child
 	}
 
 	private function finish(): void
 	{
+		$this->logger?->info('done');
 	}
 
 	public function __toString(): string
@@ -201,7 +214,7 @@ final class Foo extends Bar implements Baz
 
 ### 2.4 Declarations and naming
 
-- **`final` is not the default.** 25% of classes are `final`. Use `final` for: leaf exceptions, static utility
+- **`final` is not the default.** 25% of classes are `final`. Use `final` for: static utility
   classes (`Helpers`, `Regex`, `Caster`, `Uuid`, `BuilderMan`), DI helpers, decorators/value leaves, and code in the
   newest repositories (console-extra, logging, crafter, jsonrpc). Leave services, DI extensions, passes, presenters,
   mailers, panels and anything users may extend as plain `class`. Never `final` on Doctrine entities, DTOs or
@@ -212,14 +225,16 @@ final class Foo extends Bar implements Baz
   modules → `Base*`; entities, repositories, passes, handlers, transformers → `Abstract*`. Never a trailing
   `Abstract`.
 - Interfaces: **`I` prefix is the majority in libraries** (56%: `IHandler`, `IMiddleware`, `IRouter`, `IDispatcher`,
-  `ILogger`, `IMailer`, `ICacheFactory`, `IController`). No prefix/suffix in the newest Nette-adjacent code
+  `ILogger`, `IMailer`, `ICacheFactory`, `IController`). No prefix/suffix in some newer or Nette-adjacent code
   (`ConnectionAccessor`, `FiltersProvider`, `Firewall`, `Serializer`) and in application code (`Queryable`). The
-  `Interface` suffix is **forbidden** by the ruleset (`SuperfluousInterfaceNaming`); it appears only in
-  `contributte/api` and `imagist`, which opt out. Constant-bag interfaces have no prefix (`RequestAttributes`).
+  `Interface` suffix is a phpcs error under the default ruleset (`SuperfluousInterfaceNaming`); 21% of interfaces use
+  it in the 8 repos that opt out (`contributte/api` — `FirewallInterface`, `MiddlewareInterface` —, crafter, imagist,
+  doctrine-fixtures, doctrine-migrations, messenger, translation, webpack). Follow the repository. Constant-bag
+  interfaces have no prefix (`RequestAttributes`).
   Interfaces are small, often a single method (`IRouter::match`, `IHandler::handle`, `ISerializer::serialize`).
 - Traits: `T` prefix in application code and DI (`TId`, `TCreatedAt`, `TContainerAware`, `TReflectionProperties`) or a
-  descriptive name (`ExtraRequestTrait`, `StructuredTemplates`). `Trait` suffix is tolerated only in the PSR-7
-  package; do not add it to new code.
+  plain descriptive noun (`StructuredTemplates`, `ExceptionExtra`). The `Trait` suffix is a phpcs error
+  (`SuperfluousTraitNaming`); only psr7-http-message, forms-bootstrap, newrelic opt out.
 - Exceptions: suffix `Exception`; roots named `LogicalException` (with "-al", to avoid the SPL name) and
   `RuntimeException` (see 2.10).
 - Class-name vocabulary (measured suffix frequency): `*Extension`, `*Pass`, `*Exception`, `*Factory`, `*Command`,
@@ -247,7 +262,8 @@ final class Foo extends Bar implements Baz
 - Variables camelCase; short names are fine (`$def`, `$rc`, `$em`, `$qb`, `$e`). Conventional locals inside DI
   code: `$builder`, `$config`, `$def`, `$definitions`.
 - Namespace layout inside `src/`: entry classes in the root (`ConnectionFactory`, `CommandBus`); sub-namespaces `DI`
-  (with `DI/Pass`, `DI/Helpers` or `DI/Utils`), `Exception` (singular; `Exceptions` only in 4 older repos) with
+  (with `DI/Pass`, `DI/Helpers` or `DI/Utils`), `Exception` (singular, 44 of the 100 qa repos) or `Exceptions` (13, including
+  doctrine-dbal and event-dispatcher; keep the one the repository uses; 43 repos have no own exceptions) with
   `Exception/Logical` and `Exception/Runtime`, `Utils`, `Tracy` (panels, with `templates/*.phtml` beside them),
   `Http`, `UI`, `Middleware`, `Mailer`, `Handler`, `Event`, `Command`, `Cache`, `Bridge`/`Bridges` for optional
   integrations.
@@ -266,9 +282,10 @@ Two generations coexist; both pass QA. Choose by repository age:
 	}
 
 	// Promoted (29%; console-extra, doctrine-dbal, crafter, apitte 2025+) — trailing comma, ")" then "{" on new lines
+	// doctrine-*/framex write plain `private`; console-extra/apitte/console write `private readonly`
 	public function __construct(
-		private readonly Container $container,
-		private readonly array $commandMap,
+		private Container $container,
+		private array $commandMap,
 	)
 	{
 	}
@@ -279,11 +296,13 @@ Two generations coexist; both pass QA. Choose by repository age:
 2. Visibility: `private` for state (60–72%), `protected` only in classes designed for subclassing (`CoreDispatcher`,
    `ServiceHandler`, `BasePresenter`), `public` only for Nette Schema config DTOs, request/response entities and
    mapping entities the library reflects (`public int $userId;`).
-3. Promoted parameters are `private readonly` in leaf/value classes, `protected` (no `readonly`) in classes meant
-   to be extended, `public` in DTO/command objects. Never `protected readonly`.
+3. Promoted parameters are plain `private` (152: doctrine-dbal, doctrine-orm, framex) or `private readonly` (141:
+   console-extra, apitte, console) — follow the repository; `protected` (no `readonly`) in classes meant to be
+   extended, `public` in DTO/command objects (crafter). Never `protected readonly`.
 4. Multi-line parameter lists: one parameter per line, one tab deeper, `)` alone on its line at method indent, `{`
-   on the next line. Promoted lists in 2025+ code end with a trailing comma; classic lists usually do not. A single
-   promoted parameter stays on one line: `public function __construct(private readonly Mailer $mailer)`.
+   on the next line. Promoted lists in 2025+ code end with a trailing comma; classic lists usually do not. Promoted
+   constructors are written vertically even with one parameter (97 vs 52 one-line; doctrine-dbal:
+   `public function __construct(` / `private ?bool $debugMode = null` / `)` / `{`).
 5. An empty constructor body is `{` newline `}`; a private constructor with no work carries `// Use self::create()`;
    other intentionally empty methods carry `// Nothing to register`, `// No-op`, `// Override in child`,
    `// Nothing` (an empty body without a comment is a phpcs error).
@@ -291,7 +310,8 @@ Two generations coexist; both pass QA. Choose by repository age:
    `$this->serializer = $serializer ?? new DefaultSerializer();`.
 7. `readonly class` is never used; `readonly` is per property, on promoted params only, never on classic
    declarations.
-8. `new static()` is used together with a class docblock `@phpstan-consistent-constructor`;
+8. When writing `new static()`, add the class docblock `@phpstan-consistent-constructor` (otherwise level 9 reports
+   `new.static`; older repos ignore the error in `phpstan.neon` instead);
    `final public function __construct()` with `// Secured constructor` guards response objects that expose `create()`.
 
 ### 2.6 Types
@@ -307,11 +327,12 @@ Two generations coexist; both pass QA. Choose by repository age:
   returns `static` (PSR-7 `with*`, exceptions' `ExceptionExtra`, framex responses, Nette `DateTime`). Older code
   adds a redundant `@return static` docblock above `: self`; do not add it to new code.
 - Not used in current libraries: enums (0), `readonly class` (0), `never` (0), `#[Override]`, property hooks, typed
-  constants, `final const`, intersection types, named arguments in calls (1 use), first-class callable syntax (2
-  uses). Use constants for fixed sets and `switch`/`if` for dispatch. (Skeleton apps contain one enum; treat enums
+  constants, `final const`, intersection types, first-class callable syntax (5 uses). Named arguments only for
+  boolean/flag parameters of Nette/PHP helpers (`Json::decode($s, forceArrays: true)`, `Neon::encode($c, blockMode:
+  true)`, `mkdir($d, $m, recursive: true)`) and in attributes. Use constants for fixed sets and `switch`/`if` for dispatch. (Skeleton apps contain one enum; treat enums
   as allowed but exceptional.)
-- Attributes used: `#[AsCommand(name: 'nette:cache:purge', description: 'Clear temp folders')]` (multi-line with
-  named args and trailing comma when 2+ args), `#[Inject]` on public presenter properties, `#[Attribute(...)]`
+- Attributes used: `#[AsCommand(name: 'nette:cache:purge', description: 'Clear temp folders')]` (usually broken
+  one argument per line with a trailing comma when it has 2+ args; 30 multi-line vs 19 one-line), `#[Inject]` on public presenter properties, `#[Attribute(...)]`
   on attribute classes, `#[ORM\Column(type: 'string', length: 255, nullable: false)]` on entities (one attribute per
   line, string type names, explicit `nullable`), `#[AsMessageHandler]`, apitte `#[Path('/users')]`,
   `#[Method('GET')]`, `#[RequestParameter(name: 'id', type: 'int', in: 'path')]` (named args beyond the first).
@@ -352,11 +373,12 @@ Docblocks exist only for what native types cannot say. 64% of methods have none.
 4. Class docblocks (17%): tags only — `@property-read stdClass $config` or `@method stdClass getConfig()` on DI
    extensions, `@template`/`@implements`/`@extends`, `@phpstan-type`/`@phpstan-import-type`,
    `@phpstan-consistent-constructor`, `@internal`, `@see <upstream url>`, `@method` (Doctrine repositories),
-   `@mixin BasePresenter` on presenter traits, `@copyright` only when crediting ported code. One-line prose
-   summaries are rare (`File download response from PSR7 stream.`). Never `@author`, `@package`, `@since`,
-   `@version`, `@todo`, `@license` (forbidden by the ruleset).
-5. `@inheritDoc` (this spelling in current code; `{@inheritdoc}` is older) as the whole docblock when an override
-   narrows a return type or implements a framework interface with generics.
+   `@mixin BasePresenter` on presenter traits. One-line prose summaries are rare (`File download response from PSR7
+   stream.`). Never `@author`, `@copyright`, `@created`, `@license`, `@package`, `@since`, `@subpackage`, `@version`,
+   `@todo` (forbidden by the ruleset); credit ported code with `@see <upstream url>`.
+5. `/** {@inheritDoc} */` (doctrine-*, bus, console; 64 uses) or `/** @inheritDoc */` (apitte, api; 28) as the whole
+   docblock when an override narrows a return type or implements a framework interface with generics; follow the
+   repository.
 6. `@throws` is rare (2.4%); used on interface contracts to describe control-flow exceptions.
 7. Inline narrowing: prefer `assert($def instanceof ServiceDefinition);` (doctrine-*, event-dispatcher, apitte);
    `/** @var ServiceDefinition $def */` above the assignment is the older equivalent (messenger, console-extra).
@@ -394,9 +416,11 @@ Docblocks exist only for what native types cannot say. 64% of methods have none.
 1. Guard clauses first (42% of top-level `if`s are guards), happy path last; `else` after a `return`/`throw` is
    avoided (16 occurrences in 1,935 files). `elseif` (never `else if`); `else` is used for genuine two-way
    branches.
-2. **Blank line before `return`, `throw`, `continue`, `break`** (enforced `JumpStatementsSpacing`) unless it is the
-   first statement in the block or directly follows a `//` comment. Blank line after every block (`if`, `foreach`,
-   `try`) before the next statement (enforced). No blank line as the first or last line of a method body.
+2. **Blank line before `return`, `throw`, `continue`** (enforced `JumpStatementsSpacing`) unless it is the first
+   statement in the block; a `//` comment may sit directly above the jump statement, but the blank line then goes
+   above the comment. Blank line after every block (`if`, `foreach`, `try`) before the next statement (enforced). No
+   blank line as the first or last line of a method body. `parent::…()` calls need a blank line before and after
+   unless first/last in the body (enforced).
 3. Strict comparisons only: `=== null`, `!== null`, `=== []`, `!== []`, `=== ''`, `=== true` on booleans from config
    (`if ($busConfig->defaultMiddlewares === true)`), `count($x) === 0`, `in_array($x, $list, true)`. Never `==`,
    Yoda, `empty()`, `is_null()` (forbidden functions: `is_null`, `sizeof`, `join`, `chop`, `key_exists`, `pos`,
@@ -416,7 +440,10 @@ Docblocks exist only for what native types cannot say. 64% of methods have none.
 			) {
    ```
 
-6. `match` is essentially unused; `switch` (37 uses) has a blank line before every `break;` in current code.
+6. `match` is essentially unused; `switch` (37 uses): `break;` is usually glued to the last statement of the case
+   (about 70%); a blank line before it also passes. A two-way `if/else` whose branches are a single `return` or a
+   single assignment to the same variable must be a ternary (enforced `RequireTernaryOperator`); do not assign a
+   variable only to return it (`UselessVariable`); `if (c) { return true; } return false;` is rejected.
 7. Loops: `foreach` (1,012) far above `array_map`/`array_filter` (used only for one-line transforms). Never `for`
    where `foreach` works; `while ($middleware = array_pop($middlewares))` assignment-in-condition is accepted in
    chain builders.
@@ -431,7 +458,10 @@ Docblocks exist only for what native types cannot say. 64% of methods have none.
    third argument.
 10. Casts with a space: `(string) $x`, `(int) $y`, `(array) $values` (enforced); canonical `(int)`/`(bool)`;
     `intval()`/`strval()` only rarely.
-11. Increment `++$i`/`$i++` both fine; `$x += 1` not `$x = $x + 1` (enforced).
+11. Increment/decrement by one is `++$i` / `$i++` / `--$i` (both `$i += 1` and `$i = $i + 1` are phpcs errors on
+    local variables); other steps use combined assignment `$i += 2` (enforced). `self::CONST`, never `static::CONST`
+    (enforced); `$x::class`, never `get_class()` (enforced); strict flag on `in_array`, `array_search`,
+    `array_keys($a, $v, true)`, `base64_decode` (enforced).
 12. Destructuring `[$a, $b] = …` (never `list()`); by-reference parameters and `use (&$x)` are forbidden by the
     ruleset (repositories that need them exclude `DisallowReference`).
 
@@ -441,7 +471,8 @@ Docblocks exist only for what native types cannot say. 64% of methods have none.
    (`"Bus '%s' not found"`, `"I'm info command"`). **Never interpolation** (`"Hello $x"` is a phpcs error: use
    `sprintf`). Values in messages go through `sprintf` with `"%s"` (double quotes inside the single-quoted PHP
    string) — see 2.10. Concatenation ` . ` with one space each side; string literals are never concatenated to each
-   other on one line (enforced). Heredoc is forbidden; nowdoc `<<<'NEON'` is used in tests and `Expect` helpers.
+   other on one line (enforced). Heredoc is not used in practice (a nowdoc is required when nothing is interpolated);
+   nowdoc `<<<'NEON'` is used in tests and `Expect` helpers.
 2. Arrays: `[]` only; single-quoted keys; ` => ` single-spaced, never column-aligned; multi-line arrays have **one
    element per line, the first element on a new line, a trailing comma, and `]` at the parent indent** (enforced,
    100%). Nested arrays follow the same shape.
@@ -477,22 +508,26 @@ src/Exception/Logical/InvalidStateException.php   final class InvalidStateExcept
 src/Exception/Runtime/LocatorFailedException.php  final class LocatorFailedException extends RuntimeException {}
 ```
 
-1. Every library has its own roots `LogicalException` (extends SPL `LogicException`, imported with
-   `use LogicException;`) and `RuntimeException` (extends `\RuntimeException`, fully qualified because the short
-   names collide). The directory is `Exception/` (12 repos; `Exceptions/` in doctrine-dbal, event-dispatcher,
-   event-dispatcher-extra, logging, scheduler — keep whatever the repository already uses). Small libraries throw
-   the two roots directly and may make them `final` (doctrine-dbal, doctrine-orm, event-dispatcher have no leaves);
-   libraries with leaves keep the roots plain (messenger, console, di, nella) or `abstract` (apitte, logging).
-   Leaves live in `Exception/Logical/` and `Exception/Runtime/` (or `Exception/Logic/`), are `final` when
-   library-internal, and have **empty bodies** (86%). Never add a leaf under a `final` root; reuse the root.
+1. Libraries that need their own exceptions (57 of 100) put them in `Exception/` (44 repos) or `Exceptions/` (13:
+   doctrine-dbal, event-dispatcher, event-dispatcher-extra, logging, scheduler, fio, comgate, … — keep whatever the
+   repository already uses). The usual roots are `LogicalException` (40 repos; extends SPL `LogicException`, imported
+   with `use LogicException;` or written `\LogicException`, both pass) and `RuntimeException` (extends
+   `\RuntimeException`, fully qualified because the short names collide); some repos use `LogicException` (bus, fio,
+   mailing) or a single domain root (`ApiException`, `MiddlewareException`). Small libraries throw the two roots
+   directly and may make them `final` (doctrine-dbal, doctrine-orm, event-dispatcher have no leaves); libraries with
+   leaves keep the roots plain (messenger, console, di, nella) or `abstract` (apitte, logging). Leaves live in
+   `Exception/Logical/` and `Exception/Runtime/` (or `Exception/Logic/`); about two thirds have empty bodies, the rest
+   carry static factories; they are plain `class` in most repos and `final` in newer ones (messenger, apitte, di,
+   psr7-http-message). Never add a leaf under a `final` root; reuse the root.
 2. Programmer/config errors → `LogicalException` (or `InvalidStateException`, `InvalidArgumentException` leaves);
    environment/IO/runtime failures → `RuntimeException` leaves. Inside DI extensions, invalid configuration and
    wiring problems throw the library `LogicalException` by default (messenger, doctrine-orm, latte); Nette's
    `ServiceCreationException` / `MissingServiceException` are used when the extension already throws them
    (event-dispatcher, console) or when the problem is a missing/invalid service definition. Match the file you are
    editing. Attribute classes throw the SPL `InvalidArgumentException` imported with `use InvalidArgumentException;`.
-3. Messages: capitalised complete phrase, values quoted with double quotes via `sprintf`, class names via `::class`,
-   trailing period optional (40% have one; be consistent inside a file):
+3. Messages: capitalised complete phrase, values interpolated via `sprintf` — quoted `"%s"` (151: doctrine-*, apitte,
+   bus), bare `%s` (188) or `'%s'` inside a double-quoted string (messenger) —, class names via `::class`, trailing
+   period optional (40% have one; be consistent inside a file):
 
    ```php
    throw new LogicalException(sprintf('Connection "%s" not found', $connectionName));
@@ -502,7 +537,8 @@ src/Exception/Runtime/LocatorFailedException.php  final class LocatorFailedExcep
    throw new InvalidArgumentException('Empty #[Path] given');
    ```
 
-   AGENTS.md rule: "Exception messages must be explicit — tests assert on them."
+   AGENTS.md rule: "Exception messages must be explicit — tests assert on them." Quote style of values (`"%s"` vs
+   bare `%s`) follows the other messages in the same file.
 4. Static factories (messenger, bus, api) when an exception carries data: named after the situation, `sprintf` the
    message, set public typed properties, `return $exception;` after a blank line. Call site: `throw
    BusException::busNotFound($name);`.
@@ -535,7 +571,7 @@ src/Exception/Runtime/LocatorFailedException.php  final class LocatorFailedExcep
 
 ### 2.11 DI extension (the core Contributte artefact)
 
-Canonical skeleton, valid under `contributte/qa`:
+Canonical skeleton (phpcs-clean under `contributte/qa` and phpstan level 9 clean):
 
 ```php
 <?php declare(strict_types = 1);
@@ -573,7 +609,7 @@ class FooExtension extends CompilerExtension
 	public function getConfigSchema(): Schema
 	{
 		$expectService = Expect::anyOf(
-			Expect::string()->required()->assert(static fn (mixed $input): bool => is_string($input) && (str_starts_with($input, '@') || class_exists($input))),
+			Expect::string()->required()->assert(static fn (mixed $input): bool => is_string($input) && (str_starts_with($input, '@') || class_exists($input) || interface_exists($input))),
 			Expect::type(Statement::class)->required(),
 		);
 
@@ -602,7 +638,7 @@ class FooExtension extends CompilerExtension
 			$builder->addDefinition($this->prefix(sprintf('bars.%s', $name)))
 				->setFactory(Bar::class, [$barConfig->options, $barConfig->timeout])
 				->setAutowired($name === 'default')
-				->addTag(self::BAR_TAG, ['name' => $name]);
+				->addTag(self::BAR_TAG, $name);
 		}
 
 		// Register factory
@@ -654,8 +690,9 @@ class FooExtension extends CompilerExtension
 		$builder = $this->getContainerBuilder();
 		$map = [];
 
-		foreach ($builder->findByTag(self::BAR_TAG) as $serviceName => $tag) {
-			$map[$tag['name']] = $serviceName;
+		foreach ($builder->findByTag(self::BAR_TAG) as $serviceName => $tagValue) {
+			assert(is_string($tagValue));
+			$map[$tagValue] = $serviceName;
 		}
 
 		return $map;
@@ -667,15 +704,21 @@ class FooExtension extends CompilerExtension
 Rules and idioms:
 
 1. Name `<Concern>Extension`, in namespace `<Root>\DI`, extending `Nette\DI\CompilerExtension`. Not `final` by default
-   (14 of 45 are; newest ones are). Config is typed through the class docblock: `@property-read stdClass $config`
-   and read as `$this->config` (majority, doctrine-dbal/orm/mail/http/latte/cache) or `@method stdClass getConfig()`
-   with `$this->getConfig()` (console, event-dispatcher). `stdClass` is imported.
+   (30 of 105 are; the reference `DbalExtension`, `OrmExtension`, `MessengerExtension` are not). Config is typed
+   through the class docblock: `@property-read stdClass $config` and read as `$this->config` (majority,
+   doctrine-dbal/orm/mail/http/latte/cache) or `@method stdClass getConfig()` with `$this->getConfig()` (console,
+   event-dispatcher); messenger writes `@property-write`. `stdClass` is imported. Large configs get a
+   `@phpstan-type TConnectionConfig object{…}` shape on the extension, imported in passes with
+   `@phpstan-import-type` and used in `@phpstan-param` (doctrine-dbal `ConnectionPass`) — that is how level 9 stays
+   clean with `stdClass` config.
 2. Hook order in the file is fixed: `getConfigSchema()`, `loadConfiguration()`, `beforeCompile()`,
-   `afterCompile(ClassType $class)`, then private helpers. Hook docblocks are the fixed one-liners `Register
-   services` and `Decorate services`; `afterCompile` usually has none. Extensions without options omit
-   `getConfigSchema()`.
-3. First two lines of every hook body: `$builder = $this->getContainerBuilder();` and `$config = $this->config;`
-   (builder first).
+   `afterCompile(ClassType $class)`, then private helpers (79 of 79 extensions). In the pass-based reference
+   extensions (doctrine-*, messenger) each hook carries the docblock `Register services` / `Decorate services` and
+   only forwards to the passes under `// Trigger passes`; extensions that do the work inline usually have no hook
+   docblock. `afterCompile` has none. Extensions without options omit `getConfigSchema()`.
+3. First lines of a hook body: `$builder = $this->getContainerBuilder();`, then `$config = $this->config;` (or
+   `$this->getConfig()` where the class declares `@method stdClass getConfig()`). Declare only the locals the hook
+   uses; a dispatching hook that only reads `$config` starts with it.
 4. Schema is `Expect::structure([...])` returned inline; defaults as the scalar argument (`Expect::bool(false)`,
    `Expect::int(20)`), `->required()`, `->nullable()`, `->dynamic()` for values that may be `%parameters%`,
    `->castTo('array')` on nested structures consumed as arrays, `->assert(fn, 'message')` for inline validation.
@@ -685,13 +728,17 @@ Rules and idioms:
    (`bool $debugMode`, `bool $cliMode`) passed from NEON as `%debugMode%` / `%consoleMode%`.
 5. Service definitions: `$builder->addDefinition($this->prefix('name'))` followed by chained calls one per line.
    Prefer `setFactory(X::class, [args])` over `setType()`; `setType()` only when there is no factory. Internal
-   services get `->setAutowired(false)` (61 of 70 `setAutowired` calls); only the `default` instance of a
+   services get `->setAutowired(false)` (86 of 94 calls in extensions); only the `default` instance of a
    multi-instance service is autowired (`->setAutowired($name === 'default')`). Ids are literal dotted camelCase
-   (`'bus.container'`, `'transportFactory.inMemory'`) or `sprintf('managers.%s.entityManager', $name)`; never
-   concatenation. References to other services are `$this->prefix('@bus.container')` (the `@` inside `prefix`),
+   (`'bus.container'`, `'transportFactory.inMemory'`); dynamic ids use `sprintf('managers.%s.entityManager', $name)`
+   in the pass-based reference repos (doctrine-*, messenger) and `'x.' . $name` concatenation in older ones
+   (console, console-extra, apitte); follow the repository. References to other services are `$this->prefix('@bus.container')` (the `@` inside `prefix`),
    or `'@container'`, `'@self'`; `Reference` objects are not used. Setup calls with placeholders:
    `->addSetup('?->addEventListener(?, ?)', ['@self', $event, $listener])`.
-6. Tags are `*_TAG` constants; payload is an array (`['name' => $name]`) or a bare string; consumers use
+6. Tags are `*_TAG` constants (22 vs 3 `TAG_*`); the payload is a scalar (usually the instance name), narrowed on read
+   with `assert(is_string($tagValue));` because `findByTag()` returns `array<string, mixed>` (messenger's
+   `(string) $tagValue` cast now fails level 9 with `cast.string`); array payloads exist (24 calls) but must be
+   narrowed (`assert(is_array($tag))`) before offset access. Consumers use
    `$builder->findByTag(self::BAR_TAG)`. Console commands get the literal tag `'console.command'` with the
    command name.
 7. **Two-phase wiring**: register a service with an empty placeholder argument in `loadConfiguration`
@@ -702,17 +749,24 @@ Rules and idioms:
    `getContainerBuilder()`, `getConfig(): stdClass`), instantiated in the extension constructor under
    `// priority 10` comments; a `BuilderMan::of($pass)` helper collects tagged definitions into
    `array<string, string>` maps. `contributte/di` ships this as `PassCompilerExtension`.
-8. **"Service or class" config values are never resolved by hand.** The schema validates the shape
+8. **"Service or class" config values are passed through, not re-implemented.** The schema validates the shape
    (`Expect::string()->assert(static fn (mixed $input): bool => is_string($input) && (str_starts_with($input, '@')
    || class_exists($input) || interface_exists($input)))` or `Expect::anyOf(Expect::string(), Expect::type(Statement::class))`)
-   and the value is passed straight to Nette DI as `new Statement($value)` — the doctrine/messenger helper
+   and the value is handed to Nette DI as `new Statement($value)` — the doctrine/messenger helper
    `SmartStatement::from(mixed $service): Statement` (string → `new Statement($string)`, `Statement` → itself, else
    `throw new LogicalException('Unsupported type of service')`) — or as a factory/setup argument; Nette DI resolves
-   `@name` references and autowires class names itself. No `str_starts_with($x, '@')` + `substr()` +
-   `hasDefinition()` + `getByType()` ladders in extensions (the only `str_starts_with(..., '@')` in the reference
-   repos is inside schema assertions and one serializer-name normaliser). PHPStan level 9 note:
-   `$builder->getByType()` / `getDefinitionByType()` take `class-string`, so pass `Foo::class` literals; dynamic
-   strings go through `Statement`.
+   `@name` references and autowires class names itself. Exception: when the consumer needs a **service name** (lazy
+   wiring such as `LazyListener`, service locators), resolve `@name` with `substr($value, 1)` and let
+   `$builder->getDefinition()` throw Nette's `MissingServiceException`; resolve a class or interface with
+   `$builder->getByType($class)` after the schema assertion proved it exists, narrowed with `/** @var class-string
+   $class */` (messenger `HandlerPass`), failing with `sprintf('Service of type "%s" is needed. Please register it.',
+   $class)`. A `Statement` with arguments becomes the extension's own definition
+   (`$builder->addDefinition($this->prefix(sprintf('listener.%d', $i)))->setFactory($value)->setAutowired(false)`,
+   middlewares). Never unwrap `Statement::getEntity()` of a config value; never guard `getByType()` with
+   `class_exists() ? … : null`. PHPStan level 9: `getByType()`/`getDefinitionByType()` take `class-string`.
+   Validate *shape* in the schema (required keys, `@`-or-class assertions, enums; tests assert the exact
+   `InvalidConfigurationException` message) and *existence/wiring* in `beforeCompile()` (service registered, method
+   exists, tag present). Do not drop a schema assertion to get a library exception instead.
 9. Narrow `Definition` to `ServiceDefinition` with `assert($def instanceof ServiceDefinition);` (current) or
    `/** @var ServiceDefinition $def */` (older). Requirement checks throw Nette's `ServiceCreationException` /
    `MissingServiceException` or the library `LogicalException` with `sprintf('Service of type "%s" is needed.
@@ -725,6 +779,11 @@ Rules and idioms:
     `false` via `Expect::anyOf(false, $schema)->default($schema)`.
 12. Section comments inside hooks label logical blocks: `// Register bus wrapper`, `// EntityManager: enable
     filters`, `// Only default logger is autowired`.
+13. Helpers that hooks delegate to are `private`, placed after the hooks, named after the file's existing scheme
+    (`doBeforeCompile<Thing>()` in event-dispatcher, `compile<Thing>()` in middlewares, `get<Thing>Map()`); a one-line
+    imperative docblock only if the sibling helpers have one; lookup helpers return the `Definition`, not its name.
+14. `addSetup('method', [...])` arguments are a positional list (doctrine-orm `EventPass`); string keys
+    (`'eventName' => …`) appear only in legacy code.
 
 ### 2.12 Library architecture and design habits
 
@@ -788,7 +847,9 @@ config/config.neon + config/local.neon (from local.neon.example)      var/tmp, v
    to pick `config/env/dev.neon` vs `prod.neon`, then `config/local.neon`.
 2. Presenters: `abstract class BasePresenter` (traits, `@property-read TemplateProperty $template` docblock) →
    `SecuredPresenter` / `UnsecuredPresenter` → `final class HomePresenter`. Dependencies via `#[Inject] public
-   Foo $foo;` (one blank line between injected props) or constructor injection; never `@inject` in new code.
+   Foo $foo;` (one blank line between injected props) or constructor injection; older skeletons (webapp,
+   doctrine-extra, payments) still use `/** @var Foo @inject */`; prefer `#[Inject]` in new code. webapp-skeleton
+   nests modules as `UI/Modules/<Module>/<Name>/`.
    Methods `action*`, `render*`, `handle*` (signals), `protected function createComponent*()`, `process*Form`
    callbacks; flash + redirect idiom `$this->flashMessage('Saved'); $this->redirect('this');`; template variables
    assigned dynamically (`$this->template->users = $users;`). No typed `*Template` classes, no `I*Factory`
@@ -876,14 +937,15 @@ require_once __DIR__ . '/../../bootstrap.php';
 // Minimal config
 Toolkit::test(function (): void {
 	$container = ContainerBuilder::of()
-		->withCompiler(static function (Compiler $compiler): void {
+		->withCompiler(function (Compiler $compiler): void {
 			$compiler->addExtension('foo', new FooExtension());
 			$compiler->addConfig(Neonkit::load(<<<'NEON'
 				foo:
 					bars:
 						default:
 							factory: Contributte\Foo\Bar
-			NEON));
+			NEON
+			));
 		})->build();
 
 	Assert::type(Bar::class, $container->getByType(Bar::class));
@@ -892,49 +954,62 @@ Toolkit::test(function (): void {
 
 // Invalid config
 Toolkit::test(function (): void {
-	Assert::exception(static function (): void {
+	Assert::exception(function (): void {
 		ContainerBuilder::of()
-			->withCompiler(static function (Compiler $compiler): void {
+			->withCompiler(function (Compiler $compiler): void {
 				$compiler->addExtension('foo', new FooExtension());
 				$compiler->addConfig(Neonkit::load(<<<'NEON'
 					foo:
 						unknown: 1
-				NEON));
+				NEON
+				));
 			})->build();
-	}, InvalidConfigurationException::class, "Unexpected item 'foo › unknown'.");
+	}, InvalidConfigurationException::class, "Unexpected item 'foo › unknown'.");
 });
 ```
 
-1. Header identical to `src` files; `namespace Tests\Cases\<Dir>;` mirrors the path (present in ~52% of files; the
+1. Header identical to `src` files; `namespace Tests\Cases\<Dir>;` mirrors the path (present in 63% of test files; the
    rest are global; be consistent inside a repository). `use` block alphabetical, then
    `require_once __DIR__ . '/../../bootstrap.php';` **after** the imports, then tests. Test files are phpcs-checked.
 2. Each test is `Toolkit::test(function (): void { … });` preceded by a one-line `// Description` comment (74% of
-   calls) and separated by a blank line. `static function` is chosen per repository (bus, di, monolog, nella); inner
-   callbacks are commonly `static function (Compiler $compiler): void`. No test names, no docblocks, no `@testCase`.
+   calls) and separated by a blank line. Closures are non-static in most repositories (1,371 non-static vs 323 static
+   `Toolkit::test`; 254 vs 113 for `withCompiler`); bus, di, monolog and nella use `static` everywhere, doctrine-dbal
+   only for the inner `withCompiler`. Copy the existing tests of the repository; never mix the two styles in one file.
+   No test names, no docblocks, no `@testCase`.
 3. Assertions: expected first. `Assert::same` / `Assert::equal` split by repository (`equal` for arrays and objects
    in doctrine/bus/middlewares, `same` in messenger/apitte/mail); `Assert::type(Foo::class, $x)` for services;
    `Assert::count`, `Assert::true`/`false`, `Assert::null`, `Assert::contains`;
-   `Assert::exception(callable, Class::class, 'exact message')` (messages asserted verbatim, Nette Schema
-   messages including the `›` glyph; `sprintf` or `~regex~` when parts vary); `Assert::true(true)` as "did not
-   throw". Comments between asserts explain intent.
+   `Assert::exception(callable, Class::class, 'exact message')` (messages asserted verbatim; Nette Schema
+   paths are joined with NBSP`›`NBSP — U+00A0 U+203A U+00A0, not plain spaces — so copy the message from a real
+   failure or use a pattern `'Unexpected item %a%unknown%a%'`; `sprintf` or `~regex~` when parts vary); `Assert::true(true)` as "did not
+   throw". Comments between asserts explain intent. Look up the repository's existing tests first: event-dispatcher
+   and doctrine use `equal` for arrays of events and objects; use `same` only where the repo already does.
 4. Containers are built with `ContainerBuilder::of()->withCompiler(fn)->build()` from `contributte/tester` and
-   inline nowdoc NEON via `Neonkit::load(<<<'NEON' … NEON)`; messenger uses a per-repo `Tests\Toolkit\Container::of()
+   inline nowdoc NEON via `Neonkit::load(<<<'NEON' … NEON)`; the terminator `NEON` and the closing `));` go on separate
+   lines (250 vs 40 glued `NEON));`, the glued form only in console and fileupload). NEON lists of maps: a bare `-` line
+   with the keys nested one tab deeper, or `- key: value` with the first key inline; service references stay unquoted
+   (`service: @foo`). A `// comment` goes above a `/** @var */` narrowing line, never between the two; messenger uses a per-repo `Tests\Toolkit\Container::of()
    ->withDefaults()->withCompiler(…)->build()` with `Helpers::neon()`. Legacy raw `ContainerLoader` + `FileMock`
    with numeric keys is not written anymore. Typical DI assertions: service type, laziness (`isCreated`), counts of
    `findByType`, tags, parameters, exact `InvalidConfigurationException` message.
 5. Narrowing in tests uses `/** @var Foo $x */` above `$container->getByType()` (438 uses) rather than `assert()`.
 6. Fixtures: `final class Dummy*` / `Fake*` / `Foo*` / `Simple*` / `Invalid*` with public properties, `// Nothing`
    or `// For tests` bodies, attributes as in real code; autoloaded via `autoload-dev` `"Tests\\": "tests"`.
+   New fixtures copy the shape of the nearest sibling fixture (same property name and type, same recorded value).
    Hand-written fakes are preferred over Mockery; when Mockery is used: `use Mockery;`, `Mockery::mock(Foo::class)`
    chained one expectation per line (`->once()->with(...)->andReturn(...)`), variables named after the role
-   (`$dispatcher`, not `$mock`), `Toolkit::tearDown(static fn () => Mockery::close());` once per file.
-7. `Tester\TestCase` classes only for data-provider scenarios and multi-step E2E flows: `final class XTest extends
-   TestCase`, `public function testX(): void`, `public function setUp(): void { parent::setUp(); }`,
-   `/** @dataProvider provideCases */` + `public function provideCases(): iterable`, file ends with
-   `(new XTest())->run();`; scenario data in `__files__/*.neon`. Files may be `.php` (`*Test.php`) or `.phpt`.
+   (`$dispatcher`, not `$mock`), `Mockery::close();` at the end of the test closure (25 uses; the
+   `Toolkit::tearDown(static fn () => Mockery::close());` form exists in bus but is rare).
+7. `Toolkit::test()` closures are the default (1,657 calls in 489 files). openapi, apitte, psr7-http-message and
+   datagrid write `Tester\TestCase` classes for plain unit tests too (138 files, `final` in about half):
+   `class XTest extends TestCase`, `public function testX(): void`, `public function setUp(): void {
+   parent::setUp(); }`, `/** @dataProvider provideCases */` + `public function provideCases(): iterable` (12 files),
+   file ends with `(new XTest())->run();`; scenario data in `__files__/*.neon`. Files may be `.php` (`*Test.php`) or
+   `.phpt`. Follow the repository.
 8. Temp files go to `Environment::getTestDir()`; `Environment::skip('MySQL is not running')` for optional
    infrastructure; SQLite `:memory:` for DBAL/ORM E2E tests.
-9. `make tests` = `vendor/bin/tester -s -p php --colors 1 -C tests/Cases`; coverage with `--coverage coverage.xml
+9. Tests for a feature: one happy-path test per supported config form and one exception test per `throw`; do not add
+   config forms whose only tests prove they are rejected. `make tests` = `vendor/bin/tester -s -p php --colors 1 -C tests/Cases`; coverage with `--coverage coverage.xml
    --coverage-src src`. `tests/.gitignore` ignores `*.expected`, `*.actual`, `/tmp`, `/*.log`, `/*.html`. No
    `tests/php.ini`.
 10. PHPUnit appears only in `qa`, `aop`, `forms-bootstrap`, `codeception`: `class XTest extends TestCase`,
@@ -947,8 +1022,9 @@ Toolkit::test(function (): void {
   require, require-dev, [conflict], [suggest], autoload, autoload-dev, minimum-stability, prefer-stable, config,
   extra`. `"license": "MIT"`, `"homepage": "https://github.com/contributte/<repo>"`, one author
   `{"name": "Milan Felix Šulc", "homepage": "https://f3l1x.io"}` (no email), `"php": ">=8.2"` (never a range),
-  full three-part caret versions (`"nette/di": "^3.1.8"`), `~0.x.y` for 0.x Contributte tooling
-  (`"contributte/qa": "~0.4.0"`, `"contributte/tester": "~0.4.0"`, `"contributte/phpstan": "~0.3.0"`),
+  full three-part caret versions (`"nette/di": "^3.1.8"`); Contributte 0.x tooling as `"contributte/qa": "^0.4.0"`
+  (42 repos; `^0.4` 23, `~0.4.0` 29 — messenger/bus switched to `~`), `"contributte/tester": "^0.4.0"`,
+  `"contributte/phpstan": "^0.2.0"`,
   `"mockery/mockery": "^1.6.0"` when needed, `psr-4` only (`"Contributte\\Foo\\": "src"`, dev `"Tests\\": "tests"`),
   `"minimum-stability": "dev"`, `"prefer-stable": true`, `config.sort-packages` and
   `allow-plugins.dealerdirect/phpcodesniffer-composer-installer`, `extra.branch-alias.dev-master: "0.N.x-dev"`.
@@ -966,7 +1042,7 @@ Toolkit::test(function (): void {
 - **.gitattributes**: `export-ignore` for `.docs`, `.editorconfig`, `.gitattributes`, `.gitignore`, `Makefile`,
   `README.md`, `phpstan.neon`, `ruleset.xml`, `tests` (single space, plain list). **.gitignore**: `# IDE /.idea`,
   `# Composer /vendor /composer.lock`, `# Tests /coverage.xml` (+ `/tests/tmp`, `/tests/**/*.actual|expected`).
-- **LICENSE** file (no extension), MIT, `Copyright (c) <year> Contributte`.
+- **LICENSE** file (no extension), MIT, `Copyright (c) <year> Contributte` (`Nettrine` in the doctrine-* repos).
 - **README.md** is a fixed template: heatbadger banner, two `<p align=center>` rows of badgen badges (GitHub checks,
   codecov, packagist dm/v; php, license, gitter, forum, sponsor), the `Website 🚀 … | Contact 👨🏻‍💻 … | Twitter 🐦 …`
   line, `## Usage` (`composer require contributte/foo`), `## Documentation` ("For details on how to use this
@@ -974,15 +1050,19 @@ Toolkit::test(function (): void {
   with `dev` / `stable` rows (`` `^0.7` `` / `` `master` `` / `3.2+` / `` `>=8.2` ``), `## Development` ("See [how
   to contribute](https://contributte.org/contributing.html) to this package." + maintainer avatar), `-----`, and the
   support footer.
-- **.docs/README.md**: `# Contributte <Name>`, one-sentence intro, `## Content` bullet TOC, `## Setup`
+- **.docs/README.md**: `# Contributte <Name>`, one-sentence intro, `## Content` TOC listing `##` sections only, `## Setup`
   (`composer require` in ```` ```bash ```` + `extensions:` registration in ```` ```neon ````), `## Configuration`
   (`### Minimal configuration`, `### Advanced configuration` = annotated NEON tree with `<type>` placeholders and
-  `# optional` comments), `## Usage`, `## Examples`; GitHub alerts `> [!NOTE]` / `> [!TIP]`; user-land PHP examples
+  `# optional` comments; one `### Option` subsection per option with a one-sentence intro, a ```` ```neon ```` block
+  and optional `` - `key` - Description (default: `x`) `` bullets; a new option also extends the `**Default**` block),
+  `## Usage`, `## Examples`; GitHub alerts `> [!NOTE]` / `> [!TIP]`; user-land PHP examples
   shown as `final class`. `.docs` is analysed by phpstan, so PHP fences must be valid.
 - **CI**: four thin callers in `.github/workflows/{tests,phpstan,codesniffer,coverage}.yml` (2-space YAML,
-  double-quoted strings) using `contributte/.github/.github/workflows/<name>.yml@master` with `php: "8.4"`, jobs
-  `test85`, `test84`, `test83`, `test82`, `testlower` (`--prefer-lowest`), weekly cron `"0 8 * * 1"`,
-  `workflow_dispatch`; every workflow runs `make <target>`.
+  double-quoted strings): `codesniffer.yml`/`phpstan.yml` call the same-named reusable workflows in
+  `contributte/.github/.github/workflows/…@master` with `php:` = the repo's minimum (usually `"8.2"`), `tests.yml`
+  calls `nette-tester.yml` with jobs `test85`, `test84`, `test83`, `test82`, `testlower` (`--prefer-lowest`),
+  `coverage.yml` calls `nette-tester-coverage-v2.yml` with `secrets: inherit`; weekly Monday cron (`"0 8 * * 1"`,
+  staggered per repo), `workflow_dispatch`. The reusable workflows run `make <target>`.
 - **Versioning**: single `master` branch; tags `vMAJOR.MINOR.PATCH`; after a release, commit `Composer: open v0.N.x`
   bumping `branch-alias` and the README `dev`/`stable` rows. 0.x minor = BC break.
 - **Commits**: `Area: imperative lowercase phrase`, no period, no body, no emoji, no conventional-commit type.
@@ -991,7 +1071,9 @@ Toolkit::test(function (): void {
   `ManagerRegistry:`). Examples: `Composer: require PHP 8.2`, `Tests: cover more handlers usecases`, `DI: introduce
   passes (no more multiple extensions)`, `Readme: clarify autoconfiguration [#99]`, `Annotations: unlock
   doctrine/annotations v2 [closes #196]`, `Composer: open v0.3.x`, `AI: init`. Issue refs `[#N]` / `[closes #N]` at
-  the end. AI commits are authored as `Contributte AI <ai@f3l1x.io>` and use the same form.
+  the end. Milan's own subjects follow this form about 75% of the time; bot and AI commits in the same repos
+  (`Oh My Felix` with conventional `chore:`, `Contributte AI <ai@f3l1x.io>` with capitalised verbs) are less uniform
+  and are not the model.
 - **AGENTS.md** (messenger, qa; `CLAUDE.md` containing `@AGENTS.md`): sections Stack, Codebase, Architecture, Code
   Style, Testing, Conventions; "Always run `make cs phpstan tests` and fix all errors."
 
@@ -1000,18 +1082,21 @@ Toolkit::test(function (): void {
 - No `declare(strict_types=1)` without spaces; no `declare` on its own line; no closing tag.
 - No `match`, enums, `readonly class`, `never`, `#[Override]`, typed constants, named arguments for ordinary data,
   first-class callable syntax as a habit.
-- No `\Foo` for global classes in code; no `\count()`; no `use function` as a habit; no `use Nette;` root import.
-- No interpolated strings, no `printf`, no positional `%1$s`, no heredoc, no numeric separators, no aligned `=>`.
-- No `==`, `!=`, Yoda, `empty()`, `is_null()`, `else if`, `?:`, `list()`, `array()`, brace-less `if`.
-- No `//` comment glued above a member; no `#` or `/* */` comments; no `@author`, `@package`, `@since`,
+- No `\Foo` for global classes by habit (phpcs allows it); no `\count()`; no `use function` as a habit; no `use Nette;`
+  root import.
+- No interpolated strings, no `printf`, no positional `%1$s`, no heredoc in practice, no numeric separators, no
+  aligned `=>`.
+- No `==`, `!=`, Yoda, `empty()`, `is_null()`, `else if`, `?:`, `list()`, `array()`, brace-less `if`, `$i += 1`,
+  `static::CONST`, `get_class()`, `$x = …; return $x;`, two-way `if/else` that should be a ternary.
+- No `//` comment glued above a member; no `#` or `/* */` comments; no `@author`, `@copyright`, `@package`, `@since`,
   `@version`, `@todo`; no `@return void`; no docblock repeating native types; no multi-line `@var` on properties;
   no `@throws` on ordinary methods; no baseline files.
-- No `final` on entities, DTOs, extensions/passes/services by default; no `Interface`/`Trait` suffix on own types;
-  no `protected readonly`; no `readonly` on classic property declarations.
+- No `final` on entities, DTOs, extensions/passes/services by default; no `Interface`/`Trait` suffix unless the repo
+  opts out of the sniff; no `protected readonly`; no `readonly` on classic property declarations.
 - No `assert()` for input validation; no `else` after `return`/`throw`; no blank line as first/last line of a body;
   no missing blank line before `return`.
 - No test names/docblocks on `Toolkit::test`; no `tests/php.ini`; no committed `expected` outputs; no `$mock`
-  variable names; no PHPUnit in libraries.
+  variable names; no PHPUnit in libraries; no plain spaces around `›` in Nette Schema messages.
 - No `Felixbot`, no trailers, no `Co-Authored-By`, no commit bodies, no `feat:`/`fix:` prefixes.
 
 ---
