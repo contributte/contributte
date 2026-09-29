@@ -320,8 +320,8 @@ ruleset.xml export-ignore
 tests export-ignore
 ```
 
-- Add every other development-only path in the root: `AGENTS.md`, `CLAUDE.md`, `.claude`, `DESIGN.md`, `PRD.md`,
-  `TECH.md`, `fxnorm.yml`, `fxnorm-baseline.json`, `phpunit.xml`, `examples`, `phpstan-*.neon`.
+- Add every other development-only path in the root: `AGENTS.md`, `.claude`, `DESIGN.md`, `PRD.md`, `TECH.md`,
+  `fxnorm.yml`, `fxnorm-baseline.json`, `phpunit.xml`, `examples`, `phpstan-*.neon`.
 - `fxnorm.yml` is written by `fxnorm init` (see [AGENTS.md](AGENTS.md#checking-with-fxnorm)). It configures a
   development tool, so users who install the package don't need it.
 - Remove entries for files that don't exist anymore (most often `.travis.yml`).
