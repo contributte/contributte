@@ -69,7 +69,8 @@ constructor promotion. The guide decides only when the repository is silent.
   `ruleset-8.x.xml` files differ only in `php_version`; all 185 sniffs live in `ruleset.xml`.
 - `phpstan.neon` includes `vendor/contributte/phpstan/phpstan.neon` (phpstan-strict-rules, phpstan-nette,
   deprecation rules), `level: 9` (79 of 100 repos; 8 in apitte/openapi), `phpVersion` = the repo's minimum PHP
-  (80200 for libraries, 80400 for skeletons), paths `src` and `.docs`. 44% of repos carry `ignoreErrors` entries.
+  (80200 for libraries, 80400 for skeletons), paths `src` and (in 78 of 140 repos) `.docs`, which contains no PHP
+  files and so adds nothing; 8 repos also analyse `tests`. 44% of repos carry `ignoreErrors` entries.
 - `make qa` = `make phpstan` + `make cs`; `make csf` auto-fixes; `make tests` runs Nette Tester over `tests/Cases`.
   phpcs runs over `src tests` with `--extensions="php,phpt"` and `-n` (errors only; warnings do not fail CI):
   **test files obey every rule below too.**
@@ -217,8 +218,11 @@ final class Foo extends Bar implements Baz
 - **`final` is not the default.** 25% of classes are `final`. Use `final` for: static utility
   classes (`Helpers`, `Regex`, `Caster`, `Uuid`, `BuilderMan`), DI helpers, decorators/value leaves, and code in the
   newest repositories (console-extra, logging, crafter, jsonrpc). Leave services, DI extensions, passes, presenters,
-  mailers, panels and anything users may extend as plain `class`. Never `final` on Doctrine entities, DTOs or
-  scaffold classes in skeletons. In documentation examples, user-land classes are shown `final`.
+  mailers, panels and anything users may extend as plain `class`. Never `final` on Doctrine entities (proxies need to
+  extend them) or on skeleton scaffold classes. API-client entities and value objects are `final` (gosms, czech-post,
+  reCAPTCHA), unless they extend a shared base (comgate `AbstractEntity`). In documentation examples, follow the
+  `.docs` file you are editing: plain `class` is the majority (108 vs 72 `final class`; presenters 16 vs 8). Never
+  mix both forms in one file.
 - Abstract classes: `Abstract*` (34%: `AbstractPass`, `AbstractEntity`, `AbstractHandler`, `AbstractRepository`) or
   `Base*` (13%: `BasePresenter`, `BaseModule`, `BaseResponse`, `BaseControl`); the rest carry a plain role name
   (`Command`, `Event`, `Plugin`, `JsonController`). Rule of thumb from the code: presenters, controllers, controls,
@@ -248,8 +252,11 @@ final class Foo extends Bar implements Baz
   `Replacus`, `Nella`, `Crafter`, `Framex`.
 - Methods: camelCase; prefixes by frequency `get` (31%), `set` (13%), `add`, `create`, `load`, `is`, `has`, `with`,
   `from`, `to`, `build`, `resolve`, `parse`, `format`, `validate`, `process`, `run`, `execute`, `register`,
-  `configure`. Booleans are `isX()` / `hasX()`, never `getIsX()`. A class with one natural value exposes `get()`;
-  a collection exposes `all()`. DI hook names are fixed (see 2.11). Nette-side hooks: `createComponent*`, `action*`,
+  `configure`. Booleans are `isX()` / `hasX()`, never `getIsX()`. A list owned by an object is `get<Plural>()`
+  (268 methods in 53 repos: `getTags()`, `getHeaders()`, `getItems()`, `getColumns()`; `get()` alone is for a class's
+  single natural value, never a by-id lookup, see 2.13.3). `all()` exists only on keyed
+  bags that also expose `get($key)` / `has($key)` (`AppParams`, `Changeset`; 3 uses in total). Never use `all()` on a
+  component or entity. DI hook names are fixed (see 2.11). Nette-side hooks: `createComponent*`, `action*`,
   `render*`, `handle*`, `startup`, `beforeRender`, `checkRequirements`.
 - Static constructors: `of(...)` wraps given collaborators (`BuilderMan::of($pass)`, `ContainerBuilder::of()`,
   `Kernel::of($configurator)`), `create()` is a no-argument blank instance (`Bootloader::create()`,
@@ -368,8 +375,9 @@ Docblocks exist only for what native types cannot say. 64% of methods have none.
    signatures `callable(ApiRequest): ResponseInterface`.
 3. Layout: description (optional, one line, imperative, no trailing period: `Register services`, `Decorate
    services`, `Update PHP code`, `Log error and generate response`), **one blank ` *` line**, then tags in the order
-   `@see`, `@template`, `@param`…, `@return`, `@throws`. A docblock with a single tag is written on one line
-   (`/** @var Foo[] */`, `/** @internal */`, `/** @phpstan-consistent-constructor */`) — required for properties.
+   `@see`, `@template`, `@param`…, `@return`, `@throws`. A property `@var` with a single tag is one line
+   (`/** @var Foo[] */`, enforced). A method docblock with a single `@param`/`@return` stays multi-line (917 vs 7
+   one-line). Class-level single tags (`/** @internal */`, `/** @phpstan-consistent-constructor */`) are one line.
 4. Class docblocks (17%): tags only — `@property-read stdClass $config` or `@method stdClass getConfig()` on DI
    extensions, `@template`/`@implements`/`@extends`, `@phpstan-type`/`@phpstan-import-type`,
    `@phpstan-consistent-constructor`, `@internal`, `@see <upstream url>`, `@method` (Doctrine repositories),
@@ -519,12 +527,16 @@ src/Exception/Runtime/LocatorFailedException.php  final class LocatorFailedExcep
    `Exception/Logical/` and `Exception/Runtime/` (or `Exception/Logic/`); about two thirds have empty bodies, the rest
    carry static factories; they are plain `class` in most repos and `final` in newer ones (messenger, apitte, di,
    psr7-http-message). Never add a leaf under a `final` root; reuse the root.
+   Small API clients keep a flat `Exception/` with one abstract root and final leaves (gosms
+   `Exception/{RuntimeException,ClientException}.php`).
 2. Programmer/config errors → `LogicalException` (or `InvalidStateException`, `InvalidArgumentException` leaves);
    environment/IO/runtime failures → `RuntimeException` leaves. Inside DI extensions, invalid configuration and
    wiring problems throw the library `LogicalException` by default (messenger, doctrine-orm, latte); Nette's
    `ServiceCreationException` / `MissingServiceException` are used when the extension already throws them
    (event-dispatcher, console) or when the problem is a missing/invalid service definition. Match the file you are
    editing. Attribute classes throw the SPL `InvalidArgumentException` imported with `use InvalidArgumentException;`.
+   So do entities and value objects that reject input, including in libraries that have a `LogicalException`
+   (czech-post `Entity/Cheque.php:86-88`).
 3. Messages: capitalised complete phrase, values interpolated via `sprintf` — quoted `"%s"` (151: doctrine-*, apitte,
    bus), bare `%s` (188) or `'%s'` inside a double-quoted string (messenger) —, class names via `::class`, trailing
    period optional (40% have one; be consistent inside a file):
@@ -538,7 +550,7 @@ src/Exception/Runtime/LocatorFailedException.php  final class LocatorFailedExcep
    ```
 
    AGENTS.md rule: "Exception messages must be explicit — tests assert on them." Quote style of values (`"%s"` vs
-   bare `%s`) follows the other messages in the same file.
+   bare `%s`) follows the other messages in the same file. Integers are bare `%d` (26 vs 2 quoted).
 4. Static factories (messenger, bus, api) when an exception carries data: named after the situation, `sprintf` the
    message, set public typed properties, `return $exception;` after a blank line. Call site: `throw
    BusException::busNotFound($name);`.
@@ -547,7 +559,7 @@ src/Exception/Runtime/LocatorFailedException.php  final class LocatorFailedExcep
    final class ContainerException extends LogicalException
    {
 
-   	public string $service;
+   	public ?string $service = null;
 
    	public static function serviceNotFound(string $id): self
    	{
@@ -559,6 +571,10 @@ src/Exception/Runtime/LocatorFailedException.php  final class LocatorFailedExcep
 
    }
    ```
+
+   Make the data property safe to read: default it (`public ?string $service = null;`) or give the class a private
+   constructor as doctrine-extra `EntityNotFoundException.php:14` does. When a factory wraps another exception, take it
+   typed (`ClientException $previous`) and copy `$previous->getCode()` instead of hardcoding a code.
 
 5. Alternatively the message is built in a constructor that takes the offending value:
    `public function __construct(string $type) { parent::__construct(sprintf('Class "%s" does not exist', $type)); }`.
@@ -795,10 +811,13 @@ Rules and idioms:
   a loop. Pipelines reduce with `foreach ($this->decorators as $decorator) { $request = $decorator->decorate($request); }`.
 - **Static utility classes**: `final class Helpers` / `Regex` / `Caster` / `Uuid`, all `public static`, stateless, no
   private constructor, in namespace `Utils`. `Regex::match()` wraps `preg_match` and returns `null` instead of
-  `false`. Name triples in `Caster`: `xOrNull()`, `ensureX()`, `forceX()`. Getter naming: `get()` for the single
-  value, `all()` for the array.
-- **Value objects**: getter-only classes with promoted private props, `fromArray(array $data): self` +
-  `toArray(): array` symmetry with null-skipping serialization; `__toString()` via `sprintf`. Setters on DTO/entity/
+  `false`. Name triples in `Caster`: `xOrNull()`, `ensureX()`, `forceX()`. Keyed bags: `get($key)` +
+  `has($key)` + `all()`. Everything else uses `get<Plural>()`.
+- **Value objects**: getter-only classes with promoted private props;
+  `fromArray(array $data): self` (typed `@param mixed[] $data`, reads the source keys as they arrive) on objects built
+  *from* external data, `toArray(): array` with null-skipping on objects sent *out*. Add the other direction only when
+  something calls it (cache, persistence). Never assemble an intermediate array just to call your own `fromArray()`.
+  `__toString()` via `sprintf`. Setters on DTO/entity/
   API-client classes return `void`; fluent `return $this` (with `: self`) is reserved for builders and UI components
   (`Datagrid`, `CurlBuilder`, `ChainBuilder::add()`, `Bootloader::use()`); `with*()` means an immutable clone only in
   PSR-7 wrappers (`$new = clone $this; … return $new;`), a mutating fluent setter in response/exception DSLs.
@@ -820,11 +839,76 @@ Rules and idioms:
   narrowing the return type; `/** @inheritDoc */` as the only docblock.
 - **Tracy panels** in `Tracy/` implement `IBarPanel`, keep `templates/*.phtml` next to the class and render with
   `ob_start(); require __DIR__ . '/templates/panel.phtml'; return ob_get_clean();` wrapped in `// phpcs:disable`.
-- **Nette UI components** (`Control` subclasses): `createComponent*()` methods (protected), `render()` sets
-  `$this->template->setFile()` and `->render()`, `handle*()` signals, templates in `templates/` next to the class,
-  `I*Factory` interfaces with `create()` generated by DI (`addFactoryDefinition()->setImplement(...)`).
+- **Nette UI components** (`Control` subclasses in 8 libraries: ui, paginator-control, menu-control, datagrid, social,
+  application, oauth2-client, newrelic). `createComponent*()` methods are protected, `handle*()` are signals. Recipe,
+  from `ui/src/Paginator`:
+
+  ```
+  src/<Feature>/<Feature>Control.php          class, extends Nette\Application\UI\Control (plain `class`;
+                                              menu-control's MenuComponent is the only `final` one)
+  src/<Feature>/<Feature>ControlFactory.php   interface <Feature>ControlFactory { public function create(…): <Feature>Control; }
+  src/<Feature>/Template/bootstrap5.latte     default template; more files named after the CSS framework (bootstrap4, tailwind2)
+  ```
+
+  - Template directory: follow the repository. Measured: `templates/` (datagrid ×2 controls, menu-control),
+    `Template/` (ui), `Examples/` (paginator-control), file next to the class (oauth2-client `GenericAuthControl.latte`,
+    social `Script/script.latte`). In a new repository use `templates/`.
+  - The default template path is a property, `private string $templateFile = __DIR__ . '/Template/bootstrap5.latte';`,
+    with `public function setTemplateFile(string $file): void` (ui, paginator-control, DatagridPaginator). Only
+    `Datagrid` returns `self`.
+  - `render(): void` is `$template = $this->getTemplate(); $template->setFile($this->templateFile);
+    $template->foo = …;`, blank line, `$template->render();`. Data is passed as dynamic template properties. No typed
+    `*Template` classes.
+  - Links are generated by the caller (`$this->link()` in the presenter) and passed in as strings, or with `n:href` for
+    the control's own signals (`handle*()`), which then needs a presenter.
+  - Factories: 0 of 4 Control factories use the `I` prefix. Two are **interfaces without prefix**
+    (`ui/src/Paginator/PaginatorControlFactory.php`, `paginator-control/src/PaginatorControlFactory.php`) that the user
+    registers as `- Vendor\Pkg\<Feature>ControlFactory` in NEON (or the library's extension loads a
+    `config/common.neon` that does). Two are **hand-written `final class`** factories with injected services
+    (`menu-control` `MenuComponentFactory::create(string $name)`, `newrelic` `RUMControlFactory::createHeader()`). Use
+    an interface when all arguments come from the caller, and a class when the factory needs container services.
+    `addFactoryDefinition()->setImplement()` is used for form and message factories (`forms` `IApplicationFormFactory`,
+    `mail` `IMessageFactory`, `utils` `IDateTimeFactory`), never for Controls.
+  - Accessors on the control follow 2.4 (`get<Plural>()` for its list), and `add<Thing>(): self` when the control is
+    configured in `createComponent*()`.
+  - Latte templates in libraries: tabs, n:attributes (`n:if`, `n:foreach`, `n:class`, `n:href`), Bootstrap class names
+    verbatim from the Bootstrap docs, the root element guarded with `n:if` so an empty control renders nothing, and a
+    conditional attribute written inside the tag as `{if $cond}aria-current="page"{/if}` (ui, paginator-control ×2; no
+    `n:attr` for single attributes). Auto-escaping is relied on; no `|noescape`. `{varType}` only when the repository
+    already uses it (menu-control).
 - **Whimsy and terseness**: short class names (`Nella`, `Expecto`, `BuilderMan`), short variable names, methods of
   4–10 lines (median 6), files of 30–60 lines (median 35).
+
+#### 2.12.1 API clients (gosms, comgate, czech-post, fio)
+
+- Layout: one transport class in `Http/` over PSR-18 `ClientInterface` + `RequestFactoryInterface` (gosms
+  `Http/Client.php:18-23`) or Guzzle (comgate `Http/HttpClient.php:15`); an endpoint mapper (`Api/`, `Gateway/`,
+  `Requestor/`); a user-facing facade in `Client/` or `*Service`; data classes in `Entity/` (comgate adds
+  `Entity/Response/`, `Entity/Codes/` for status constants).
+- One method per endpoint named after it (`messageDetail()` → facade `detail()`); path ids stay scalar
+  (`string $id`, `sprintf('%s/%d', self::BASE_MESSAGE_URL, $id)`). A request object only for a request body
+  (gosms `Message implements JsonSerializable`, comgate `Payment::toArray()`).
+- Entities are `final`, getter-only (gosms `Entity/AccessToken.php:8`, czech-post `Entity/State.php:7`); open only
+  when they extend a base (comgate `AbstractEntity`). Outgoing ones serialise (`toArray()`/`jsonSerialize()`);
+  incoming ones are built from the decoded payload with `new Entity($data->a, …)` (gosms
+  `Auth/AccessTokenProvider.php:24-30`) or `fromArray(array $data)` reading the *wire* keys, `@param mixed[] $data`
+  (czech-post `Entity/State.php:22-39`; 55 of 57 `fromArray` in the corpus). No `toArray()` nobody calls; a shape
+  alias mirrors the wire (`reCAPTCHA/src/ReCaptchaResponse.php:5-13`).
+- Response shape is checked before use; a missing field throws the library runtime exception with an explicit
+  message (czech-post `ParcelHistoryRequestor.php:82-88`, comgate `AbstractResponseEntity.php:55-60`). Never let a
+  warning or `TypeError` escape from a mapped `stdClass` (phpstan level 9 does not see implicit mixed).
+- HTTP errors: one transport exception for every unexpected status, status as the exception code (gosms
+  `Http/Client.php:72-74`, czech-post `Runtime/ResponseException.php`, fio `HttpStatusException::fromStatusCode()`).
+  No per-resource `*NotFoundException` for 404 and no `null` returns; callers branch on `$e->getCode()`. Invalid
+  input in an entity throws SPL `InvalidArgumentException` (czech-post `Entity/Cheque.php:86-88`).
+- Tests never hit the network except an `E2E/` test skipped without credentials (gosms `E2E/SendSmsTest.phpt:25-29`).
+  Stub the transport with Guzzle `MockHandler` + `Middleware::history()` (comgate `Gateway/PaymentService.phpt:30-50`),
+  a spy fake (fio `tests/Toolkit/SpyHttpClient.php`) or `Mockery::mock(ClientInterface::class)` returning
+  `new Response(…)` (gosms `Auth/AccessTokenClient.phpt:16-18`); assert method, URI and headers with `Assert::same`
+  one per line, never through a boolean `withArgs` chain.
+- Docs: under `## Usage` list facade methods as `` - `name(args)` - [Title](upstream anchor) `` (gosms
+  `.docs/README.md:85-91`, fio `:143-147`); a new method gets a `### <Name>` with a one-line intro and one example
+  (comgate `### Status`); failure modes stay in one sentence or one `### Errors` section (czech-post `:50-53`).
 
 ### 2.13 Application code (skeletons)
 
@@ -846,7 +930,10 @@ config/config.neon + config/local.neon (from local.neon.example)      var/tmp, v
    `addStaticParameters(['rootDir' => …, 'appDir' => …, 'wwwDir' => …])`, `getenv('NETTE_ENV', true) === 'dev'`
    to pick `config/env/dev.neon` vs `prod.neon`, then `config/local.neon`.
 2. Presenters: `abstract class BasePresenter` (traits, `@property-read TemplateProperty $template` docblock) →
-   `SecuredPresenter` / `UnsecuredPresenter` → `final class HomePresenter`. Dependencies via `#[Inject] public
+   `SecuredPresenter` / `UnsecuredPresenter` → `class HomePresenter` (plain, as in 2.4: 26 presenters in 17 skeleton
+   repos, including every Nella `UI/<Name>/` skeleton except datagrid; `final` only in datagrid-skeleton, gui, vite,
+   micro and webapp's Front/Admin modules). Copy the sibling presenter. A presenter with a constructor calls
+   `parent::__construct();` first. Dependencies via `#[Inject] public
    Foo $foo;` (one blank line between injected props) or constructor injection; older skeletons (webapp,
    doctrine-extra, payments) still use `/** @var Foo @inject */`; prefer `#[Inject]` in new code. webapp-skeleton
    nests modules as `UI/Modules/<Module>/<Name>/`.
@@ -855,14 +942,29 @@ config/config.neon + config/local.neon (from local.neon.example)      var/tmp, v
    assigned dynamically (`$this->template->users = $users;`). No typed `*Template` classes, no `I*Factory`
    component factories in skeletons.
 3. Doctrine entities: plain `class` (never final), `#[ORM\Entity(repositoryClass: UserRepository::class)]`,
-   `#[ORM\Table(name: '`user`')]`, one attribute per line, `#[ORM\Column(type: 'string', length: 255, nullable:
-   false)]` with string type names, `private` typed properties with `?T = null`, traits `TId`, `TCreatedAt`,
-   `TUpdatedAt`, constructor takes required fields and sets defaults, domain mutators named by intent
+   `#[ORM\Table(name: '`user`')]`, one attribute per line, `#[ORM\Column(type: 'string')]` terse in doctrine-skeleton,
+   doctrine-project, doctrine-extra-skeleton and demo-typesense; verbose `type, length: 255, nullable: false` in apitte-,
+   ddd- and webapp-skeleton (follow the repo's existing entity). `private` typed properties with `?T = null`. Ids and
+   timestamps are either plain properties set in the constructor (doctrine-skeleton `User`), or traits with the entity
+   extending `AbstractEntity`. The traits are app-defined `App\Model\Database\Entity\{TId,TCreatedAt,TUpdatedAt}` +
+   `AbstractEntity` (apitte, webapp), or `Nettrine\Extra\Entity\{TGeneratedId,TCreatedAt}` + `AbstractEntity` (ddd);
+   `TId` exists only as an app-defined trait. Never traits without `AbstractEntity`. `TCreatedAt`/`TUpdatedAt` use
+   `#[ORM\PrePersist]`/`#[ORM\PreUpdate]`, so the entity **must** carry `#[ORM\HasLifecycleCallbacks]` (3 of 3 entities
+   with such callbacks do). Do not use `nettrine/extra`'s `TUpdatedAt` (^0.2 declares `nullable: false` on a null
+   default). The constructor takes required fields and sets defaults, domain mutators named by intent
    (`activate()`, `block()`, `changeUsername()`, `rename()`), simple `getX()`/`setX(): void`, `isActivated(): bool`.
    Repositories `final class UserRepository extends AbstractRepository` with `/** @extends AbstractRepository<User> */`,
    custom finders `findOneByEmail()`; `EntityManagerDecorator` extends Doctrine's decorator.
-4. Facades `<Plural>Facade` / `<Verb><Noun>Facade` hold `$em` and return DTOs (`UserResDto::from($entity)`); commands
-   and handlers under `App\Domain\<Aggregate>` (`#[AsMessageHandler] final class CreateUserHandler`, `__invoke`).
+   Lookup vocabulary: `find($id)` / `findOneBy()` return `?Entity` (Doctrine). `fetch($id)` / `fetchBy($criteria)` throw
+   `EntityNotFoundException` (inherited from `Nettrine\Extra\Repository\AbstractRepository`; doctrine-extra-skeleton
+   `TRepositoryExtra`). Use them instead of writing a throwing `get()` and a per-entity not-found exception. `get(int
+   $id)` does not occur.
+4. Facades: `<Plural>Facade` for a facade with several operations on one aggregate (`UsersFacade`, apitte-skeleton);
+   `<Verb><Noun>Facade` for a single use case (`CreateUserFacade`, webapp-skeleton). Singular `UserFacade` appears only
+   in library README examples. They hold only `$em` (or `EntityManagerDecorator`) and reach repositories via
+   `getRepository()`; by-id lookups that must succeed use `fetch()` (item 3). API facades return response DTOs for reads
+   (`UserResDto::from($entity)`); Latte apps, and `create()` everywhere, return entities. Commands and handlers live
+   under `App\Domain\<Aggregate>` (`#[AsMessageHandler] final class CreateUserHandler`, `__invoke`).
 5. Console commands: `#[AsCommand(name: self::NAME)] final class InfoCommand extends Command` with `public const NAME
    = 'app:info';`, `configure()` (`setName`, `setDescription`), `execute(InputInterface $input, OutputInterface
    $output): int` returning `0`.
@@ -870,19 +972,27 @@ config/config.neon + config/local.neon (from local.neon.example)      var/tmp, v
    PascalCase constants (`self::IdentityNotFound`); `SecurityUser extends Nette\Security\User` registered as
    `security.user`; `Identity extends SimpleIdentity`.
 7. Exceptions in apps mirror libraries: `App\Model\Exception\{LogicException,RuntimeException}` roots →
-   `Logic\*`, `Runtime\*` final leaves.
+   `Logic\*`, `Runtime\*` final leaves (apitte-skeleton, webapp-skeleton: 2 of 2 apps with leaves). Libraries use
+   `Exception/Logical/` (12 repos vs 5 with `Logic/`, see 2.10). doctrine-skeleton names the root `LogicalException` (no
+   leaves). Keep the repo's root name, and put leaves in `Logic/` (apps) next to `Runtime/`. Entity-not-found is a
+   Runtime leaf; prefer nettrine/extra's `Runtime\EntityNotFoundException` via `fetch()` over a new class.
 8. NEON (tabs; `# ====` banner comments in Nella-era configs; section order `php` → `parameters` → `extensions` →
    extension blocks → `services`): services as anonymous list entries `- App\Domain\User\CreateUserFacade`, named only
    when overriding framework services (`security.user: App\Model\Security\SecurityUser`, `router: … factory:
    @App\Model\Router\RouterFactory::create`); extension keys dotted with vendor (`nettrine.dbal`, `contributte.console`)
    in new skeletons, short (`console`, `monolog`) in older ones; parameters `%appDir%`, `%tempDir%`, `%debugMode%`,
-   `%consoleMode%`; constants via `::constant(Foo::BAR)`.
+   `%consoleMode%`; constants via `::constant(Foo::BAR)`. ORM mapping: one `attributes` block covering the whole domain
+   (`App\Domain: { type: attributes, directories: [%appDir%/Domain], namespace: App\Domain }`: apitte, ddd, messenger).
+   Widen the existing block for a new aggregate instead of adding one per folder, and map an entity only into the
+   managers that use it (never a second manager by default). Migrations are part of an entity PR: a new entity ships
+   with a migration for every manager it is mapped into.
 9. Latte: `@layout.latte`, `{block #content}` in f3l1x scaffolds (`{block content}` in community demos),
    `{include #content}`, `{block #title|striptags}…{/}`, n:attributes over tag pairs (`n:if`, `n:href`, `n:class`,
    `n:inner-foreach`, `n:name`), `{=date(Y)}`, `{$basePath}`, loop variable `$_user`; tabs.
 10. Root files: `Makefile` with `#####` banner sections (`PROJECT`, `DEVELOPMENT`, `DOCKER`, `DEPLOYMENT`) and
     targets `project init install setup clean qa cs csf phpstan tests coverage dev build docker-up deploy`
-    (`qa: cs phpstan`, `dev: NETTE_DEBUG=1 NETTE_ENV=dev php -S 0.0.0.0:8000 -t www`); `ruleset.xml` extending
+    (`qa: cs phpstan`, `dev: NETTE_DEBUG=1 NETTE_ENV=dev php -S 0.0.0.0:8000 -t www`; port 8000 in 20 of 21
+    skeletons with a `dev` target); `ruleset.xml` extending
     `ruleset-8.4.xml` with `app => App`, `tests => Tests`; `phpstan.neon` level 9, paths `app`, `bin`, `tmpDir:
     %currentWorkingDirectory%/var/tmp/phpstan`; `docker-compose.yml` with `dockette/web:php-84`, `postgres:15`,
     credentials `contributte/contributte`; workflows call `contributte/.github` with `make: "init tests"`.
@@ -976,6 +1086,11 @@ Toolkit::test(function (): void {
    `Toolkit::test`; 254 vs 113 for `withCompiler`); bus, di, monolog and nella use `static` everywhere, doctrine-dbal
    only for the inner `withCompiler`. Copy the existing tests of the repository; never mix the two styles in one file.
    No test names, no docblocks, no `@testCase`.
+   Shared setup inside one `.phpt` is a top-level named `function` (20 files in 11 repos: application, messenger,
+   validator, mail, imap, image-storage, forms-multiplier, apitte, apitte-core, fio, nusoap), not a closure in a
+   variable (1 file, redis). It is named `create<Thing>()` (17 of 40), `get<Thing>()`, `initialize<Thing>()`, typed,
+   and placed after `require_once` and before the first `Toolkit::test()` (13 of 20; the rest put it at the end of the
+   file). A helper needed by more than one file moves to `tests/Toolkit/` or `tests/Fixtures/` as a class.
 3. Assertions: expected first. `Assert::same` / `Assert::equal` split by repository (`equal` for arrays and objects
    in doctrine/bus/middlewares, `same` in messenger/apitte/mail); `Assert::type(Foo::class, $x)` for services;
    `Assert::count`, `Assert::true`/`false`, `Assert::null`, `Assert::contains`;
@@ -983,7 +1098,9 @@ Toolkit::test(function (): void {
    paths are joined with NBSP`›`NBSP — U+00A0 U+203A U+00A0, not plain spaces — so copy the message from a real
    failure or use a pattern `'Unexpected item %a%unknown%a%'`; `sprintf` or `~regex~` when parts vary); `Assert::true(true)` as "did not
    throw". Comments between asserts explain intent. Look up the repository's existing tests first: event-dispatcher
-   and doctrine use `equal` for arrays of events and objects; use `same` only where the repo already does.
+   and doctrine use `equal` for arrays of events and objects. In `equal` repos, `same` is still the choice for instance
+   identity (`Assert::same($listener, $resolved)` doctrine-orm; `Assert::same($em->getRepository(…), …)`
+   doctrine-extra-skeleton) and `equal` for scalars and arrays.
 4. Containers are built with `ContainerBuilder::of()->withCompiler(fn)->build()` from `contributte/tester` and
    inline nowdoc NEON via `Neonkit::load(<<<'NEON' … NEON)`; the terminator `NEON` and the closing `));` go on separate
    lines (250 vs 40 glued `NEON));`, the glued form only in console and fileupload). NEON lists of maps: a bare `-` line
@@ -996,25 +1113,125 @@ Toolkit::test(function (): void {
 6. Fixtures: `final class Dummy*` / `Fake*` / `Foo*` / `Simple*` / `Invalid*` with public properties, `// Nothing`
    or `// For tests` bodies, attributes as in real code; autoloaded via `autoload-dev` `"Tests\\": "tests"`.
    New fixtures copy the shape of the nearest sibling fixture (same property name and type, same recorded value).
-   Hand-written fakes are preferred over Mockery; when Mockery is used: `use Mockery;`, `Mockery::mock(Foo::class)`
-   chained one expectation per line (`->once()->with(...)->andReturn(...)`), variables named after the role
-   (`$dispatcher`, not `$mock`), `Mockery::close();` at the end of the test closure (25 uses; the
-   `Toolkit::tearDown(static fn () => Mockery::close());` form exists in bus but is rare).
+   Fakes and Mockery are both common (95 test files mock with Mockery; fio and thepay also keep spies and stubs). Copy
+   what the repository uses. With Mockery: `use Mockery;`, `Mockery::mock(Foo::class)` chained one expectation per line
+   (`->once()->with(...)->andReturn(...)`), variables named after the role (`$dispatcher`, not `$mock`).
+   `Mockery::close()` is what verifies `once()`/`times()`, so write it as the last statement of every test that sets a
+   count expectation and nowhere else (gosms, mailing omit it when no count is set). To inspect an argument, use
+   `->andReturnUsing(function (Foo $x): Bar { Assert::same(…); return …; })` so a failure names the field. A
+   `withArgs` predicate stays single-line (mailing `MailBuilder.phpt:30`). `Assert::exception()` returns the
+   exception; inspect its properties directly. In `TestCase` classes: `protected function tearDown(): void {
+   Mockery::close(); }` (datagrid, menu-control, paginator-control: 5 of 5; paginator-control calls `parent::tearDown();`
+   first). Skeleton suites use no Mockery; prefer a real in-memory EM (item 8) over mocking `EntityManagerInterface`.
 7. `Toolkit::test()` closures are the default (1,657 calls in 489 files). openapi, apitte, psr7-http-message and
    datagrid write `Tester\TestCase` classes for plain unit tests too (138 files, `final` in about half):
    `class XTest extends TestCase`, `public function testX(): void`, `public function setUp(): void {
    parent::setUp(); }`, `/** @dataProvider provideCases */` + `public function provideCases(): iterable` (12 files),
    file ends with `(new XTest())->run();`; scenario data in `__files__/*.neon`. Files may be `.php` (`*Test.php`) or
    `.phpt`. Follow the repository.
-8. Temp files go to `Environment::getTestDir()`; `Environment::skip('MySQL is not running')` for optional
-   infrastructure; SQLite `:memory:` for DBAL/ORM E2E tests.
+   Skeletons: `E2E/Container/EntrypointTest` is the one boilerplate `TestCase` class (16 skeletons). Other tests are
+   `Toolkit::test` (messenger-skeleton, webapp-skeleton `Unit/`), except doctrine-skeleton `Unit/`, which uses `TestCase`
+   classes. Follow the directory.
+8. Temp files go to `Environment::getTestDir()` from **`Contributte\Tester\Environment`**
+   (`use Contributte\Tester\Environment;`, imported in all 86 test files that call it). It is `tests/tmp/<pid>`,
+   created by `Environment::setup()` in `tests/bootstrap.php`. `Tester\Environment` (nette/tester) has no
+   `getTestDir()`. In a global-namespace `.phpt` an unimported `Environment::` passes phpcs and fails only at runtime.
+   `Environment::skip('MySQL is not running')` exists on both classes; import the Contributte one.
+   DBAL/ORM E2E tests use in-memory SQLite (shape from doctrine-orm `tests/Cases/E2E/QueryTest.phpt`):
+
+   ```php
+   // Facade against in-memory SQLite
+   Toolkit::test(function (): void {
+   	$container = ContainerBuilder::of()
+   		->withCompiler(function (Compiler $compiler): void {
+   			$compiler->addExtension('nettrine.dbal', new DbalExtension());
+   			$compiler->addExtension('nettrine.orm', new OrmExtension());
+   			$compiler->addConfig(Neonkit::load(<<<'NEON'
+   				nettrine.dbal:
+   					connections:
+   						default:
+   							driver: pdo_sqlite
+   							path: ":memory:"
+   				nettrine.orm:
+   					managers:
+   						default:
+   							connection: default
+   							lazyNativeObjects: true
+   							mapping:
+   								App:
+   									type: attributes
+   									directories: [%appDir%/Domain]
+   									namespace: App\Domain
+   				services:
+   					- App\Domain\Article\ArticlesFacade
+   			NEON
+   			));
+   			$compiler->addConfig([
+   				'parameters' => [
+   					'tempDir' => Environment::getTestDir(),
+   					'appDir' => Tests::APP_PATH,
+   				],
+   			]);
+   		})
+   		->build();
+
+   	/** @var EntityManagerInterface $em */
+   	$em = $container->getByType(EntityManagerInterface::class);
+   	(new SchemaTool($em))->createSchema($em->getMetadataFactory()->getAllMetadata());
+
+   	/** @var ArticlesFacade $facade */
+   	$facade = $container->getByType(ArticlesFacade::class);
+   	…
+   });
+   ```
+
+   `lazyNativeObjects: true` is required on PHP 8.4 without symfony/var-exporter (otherwise "Symfony LazyGhost is not
+   available"). Do not hand-build `Doctrine\ORM\Configuration` / `ORMSetup` (the latter needs symfony/cache). Skeleton
+   `Bootstrap::boot()->addConfig()` cannot swap the connection to SQLite (merged `port`/`host` keys fail the pdo_sqlite
+   schema), so build a dedicated container.
 9. Tests for a feature: one happy-path test per supported config form and one exception test per `throw`; do not add
-   config forms whose only tests prove they are rejected. `make tests` = `vendor/bin/tester -s -p php --colors 1 -C tests/Cases`; coverage with `--coverage coverage.xml
-   --coverage-src src`. `tests/.gitignore` ignores `*.expected`, `*.actual`, `/tmp`, `/*.log`, `/*.html`. No
+   config forms whose only tests prove they are rejected. `make tests` =
+   `vendor/bin/tester -s -p php --colors 1 -C tests/Cases` (skeletons run `-C tests`: 17 of 18); coverage with
+   `--coverage coverage.xml --coverage-src src`. `tests/.gitignore` ignores `*.expected`, `*.actual`, `/tmp`, `/*.log`,
+   `/*.html`. No
    `tests/php.ini`.
 10. PHPUnit appears only in `qa`, `aop`, `forms-bootstrap`, `codeception`: `class XTest extends TestCase`,
     `testX(): void`, static `self::assertSame()`, `#[DataProvider('provideX')]` + `public static function
     provideX(): Generator`.
+11. Rendering a `Control` in a test without a presenter. `Control::getTemplate()` needs a `TemplateFactory`. Give it
+    the real `Nette\Bridges\ApplicationLatte\TemplateFactory` backed by a trivial `LatteFactory` fixture
+    (`forms-wizard/tests/Fixtures/DummyLatteFactory.php`, `ui/tests/Fixtures/FakeLatteFactory.php`), then capture
+    output with `ob_start()` (`application/tests/Cases/UI/NullControl.phpt`, `ui/tests/Cases/Bundler/Vite.phpt`):
+
+    ```php
+    // tests/Fixtures/FakeLatteFactory.php
+    final class FakeLatteFactory implements LatteFactory
+    {
+
+    	public function create(?Control $control = null): Engine
+    	{
+    		return new Engine();
+    	}
+
+    }
+
+    // tests/Cases/<Feature>/<Feature>.phpt
+    function renderControl(Control $control): string
+    {
+    	$control->setTemplateFactory(new TemplateFactory(new FakeLatteFactory()));
+
+    	ob_start();
+    	$control->render();
+
+    	return (string) ob_get_clean();
+    }
+    ```
+
+    Assert with `Assert::contains()` / `Assert::match()` on the HTML. Every assertion must be able to fail. Templates
+    that use `n:href`/`{link}` need a presenter: build one as in `forms-wizard/tests/Fixtures/WizardPresenterFactory.php`
+    (`injectPrimary(…, $templateFactory)`). Do not mock `Template` with Mockery to check only which variables were
+    assigned (the older `paginator-control` / `datagrid` style); render real HTML. Custom-template fixtures are
+    committed files under `tests/Fixtures/Files/`, not written at runtime.
 
 ### 2.15 Repository conventions
 
@@ -1050,13 +1267,21 @@ Toolkit::test(function (): void {
   with `dev` / `stable` rows (`` `^0.7` `` / `` `master` `` / `3.2+` / `` `>=8.2` ``), `## Development` ("See [how
   to contribute](https://contributte.org/contributing.html) to this package." + maintainer avatar), `-----`, and the
   support footer.
-- **.docs/README.md**: `# Contributte <Name>`, one-sentence intro, `## Content` TOC listing `##` sections only, `## Setup`
+- **.docs/README.md**: `# Contributte <Name>`, one-sentence intro, `## Content` TOC of `##` sections, optionally with
+  their `###` children indented (gosms, czech-post); a new `###` is added to the TOC only if its siblings are listed,
+  `## Setup`
   (`composer require` in ```` ```bash ```` + `extensions:` registration in ```` ```neon ````), `## Configuration`
   (`### Minimal configuration`, `### Advanced configuration` = annotated NEON tree with `<type>` placeholders and
   `# optional` comments; one `### Option` subsection per option with a one-sentence intro, a ```` ```neon ```` block
   and optional `` - `key` - Description (default: `x`) `` bullets; a new option also extends the `**Default**` block),
   `## Usage`, `## Examples`; GitHub alerts `> [!NOTE]` / `> [!TIP]`; user-land PHP examples
-  shown as `final class`. `.docs` is analysed by phpstan, so PHP fences must be valid.
+  follow the `.docs` file being edited (see `final` in 2.4); client-method sections follow the Docs bullet in 2.12.1.
+  `phpstan.neon` lists `.docs` under `paths` in 78 of 140 repos, but `fileExtensions` is `php` (90), `php, phpt` (21)
+  or unset (29, which defaults to `php`), and no repository keeps `.php` files in `.docs`. **No tool checks Markdown
+  fences**, and the `.docs` path is a no-op kept for symmetry. Keep PHP fences syntactically valid by hand. For a
+  library without a DI extension (UI controls, Latte helpers), use per-feature sections `### <Feature>` under
+  `## Usage` with "Register the factory" (NEON) / "Use in presenter" (PHP) / "Render in template" (Latte) /
+  "Custom template" instead of `## Setup` + `## Configuration` (`ui/.docs/README.md`).
 - **CI**: four thin callers in `.github/workflows/{tests,phpstan,codesniffer,coverage}.yml` (2-space YAML,
   double-quoted strings): `codesniffer.yml`/`phpstan.yml` call the same-named reusable workflows in
   `contributte/.github/.github/workflows/…@master` with `php:` = the repo's minimum (usually `"8.2"`), `tests.yml`
@@ -1091,8 +1316,9 @@ Toolkit::test(function (): void {
 - No `//` comment glued above a member; no `#` or `/* */` comments; no `@author`, `@copyright`, `@package`, `@since`,
   `@version`, `@todo`; no `@return void`; no docblock repeating native types; no multi-line `@var` on properties;
   no `@throws` on ordinary methods; no baseline files.
-- No `final` on entities, DTOs, extensions/passes/services by default; no `Interface`/`Trait` suffix unless the repo
-  opts out of the sniff; no `protected readonly`; no `readonly` on classic property declarations.
+- No `final` on Doctrine entities, skeleton DTOs, presenters, extensions/passes/services by default; no `Interface`/`Trait`
+  suffix unless the repo opts out of the sniff; no `protected readonly`; no `readonly` on classic property
+  declarations.
 - No `assert()` for input validation; no `else` after `return`/`throw`; no blank line as first/last line of a body;
   no missing blank line before `return`.
 - No test names/docblocks on `Toolkit::test`; no `tests/php.ini`; no committed `expected` outputs; no `$mock`
@@ -1824,7 +2050,8 @@ test('missing key throws', function () use ($arr) {
    between members; magic methods last; imports alphabetical and complete (global classes imported).
 3. Native types everywhere; docblocks only for generics/shapes; `?T`; `: void`; `: self` for fluent methods.
 4. `sprintf('… "%s" …', $x)` messages; guard clauses; blank line before `return`; strict comparisons; `??`.
-5. Exceptions in `Exception/Logical|Runtime`, roots `LogicalException`/`RuntimeException`, empty bodies.
+5. Exceptions follow the repository's layout (`Exception/Logical|Logic|Runtime` or flat); roots
+   `LogicalException`/`RuntimeException`; empty bodies unless a static factory carries data.
 6. DI: `@property-read stdClass $config`, hook order, `$builder`/`$config` locals, `prefix()` ids, `*_TAG`
    constants, `setAutowired(false)` on internals, `assert($def instanceof ServiceDefinition)`.
 7. Tests: `Toolkit::test(function (): void { … })` with a `// comment`, `ContainerBuilder::of()` + `Neonkit::load`,

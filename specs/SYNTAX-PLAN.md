@@ -337,3 +337,40 @@ dependency versions).
 Verdicts after fixes: both reviewers judged that code produced from the corrected document looks like the respective
 author's code and passes the toolchains; residual risk is in repository-specific habits, which the document now
 delegates to "local convention wins".
+
+## Evaluation results, round 2 (2026-09-29)
+
+Three repository shapes not covered by round 1, same protocol (Sonnet implementer given only SYNTAX.md, then an Opus
+grilling review as maintainer, then the confirmed guide defects applied to SYNTAX.md):
+
+| Shape | Repository | Feature | Tooling after change | Verdict on the code | Guide defects confirmed |
+|---|---|---|---|---|---|
+| API client | `contributte/gosms` | message-detail endpoint, request/response entities, exception, tests, docs | `make qa` OK, `make tests` OK (7, 1 E2E skipped) | would not merge: 2 bugs (validation accepts `-5`/`+3`, unchecked response shape), design driven by the guide (`fromArray`/`toArray` symmetry, per-resource `*NotFoundException`) | 10 of 17 reported gaps; 6 text fixes |
+| UI control | `contributte/ui` | Breadcrumbs control, factory, Latte template, presenter-less render test, docs | `make cs` OK, `make tests` OK (3); phpstan red only on a stale ignore already on master | merge after nits: `all()` instead of `getItems()` (guide), `n:attr` for a conditional attribute, an assertion that cannot fail, `final` presenter in docs beside a plain one | 8 text fixes |
+| Skeleton app | `contributte/doctrine-skeleton` | Article entity, repository, facade, exception, presenter, unit + E2E tests, NEON | `make qa` OK (phpstan 12/12), `make tests` OK (7) | would not merge: no migration (blocker), a throwing `get()` reinventing nettrine/extra `AbstractRepository::fetch()`, a per-aggregate mapping block also mapped into the second manager | 12 text fixes |
+
+Syntax was judged indistinguishable from the maintainer's in all three; every deviation was in design, and roughly half of
+those were traced to SYNTAX.md. Fixes applied to SYNTAX.md from this round:
+
+- New `2.12.1 API clients` (layout, one method per endpoint, `final` getter-only entities built from the wire payload,
+  response-shape checks, one transport exception with the HTTP status as code, network-free tests, docs shape).
+- UI-control recipe in 2.12 rewritten from measured data (0 of 4 control factories use `I`, none DI-generated;
+  template directory per repository; `{if}aria-current{/if}` idiom) and a presenter-less render recipe in 2.14.
+- Naming: `get<Plural>()` (268 methods in 53 repos) instead of `all()`, which exists only on keyed bags (3 uses).
+- `final`: never on Doctrine entities or skeleton scaffold classes; API-client entities and value objects are `final`;
+  documentation examples follow the file they are in (108 plain vs 72 `final`).
+- `fromArray`/`toArray` only in the direction something calls; never an intermediate array for one's own `fromArray()`.
+- Exceptions: flat `Exception/` in small clients; SPL `InvalidArgumentException` for rejected input in entities; typed
+  `$previous` with the copied code in wrapping factories; `Logic/` in applications vs `Logical/` in libraries.
+- Tests: `Contributte\Tester\Environment::getTestDir()` named explicitly; top-level `create*()` helper functions in
+  `.phpt` (20 files in 11 repos) rather than closures; Mockery and fakes both common, `Mockery::close()` only where a
+  count expectation is set, in `tearDown()` for TestCase classes; nettrine-extension SQLite recipe; `-C tests` in
+  Makefiles (17 of 18 skeletons).
+- Skeletons: nettrine/extra traits (`TGeneratedId`, `TCreatedAt`) with `AbstractEntity` and `#[ORM\HasLifecycleCallbacks]`;
+  `<Plural>Facade` for several operations, `<Verb><Noun>Facade` for one use case; map `%appDir%/Domain` once; a
+  migration is part of every entity change; presenters are plain `class` (17 repos vs 5); dev port 8000 (20 of 21).
+- `.docs`: `phpstan.neon` lists `.docs` in 78 of 140 repos but no repository checks Markdown; fences are kept valid by
+  hand. Single-`@param` method docblocks stay multi-line (917 vs 7).
+
+Reviews and implementer notes: `eval2/{gosms,ui,skeleton}-implementer.md`, `eval2/grill-{gosms,ui,skeleton}.md` in the
+session scratchpad (not committed).
