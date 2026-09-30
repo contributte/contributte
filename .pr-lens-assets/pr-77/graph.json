@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "0.2.0",
+  "kind": "graph",
+  "title": "Contributte README standard and evaluator",
+  "summary": "Adds three README profiles (library, skeleton, deprecated), a Bun evaluator that checks a README against its profile with repository facts, a pinned OpenCode generation benchmark, and an OpenCode skill that ties them together.",
+  "lenses": ["architecture", "data-flow"],
+  "provenance": {
+    "repo": { "owner": "contributte", "name": "contributte", "host": "github.com" },
+    "base": { "sha": "cd19b573a64f88f4fd17b471cb4eff7108a24fa8", "ref": "master" },
+    "head": { "sha": "473881846b2e5f997de1bb5ce7e340dec3707f19", "ref": "docs/readme-standard" },
+    "pullRequest": { "number": 77, "title": "Docs: add README standard", "url": "https://github.com/contributte/contributte/pull/77" }
+  },
+  "lanes": [
+    { "id": "standards", "label": "Standards", "subtitle": "docs/", "order": 0 },
+    { "id": "agent", "label": "Agent", "subtitle": ".opencode/skills", "order": 1 },
+    { "id": "tooling", "label": "README tooling", "subtitle": "scripts/readme (Bun)", "order": 2 },
+    { "id": "external", "label": "Outside this repo", "order": 3 }
+  ],
+  "nodes": [
+    { "id": "readme-standard", "label": "README standard index", "kind": "config", "delta": "added", "lane": "standards", "subtitle": "readme-standard.md", "summary": "Picks one profile by the first reader journey and sets shared evidence rules.", "files": [{ "path": "docs/readme-standard.md" }], "badges": [] },
+    { "id": "profiles", "label": "Library / Skeleton / Deprecated", "kind": "config", "delta": "added", "lane": "standards", "subtitle": "3 profile standards", "summary": "One standard per profile, with rule IDs that the evaluator reports.", "files": [{ "path": "docs/readme-library-standard.md" }, { "path": "docs/readme-skeleton-standard.md" }, { "path": "docs/readme-deprecated-standard.md" }], "badges": ["rule IDs"] },
+    { "id": "spec-driven-docs", "label": "Spec-driven docs", "kind": "config", "delta": "added", "lane": "standards", "subtitle": "evaluation + exceptions", "summary": "Evidence, scoring, calibration and the exception format.", "files": [{ "path": "docs/spec-driven-docs.md" }, { "path": "docs/readme-evaluation.md" }, { "path": "docs/readme-generation-evaluation.md" }], "badges": [] },
+    { "id": "agents-md", "label": "AGENTS.md", "kind": "config", "delta": "unchanged", "lane": "agent", "summary": "Existing agent entry point of the repository.", "files": [{ "path": "AGENTS.md" }], "badges": [] },
+    { "id": "readme-skill", "label": "contributte-readme skill", "kind": "config", "delta": "added", "lane": "agent", "subtitle": "OpenCode skill", "summary": "10-step procedure: select a profile, read facts, write, then run the evaluator and fix every failure.", "files": [{ "path": ".opencode/skills/contributte-readme/SKILL.md" }], "badges": [] },
+    { "id": "evaluate-cli", "label": "evaluate.ts", "kind": "app", "delta": "added", "lane": "tooling", "subtitle": "--profile --readme --format", "summary": "CLI. Exit 0 when incomplete, 1 when a gate fails, 2 on bad input.", "files": [{ "path": "scripts/readme/evaluate.ts" }], "badges": [] },
+    { "id": "evaluator", "label": "evaluator.ts", "kind": "module", "delta": "added", "lane": "tooling", "subtitle": "loadRepositoryFacts / evaluateReadme", "summary": "Reads README, composer.json name and Makefile targets, then runs the shared and profile checks.", "files": [{ "path": "scripts/readme/evaluator.ts", "startLine": 497, "endLine": 563 }], "badges": ["563 lines"] },
+    { "id": "schema", "label": "schema.ts", "kind": "module", "delta": "added", "lane": "tooling", "subtitle": "profiles, findings", "summary": "README_PROFILES, Finding, Evidence and EvaluationResult types.", "files": [{ "path": "scripts/readme/schema.ts" }, { "path": "scripts/readme/result.schema.json" }], "badges": [] },
+    { "id": "generate-cli", "label": "generate.ts", "kind": "app", "delta": "added", "lane": "tooling", "subtitle": "--manifest", "summary": "CLI for one pinned generation benchmark.", "files": [{ "path": "scripts/readme/generate.ts" }], "badges": [] },
+    { "id": "generator", "label": "generator.ts", "kind": "module", "delta": "added", "lane": "tooling", "subtitle": "runGeneration", "summary": "Checks out the pinned revision, verifies the README hash, runs OpenCode, and writes candidate.md and result.json per run.", "files": [{ "path": "scripts/readme/generator.ts", "startLine": 171, "endLine": 269 }], "badges": [] },
+    { "id": "manifests", "label": "Generation manifests", "kind": "config", "delta": "added", "lane": "tooling", "subtitle": "prompt v1-v4 + 10 runs", "summary": "Pinned repository, revision, README hash, prompt, model and variant.", "files": [{ "path": "scripts/readme/generation/pilot-webpack.json" }, { "path": "scripts/readme/generation/prompt-v4.md" }, { "path": "scripts/readme/generation.schema.json" }], "badges": [] },
+    { "id": "tests", "label": "Tests + fixtures", "kind": "test", "delta": "added", "lane": "tooling", "subtitle": "14 fixture repos", "summary": "Valid and invalid README fixtures per profile, plus markdown edge cases.", "files": [{ "path": "scripts/readme/evaluator.test.ts" }, { "path": "scripts/readme/generator.test.ts" }, { "path": "scripts/readme/fixtures/library-valid/README.md" }], "badges": [] },
+    { "id": "target-repo", "label": "Target repository", "kind": "external", "delta": "unchanged", "lane": "external", "subtitle": "README.md, composer.json, Makefile", "summary": "Any Contributte repository whose README is checked.", "files": [], "badges": [] },
+    { "id": "opencode", "label": "OpenCode", "kind": "external", "delta": "unchanged", "lane": "external", "subtitle": "LLM agent CLI", "summary": "Runs the prompt in a copied repository. GitHub tokens are cleared.", "files": [], "badges": [] }
+  ],
+  "edges": [
+    { "id": "index-to-profiles", "from": "readme-standard", "to": "profiles", "kind": "dependency", "delta": "added", "label": "select profile" },
+    { "id": "index-to-spec", "from": "readme-standard", "to": "spec-driven-docs", "kind": "dependency", "delta": "added" },
+    { "id": "agents-to-skill", "from": "agents-md", "to": "readme-skill", "kind": "dependency", "delta": "unchanged", "emphasis": "muted" },
+    { "id": "skill-to-profiles", "from": "readme-skill", "to": "profiles", "kind": "dependency", "delta": "added", "label": "reads" },
+    { "id": "skill-to-evaluate", "from": "readme-skill", "to": "evaluate-cli", "kind": "call", "delta": "added", "label": "must pass", "emphasis": "hero", "animated": true },
+    { "id": "evaluate-to-evaluator", "from": "evaluate-cli", "to": "evaluator", "kind": "call", "delta": "added" },
+    { "id": "evaluator-to-schema", "from": "evaluator", "to": "schema", "kind": "dependency", "delta": "added" },
+    { "id": "evaluator-to-target", "from": "evaluator", "to": "target-repo", "kind": "data", "delta": "added", "label": "read facts" },
+    { "id": "profiles-to-evaluator", "from": "profiles", "to": "evaluator", "kind": "dependency", "delta": "added", "label": "rule IDs", "emphasis": "muted" },
+    { "id": "generate-to-generator", "from": "generate-cli", "to": "generator", "kind": "call", "delta": "added" },
+    { "id": "generator-to-manifests", "from": "generator", "to": "manifests", "kind": "data", "delta": "added", "label": "load" },
+    { "id": "generator-to-opencode", "from": "generator", "to": "opencode", "kind": "call", "delta": "added", "label": "opencode run", "animated": true },
+    { "id": "generator-to-target", "from": "generator", "to": "target-repo", "kind": "data", "delta": "added", "label": "pinned worktree" },
+    { "id": "tests-to-evaluator", "from": "tests", "to": "evaluator", "kind": "dependency", "delta": "added", "emphasis": "muted" },
+    { "id": "tests-to-generator", "from": "tests", "to": "generator", "kind": "dependency", "delta": "added", "emphasis": "muted" }
+  ],
+  "flows": [
+    {
+      "id": "evaluate-flow",
+      "title": "Checking one README",
+      "summary": "What happens when the skill runs the evaluator.",
+      "delta": "added",
+      "participants": [{ "node": "readme-skill", "label": "skill" }, { "node": "evaluate-cli" }, { "node": "evaluator" }, { "node": "target-repo", "label": "repository" }],
+      "messages": [
+        { "id": "run", "from": "readme-skill", "to": "evaluate-cli", "label": "--profile skeleton", "kind": "sync", "delta": "added", "animated": true },
+        { "id": "load-facts", "from": "evaluate-cli", "to": "evaluator", "label": "loadRepositoryFacts", "kind": "sync", "delta": "added" },
+        { "id": "read", "from": "evaluator", "to": "target-repo", "label": "README, composer.json, Makefile", "kind": "sync", "delta": "added" },
+        { "id": "facts", "from": "target-repo", "to": "evaluator", "label": "markdown, name, make targets", "kind": "return", "delta": "added" },
+        { "id": "check", "from": "evaluator", "to": "evaluator", "label": "shared + profile rules", "kind": "self", "delta": "added" },
+        { "id": "result", "from": "evaluator", "to": "evaluate-cli", "label": "findings + status", "kind": "return", "delta": "added" },
+        { "id": "exit", "from": "evaluate-cli", "to": "readme-skill", "label": "exit 1 if a gate fails", "kind": "return", "delta": "added", "note": "Unassessed gates are review work, not passes." }
+      ]
+    }
+  ],
+  "stats": {
+    "filesChanged": 63,
+    "additions": 2977,
+    "deletions": 0,
+    "chips": [
+      { "label": "README profiles", "value": "3", "tone": "hero" },
+      { "label": "Fixture repos", "value": "14", "tone": "added" },
+      { "label": "Generation runs", "value": "10 manifests", "tone": "neutral" }
+    ]
+  },
+  "views": [
+    {
+      "id": "overview",
+      "title": "Architecture — blast radius",
+      "lens": "architecture",
+      "summary": "Standards, skill, tooling and what they touch.",
+      "scope": { "kind": "all" },
+      "defaultOpen": true,
+      "children": [
+        {
+          "id": "evaluator-view",
+          "title": "The evaluator",
+          "lens": "architecture",
+          "summary": "Deterministic README checks.",
+          "scope": { "kind": "selection", "nodes": ["evaluate-cli", "evaluator", "schema", "tests", "target-repo", "profiles"], "edges": ["evaluate-to-evaluator", "evaluator-to-schema", "evaluator-to-target", "profiles-to-evaluator", "tests-to-evaluator"] }
+        },
+        {
+          "id": "generator-view",
+          "title": "The generation benchmark",
+          "lens": "architecture",
+          "summary": "Pinned OpenCode runs for prompt and model comparison.",
+          "scope": { "kind": "selection", "nodes": ["generate-cli", "generator", "manifests", "opencode", "target-repo", "tests"], "edges": ["generate-to-generator", "generator-to-manifests", "generator-to-opencode", "generator-to-target", "tests-to-generator"] }
+        }
+      ]
+    },
+    { "id": "evaluate-flow-view", "title": "Data flow — checking one README", "lens": "data-flow", "scope": { "kind": "selection", "flows": ["evaluate-flow"] } }
+  ],
+  "walkthrough": {
+    "steps": [
+      { "id": "profiles-added", "heading": "3 README profiles added", "body": "A README now follows the library, skeleton or deprecated standard, picked by the first reader journey.", "stage": { "kind": "view", "view": "overview" }, "focus": { "kind": "selection", "nodes": ["readme-standard", "profiles"] } },
+      { "id": "skill-added", "heading": "contributte-readme skill added", "body": "An agent now follows 10 steps and must run the evaluator before it proposes a README.", "stage": { "kind": "view", "view": "overview" }, "focus": { "kind": "selection", "nodes": ["readme-skill", "evaluate-cli"] } },
+      { "id": "evaluator-added", "heading": "Evaluator now checks README facts", "body": "It reads composer.json and Makefile targets and fails a gate when the README disagrees.", "stage": { "kind": "flow", "flow": "evaluate-flow" }, "focus": { "kind": "selection", "messages": ["read", "facts", "check"] } },
+      { "id": "exit-code", "heading": "Failed gate now exits with code 1", "body": "Status is blocked or incomplete. Semantic rules stay unassessed for a human.", "stage": { "kind": "flow", "flow": "evaluate-flow" }, "focus": { "kind": "selection", "messages": ["result", "exit"] } },
+      { "id": "generator-added", "heading": "OpenCode generation benchmark added", "body": "Each run uses a pinned revision and README hash, so prompt and model results compare fairly.", "stage": { "kind": "view", "view": "generator-view" }, "focus": { "kind": "selection", "nodes": ["generator", "opencode", "manifests"] } }
+    ]
+  }
+}

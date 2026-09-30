@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1296 391" width="1296" height="391" role="img" aria-label="Data flow — an agent writes PHP" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, &quot;Noto Sans&quot;, Helvetica, Arial, sans-serif">
+<title>Data flow — an agent writes PHP</title>
+<desc>Adds SYNTAX.md, a PHP coding-style guide with two dialects (A: Contributte, B: Nette), links it from AGENTS.md, fixes drift in LIBRARY.md and SKELETON.md, and adds golden fixtures that must stay green under the real toolchains.</desc>
+<defs><pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="rgba(110,118,129,.22)"/></pattern><marker id="mk-added" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fb950"/></marker><marker id="mko-added" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#3fb950" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mk-modified" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d29922"/></marker><marker id="mko-modified" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#d29922" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mk-removed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f85149"/></marker><marker id="mko-removed" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#f85149" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mk-neutral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e7681"/></marker><marker id="mko-neutral" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#6e7681" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect x="0" y="0" width="1296" height="391" rx="12" fill="#0d1117"/>
+<rect x="0" y="0" width="1296" height="391" rx="12" fill="url(#dots)"/>
+<g transform="translate(12,10)"><g><rect class="lanebox" x="4" y="6" width="208" height="359" rx="12" fill="rgba(110,118,129,.07)"/>
+<rect class="lanebox" x="268" y="6" width="208" height="359" rx="12" fill="rgba(110,118,129,.07)"/>
+<rect class="lanebox" x="532" y="6" width="208" height="359" rx="12" fill="rgba(110,118,129,.07)"/>
+<rect class="lanebox" x="796" y="6" width="208" height="359" rx="12" fill="rgba(110,118,129,.07)"/>
+<rect class="lanebox" x="1060" y="6" width="208" height="359" rx="12" fill="rgba(110,118,129,.07)"/></g>
+<g><line class="lifeline" x1="108" y1="82" x2="108" y2="353" stroke="#30363d" stroke-width="1" stroke-dasharray="3 4"/>
+<line class="lifeline" x1="372" y1="82" x2="372" y2="353" stroke="#30363d" stroke-width="1" stroke-dasharray="3 4"/>
+<rect class="actbar" x="366" y="123" width="12" height="104.67" rx="4" fill="rgba(46,160,67,.15)" stroke="rgba(63,185,80,.4)"/>
+<line class="lifeline" x1="636" y1="82" x2="636" y2="353" stroke="#30363d" stroke-width="1" stroke-dasharray="3 4"/>
+<line class="lifeline" x1="900" y1="82" x2="900" y2="353" stroke="#30363d" stroke-width="1" stroke-dasharray="3 4"/>
+<rect class="actbar" x="894" y="253" width="12" height="12.67" rx="4" fill="rgba(46,160,67,.15)" stroke="rgba(63,185,80,.4)"/>
+<line class="lifeline" x1="1164" y1="82" x2="1164" y2="353" stroke="#30363d" stroke-width="1" stroke-dasharray="3 4"/>
+<rect class="actbar" x="1158" y="291" width="12" height="38" rx="4" fill="rgba(46,160,67,.15)" stroke="rgba(63,185,80,.4)"/></g>
+<g><g class="cardsh" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))"><rect class="card card-modified" x="16" y="18" width="184" height="52" rx="10" fill="#1c2128" stroke-width="1" stroke="#d29922" stroke-opacity="0.5"/>
+<rect class="chip" x="30" y="31" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M36,40 h14" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M36,48 h14" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<circle class="glyph" fill="#9198a1" cx="41" cy="40" r="2.2"/>
+<circle class="glyph" fill="#9198a1" cx="46" cy="48" r="2.2"/></g>
+<text class="ntitle" x="66" y="49" font-size="13" font-weight="600" fill="#e6edf3">AGENTS.md</text>
+<g class="bdg bdg-neutral"><rect x="91.09" y="10" width="29.29" height="16" rx="8" fill="rgba(110,118,129,.18)" stroke="#3d444d" stroke-width="1"/><text x="105.74" y="21" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#9198a1">+7</text></g>
+<g class="bdg bdg-modified"><rect x="126.38" y="10" width="66.62" height="16" rx="8" fill="rgba(187,128,9,.15)" stroke="rgba(210,153,34,.4)" stroke-width="1"/><text x="159.69" y="21" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#d29922">CHANGED</text></g></g>
+<g class="cardsh" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))"><rect class="card card-added" x="280" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3fb950" stroke-opacity="0.55"/>
+<rect class="chip" x="294" y="36" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M300,45 h14" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M300,53 h14" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<circle class="glyph" fill="#9198a1" cx="305" cy="45" r="2.2"/>
+<circle class="glyph" fill="#9198a1" cx="310" cy="53" r="2.2"/></g>
+<text class="ntitle" x="330" y="45" font-size="13" font-weight="600" fill="#e6edf3">SYNTAX.md</text>
+<text class="nsub" x="330" y="63" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">dialect A + dialect B</text>
+<g class="bdg bdg-neutral"><rect x="346.28" y="10" width="64.17" height="16" rx="8" fill="rgba(110,118,129,.18)" stroke="#3d444d" stroke-width="1"/><text x="378.36" y="21" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#9198a1">2118 lines</text></g>
+<g class="bdg bdg-added"><rect x="416.45" y="10" width="40.55" height="16" rx="8" fill="rgba(46,160,67,.15)" stroke="rgba(63,185,80,.4)" stroke-width="1"/><text x="436.73" y="21" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#3fb950">NEW</text></g></g>
+<g class="cardsh" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))"><rect class="card card-added" x="544" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3fb950" stroke-opacity="0.55"/>
+<rect class="chip" x="558" y="36" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M565,49 l4,4 l8,-8" stroke="#9198a1" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="594" y="45" font-size="13" font-weight="600" fill="#e6edf3">fixture A</text>
+<text class="nsub" x="594" y="63" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">dialect A</text>
+<g class="bdg bdg-added"><rect x="680.45" y="10" width="40.55" height="16" rx="8" fill="rgba(46,160,67,.15)" stroke="rgba(63,185,80,.4)" stroke-width="1"/><text x="700.73" y="21" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#3fb950">NEW</text></g></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="808" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3d444d"/>
+<rect class="chip" x="822" y="36" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M835,42 l6.5,3.5 v7 l-6.5,3.5 l-6.5,-3.5 v-7 Z" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M828.5,45.5 l6.5,3.5 l6.5,-3.5" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M835,49 v7" stroke="#9198a1" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="858" y="45" font-size="13" font-weight="600" fill="#e6edf3">contributte/qa</text>
+<text class="nsub" x="858" y="63" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">phpcs ruleset</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="1072" y="18" width="184" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3d444d"/>
+<rect class="chip" x="1086" y="36" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M1099,42 l6.5,3.5 v7 l-6.5,3.5 l-6.5,-3.5 v-7 Z" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M1092.5,45.5 l6.5,3.5 l6.5,-3.5" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M1099,49 v7" stroke="#9198a1" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="1122" y="45" font-size="13" font-weight="600" fill="#e6edf3">contributte/phpstan</text>
+<text class="nsub" x="1122" y="63" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">level 9</text></g></g>
+<g><path class="msg edge-added msg-strong" d="M108,123 L361,123" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="2.25"/>
+<circle r="2.6" fill="#3fb950" opacity="0"><animateMotion dur="8.4s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0;0.1667;1" calcMode="linear" path="M108,123 L361,123"/><animate attributeName="opacity" dur="8.4s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0;0.0133;0.1533;0.1667;1"/></circle>
+<path class="msg edge-added msg-strong" d="M378,161 h52 a7,7 0 0 1 7,7 v6 a7,7 0 0 1 -7,7 h-47" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="2.25"/>
+<circle r="2.6" fill="#3fb950" opacity="0"><animateMotion dur="8.4s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.1667;0.3333;1" calcMode="linear" path="M378,161 h52 a7,7 0 0 1 7,7 v6 a7,7 0 0 1 -7,7 h-47"/><animate attributeName="opacity" dur="8.4s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1667;0.18;0.32;0.3333;1"/></circle>
+<path class="msg edge-added msg-strong" d="M378,215 L631,215" marker-end="url(#mko-added)" fill="none" stroke="#3fb950" stroke-width="2.25"/>
+<circle r="2.6" fill="#3fb950" opacity="0"><animateMotion dur="8.4s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.3333;0.5;1" calcMode="linear" path="M378,215 L631,215"/><animate attributeName="opacity" dur="8.4s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3333;0.3467;0.4867;0.5;1"/></circle>
+<path class="msg edge-added msg-strong" d="M636,253 L889,253" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="2.25"/>
+<circle r="2.6" fill="#3fb950" opacity="0"><animateMotion dur="8.4s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.5;0.6667;1" calcMode="linear" path="M636,253 L889,253"/><animate attributeName="opacity" dur="8.4s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5;0.5133;0.6533;0.6667;1"/></circle>
+<path class="msg edge-added msg-strong" d="M636,291 L1153,291" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="2.25"/>
+<circle r="2.6" fill="#3fb950" opacity="0"><animateMotion dur="8.4s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.6667;0.8333;1" calcMode="linear" path="M636,291 L1153,291"/><animate attributeName="opacity" dur="8.4s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6667;0.68;0.82;0.8333;1"/></circle>
+<path class="msg edge-added msg-return msg-strong" d="M1158,329 L641,329" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="2.25" stroke-dasharray="4 3" opacity="0.8"/>
+<circle r="2.6" fill="#3fb950" opacity="0"><animateMotion dur="8.4s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.8333;1;1" calcMode="linear" path="M1158,329 L641,329"/><animate attributeName="opacity" dur="8.4s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.8333;0.8467;0.9867;1;1"/></circle></g>
+<g><g><rect class="lpill" x="186.49" y="115.5" width="96.03" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="234.5" y="126.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">read SYNTAX.md</text></g>
+<g><rect class="lpill" x="445" y="163.5" width="96.59" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="493.3" y="174.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">pick dialect A or B</text></g>
+<g><rect class="lpill" x="428.78" y="207.5" width="151.45" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="504.5" y="218.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">guide edited first, block copied</text></g>
+<g><rect class="lpill" x="741.07" y="245.5" width="42.87" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="762.5" y="256.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">phpcs</text></g>
+<g><rect class="lpill" x="852.64" y="283.5" width="83.73" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="894.5" y="294.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">phpstan level 9</text></g>
+<g><rect class="lpill" x="878.63" y="321.5" width="41.75" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="899.5" y="332.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">green</text></g></g></g>
+</svg>

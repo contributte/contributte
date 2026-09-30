@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "0.2.0",
+  "kind": "graph",
+  "title": "SYNTAX.md coding-style guide with golden fixtures",
+  "summary": "Adds SYNTAX.md, a PHP coding-style guide with two dialects (A: Contributte, B: Nette), links it from AGENTS.md, fixes drift in LIBRARY.md and SKELETON.md, and adds golden fixtures that must stay green under the real toolchains.",
+  "lenses": ["architecture", "data-flow"],
+  "provenance": {
+    "repo": { "owner": "contributte", "name": "contributte", "host": "github.com" },
+    "base": { "sha": "cd19b573a64f88f4fd17b471cb4eff7108a24fa8", "ref": "master" },
+    "head": { "sha": "1e70cf69e942406b30c2a827be03ba6008109407", "ref": "claude/coding-style-syntax-analysis-2wvdv6" },
+    "pullRequest": { "number": 79, "title": "Specs: coding-style guide (SYNTAX.md), plan, fixtures and spec drift fixes", "url": "https://github.com/contributte/contributte/pull/79" }
+  },
+  "lanes": [
+    { "id": "entry", "label": "Agent entry", "order": 0 },
+    { "id": "specs", "label": "Specs", "subtitle": "specs/", "order": 1 },
+    { "id": "fixtures", "label": "Golden fixtures", "subtitle": "specs/fixtures", "order": 2 },
+    { "id": "toolchain", "label": "Toolchain", "subtitle": "Composer packages", "order": 3 }
+  ],
+  "nodes": [
+    { "id": "agents-md", "label": "AGENTS.md", "kind": "config", "delta": "modified", "lane": "entry", "summary": "New Coding style section: read SYNTAX.md first, local convention wins.", "files": [{ "path": "AGENTS.md", "startLine": 8, "endLine": 13 }], "badges": ["+7"] },
+    { "id": "syntax-md", "label": "SYNTAX.md", "kind": "config", "delta": "added", "lane": "specs", "subtitle": "dialect A + dialect B", "summary": "How to write PHP like f3l1x (Contributte) and dg (Nette): file anatomy, class layout, types, DI extensions, tests, checklists.", "files": [{ "path": "specs/SYNTAX.md" }], "badges": ["2118 lines"] },
+    { "id": "syntax-plan", "label": "SYNTAX-PLAN.md", "kind": "config", "delta": "added", "lane": "specs", "subtitle": "analysis plan + results", "summary": "Inventory of 192 repositories, analyst slices, evaluation protocol and two evaluation rounds.", "files": [{ "path": "specs/SYNTAX-PLAN.md" }], "badges": [] },
+    { "id": "library-md", "label": "LIBRARY.md", "kind": "config", "delta": "modified", "lane": "specs", "summary": "Drift fixes: contributte/phpstan ^0.2, contributte/tester ^0.4, php instead of phpdbg, .editorconfig. Links SYNTAX.md.", "files": [{ "path": "specs/LIBRARY.md" }], "badges": [] },
+    { "id": "skeleton-md", "label": "SKELETON.md", "kind": "config", "delta": "modified", "lane": "specs", "summary": "Drift fixes: PHP >=8.4, local.neon.example, qa runs cs before phpstan.", "files": [{ "path": "specs/SKELETON.md" }], "badges": [] },
+    { "id": "fixture-contributte", "label": "contributte/ fixture", "kind": "test", "delta": "added", "lane": "fixtures", "subtitle": "dialect A", "summary": "FooExtension DI extension, stubs and a Tester case, copied from SYNTAX.md 2.10, 2.11 and 2.14.", "files": [{ "path": "specs/fixtures/contributte/src/DI/FooExtension.php" }, { "path": "specs/fixtures/contributte/tests/Cases/DI/FooExtension.phpt" }, { "path": "specs/fixtures/contributte/Makefile" }], "badges": [] },
+    { "id": "fixture-nette", "label": "nette/ fixture", "kind": "test", "delta": "added", "lane": "fixtures", "subtitle": "dialect B", "summary": "Json, Paginator and a Tester case, copied from SYNTAX.md 3.2, 3.3 and 3.13.", "files": [{ "path": "specs/fixtures/nette/src/Json.php" }, { "path": "specs/fixtures/nette/src/Paginator.php" }, { "path": "specs/fixtures/nette/dresscode.neon" }], "badges": [] },
+    { "id": "qa", "label": "contributte/qa", "kind": "package", "delta": "unchanged", "lane": "toolchain", "subtitle": "phpcs ruleset", "summary": "Coding standard for dialect A.", "files": [], "badges": [] },
+    { "id": "phpstan", "label": "contributte/phpstan", "kind": "package", "delta": "unchanged", "lane": "toolchain", "subtitle": "level 9", "summary": "Static analysis for dialect A.", "files": [], "badges": [] },
+    { "id": "tester", "label": "Nette Tester", "kind": "package", "delta": "unchanged", "lane": "toolchain", "subtitle": "via contributte/tester", "summary": "Runs the .phpt cases.", "files": [], "badges": [] },
+    { "id": "dresscode", "label": "DressCode", "kind": "package", "delta": "unchanged", "lane": "toolchain", "subtitle": "nette preset", "summary": "Coding standard for dialect B.", "files": [], "badges": [] }
+  ],
+  "edges": [
+    { "id": "agents-to-syntax", "from": "agents-md", "to": "syntax-md", "kind": "dependency", "delta": "added", "label": "read before PHP", "emphasis": "hero", "animated": true },
+    { "id": "agents-to-library", "from": "agents-md", "to": "library-md", "kind": "dependency", "delta": "added", "label": "layout + tooling" },
+    { "id": "agents-to-skeleton", "from": "agents-md", "to": "skeleton-md", "kind": "dependency", "delta": "added" },
+    { "id": "plan-to-syntax", "from": "syntax-plan", "to": "syntax-md", "kind": "data", "delta": "added", "label": "evidence" },
+    { "id": "library-to-syntax", "from": "library-md", "to": "syntax-md", "kind": "dependency", "delta": "added", "label": "dialect A" },
+    { "id": "syntax-to-fixture-a", "from": "syntax-md", "to": "fixture-contributte", "kind": "data", "delta": "added", "label": "dialect A examples" },
+    { "id": "syntax-to-fixture-b", "from": "syntax-md", "to": "fixture-nette", "kind": "data", "delta": "added", "label": "dialect B examples" },
+    { "id": "fixture-a-to-qa", "from": "fixture-contributte", "to": "qa", "kind": "call", "delta": "added", "label": "make qa" },
+    { "id": "fixture-a-to-phpstan", "from": "fixture-contributte", "to": "phpstan", "kind": "call", "delta": "added", "label": "make phpstan" },
+    { "id": "fixture-a-to-tester", "from": "fixture-contributte", "to": "tester", "kind": "call", "delta": "added", "label": "make tests" },
+    { "id": "fixture-b-to-dresscode", "from": "fixture-nette", "to": "dresscode", "kind": "call", "delta": "added", "label": "make cs" }
+  ],
+  "flows": [
+    {
+      "id": "write-php",
+      "title": "An agent writes PHP",
+      "summary": "The path from AGENTS.md to a green fixture.",
+      "delta": "added",
+      "participants": [{ "node": "agents-md" }, { "node": "syntax-md" }, { "node": "fixture-contributte", "label": "fixture A" }, { "node": "qa" }, { "node": "phpstan" }],
+      "messages": [
+        { "id": "read-guide", "from": "agents-md", "to": "syntax-md", "label": "read SYNTAX.md", "kind": "sync", "delta": "added", "animated": true },
+        { "id": "pick-dialect", "from": "syntax-md", "to": "syntax-md", "label": "pick dialect A or B", "kind": "self", "delta": "added", "note": "Local convention of the repository wins." },
+        { "id": "copy-examples", "from": "syntax-md", "to": "fixture-contributte", "label": "guide edited first, block copied", "kind": "async", "delta": "added" },
+        { "id": "run-cs", "from": "fixture-contributte", "to": "qa", "label": "phpcs", "kind": "sync", "delta": "added" },
+        { "id": "run-stan", "from": "fixture-contributte", "to": "phpstan", "label": "phpstan level 9", "kind": "sync", "delta": "added" },
+        { "id": "green", "from": "phpstan", "to": "fixture-contributte", "label": "green", "kind": "return", "delta": "added" }
+      ]
+    }
+  ],
+  "stats": {
+    "filesChanged": 25,
+    "additions": 3028,
+    "deletions": 42,
+    "chips": [
+      { "label": "Dialects", "value": "2", "tone": "hero" },
+      { "label": "Repos analysed", "value": "192", "tone": "neutral" },
+      { "label": "Spec drift fixed", "value": "2 files", "tone": "modified" }
+    ]
+  },
+  "views": [
+    {
+      "id": "overview",
+      "title": "Architecture — blast radius",
+      "lens": "architecture",
+      "summary": "Guide, specs, fixtures and the tools that keep them honest.",
+      "scope": { "kind": "all" },
+      "defaultOpen": true,
+      "children": [
+        {
+          "id": "fixtures-view",
+          "title": "Golden fixtures",
+          "lens": "architecture",
+          "summary": "The regression test of the guide.",
+          "scope": { "kind": "selection", "nodes": ["syntax-md", "fixture-contributte", "fixture-nette", "qa", "phpstan", "tester", "dresscode"], "edges": ["syntax-to-fixture-a", "syntax-to-fixture-b", "fixture-a-to-qa", "fixture-a-to-phpstan", "fixture-a-to-tester", "fixture-b-to-dresscode"] }
+        }
+      ]
+    },
+    { "id": "write-php-view", "title": "Data flow — an agent writes PHP", "lens": "data-flow", "scope": { "kind": "selection", "flows": ["write-php"] } }
+  ],
+  "walkthrough": {
+    "steps": [
+      { "id": "syntax-added", "heading": "SYNTAX.md added with 2 dialects", "body": "Dialect A is for Contributte repositories. Dialect B is for Nette.", "stage": { "kind": "view", "view": "overview" }, "focus": { "kind": "selection", "nodes": ["syntax-md", "syntax-plan"] } },
+      { "id": "agents-linked", "heading": "AGENTS.md now points to SYNTAX.md", "body": "Agents read the guide before they write or review PHP.", "stage": { "kind": "view", "view": "overview" }, "focus": { "kind": "selection", "nodes": ["agents-md", "syntax-md"] } },
+      { "id": "drift-fixed", "heading": "LIBRARY.md and SKELETON.md drift fixed", "body": "Versions, PHP 8.4, tester flags and .editorconfig now match the real repositories.", "stage": { "kind": "view", "view": "overview" }, "focus": { "kind": "selection", "nodes": ["library-md", "skeleton-md"] } },
+      { "id": "fixtures-added", "heading": "Golden fixtures added for both dialects", "body": "The guide examples now run under phpcs, phpstan level 9, Tester and DressCode.", "stage": { "kind": "view", "view": "fixtures-view" }, "focus": { "kind": "selection", "nodes": ["fixture-contributte", "fixture-nette"] } },
+      { "id": "flow", "heading": "Guide edits now end in a green fixture", "body": "Edit the guide first, copy the block into the fixture, then run make qa.", "stage": { "kind": "flow", "flow": "write-php" }, "focus": { "kind": "all" } }
+    ]
+  }
+}

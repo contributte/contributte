@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1708 750" width="1708" height="750" role="img" aria-label="Architecture — blast radius" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, &quot;Noto Sans&quot;, Helvetica, Arial, sans-serif">
+<title>Architecture — blast radius</title>
+<desc>Guide, specs, fixtures and the tools that keep them honest.</desc>
+<defs><pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="rgba(110,118,129,.22)"/></pattern><marker id="mk-added" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fb950"/></marker><marker id="mko-added" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#3fb950" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mk-modified" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d29922"/></marker><marker id="mko-modified" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#d29922" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mk-removed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f85149"/></marker><marker id="mko-removed" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#f85149" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mk-neutral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e7681"/></marker><marker id="mko-neutral" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#6e7681" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect x="0" y="0" width="1708" height="750" rx="12" fill="#0d1117"/>
+<rect x="0" y="0" width="1708" height="750" rx="12" fill="url(#dots)"/>
+<g><rect class="lanebox" x="16" y="44" width="404" height="690" rx="12" fill="rgba(110,118,129,.07)"/>
+<text class="lanelabel" x="32" y="68" font-size="10" font-weight="700" letter-spacing=".12em" fill="#9198a1">AGENT ENTRY</text>
+<rect class="lanebox" x="440" y="44" width="404" height="690" rx="12" fill="rgba(110,118,129,.07)"/>
+<text class="lanelabel" x="456" y="68" font-size="10" font-weight="700" letter-spacing=".12em" fill="#9198a1">SPECS · SPECS/</text>
+<rect class="lanebox" x="864" y="44" width="404" height="690" rx="12" fill="rgba(110,118,129,.07)"/>
+<text class="lanelabel" x="880" y="68" font-size="10" font-weight="700" letter-spacing=".12em" fill="#9198a1">GOLDEN FIXTURES · SPECS/FIXTURES</text>
+<rect class="lanebox" x="1288" y="44" width="404" height="690" rx="12" fill="rgba(110,118,129,.07)"/>
+<text class="lanelabel" x="1304" y="68" font-size="10" font-weight="700" letter-spacing=".12em" fill="#9198a1">TOOLCHAIN · COMPOSER PACKAGES</text></g>
+<g><path class="glow" stroke="#3fb950" d="M404,130 L427,130 C439.7,130 450,140.3 450,153 L450,330 C450,331.66 451.34,333 453,333 L456,333" fill="none" stroke-width="7" opacity="0.14"/>
+<path class="edge edge-added hero" d="M404,130 L427,130 C439.7,130 450,140.3 450,153 L450,330 C450,331.66 451.34,333 453,333 L456,333" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="2.25"/>
+<circle r="3" fill="#3fb950"><animateMotion dur="2.1s" repeatCount="indefinite" path="M404,130 L427,130 C439.7,130 450,140.3 450,153 L450,330 C450,331.66 451.34,333 453,333 L456,333"/></circle>
+<circle r="3" fill="#3fb950"><animateMotion dur="2.1s" begin="-1.4s" repeatCount="indefinite" path="M404,130 L427,130 C439.7,130 450,140.3 450,153 L450,330 C450,331.66 451.34,333 453,333 L456,333"/></circle>
+<circle r="3" fill="#3fb950"><animateMotion dur="2.1s" begin="-0.7s" repeatCount="indefinite" path="M404,130 L427,130 C439.7,130 450,140.3 450,153 L450,330 C450,331.66 451.34,333 453,333 L456,333"/></circle>
+<path class="edge edge-added" d="M404,106 L407,106 C408.66,106 410,107.34 410,109 L410,146 C410,164.78 425.22,180 444,180 L725,180 C732.18,180 738,185.82 738,193 L738,206" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+<path class="edge edge-added" d="M404,118 L413.67,118 C419.01,118 423.33,122.33 423.33,127.67 L423.33,215.67 C423.33,224.69 430.65,232 439.67,232 L456,232" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+<path class="edge edge-added" d="M456,123 L446.33,123 C440.99,123 436.67,127.33 436.67,132.67 L436.67,339.33 C436.67,344.67 440.99,349 446.33,349 L456,349" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+<path class="edge edge-added" d="M690,258 L690,310" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+<path class="edge edge-added" d="M828,333 L837,333 C841.97,333 846,337.03 846,342 L846,365.5 C846,383.45 860.55,398 878.5,398 L1149,398 C1156.18,398 1162,403.82 1162,411 L1162,424" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+<path class="edge edge-added" d="M828,349 L845,349 C854.39,349 862,356.61 862,366 L862,446 C862,450.97 866.03,455 871,455 L880,455" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+<path class="edge edge-added" d="M1252,455 L1261.67,455 C1267.01,455 1271.33,459.33 1271.33,464.67 L1271.33,552.67 C1271.33,561.69 1278.65,569 1287.67,569 L1304,569" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+<path class="edge edge-added" d="M1252,439 L1255,439 C1256.66,439 1258,440.34 1258,442 L1258,486 C1258,504.78 1273.22,520 1292,520 L1577,520 C1581.97,520 1586,524.03 1586,529 L1586,538" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+<path class="edge edge-added" d="M1252,471 L1268.33,471 C1277.35,471 1284.67,478.31 1284.67,487.33 L1284.67,673.33 C1284.67,678.67 1288.99,683 1294.33,683 L1304,683" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="1.5"/>
+<path class="edge edge-added" d="M970,486 L970,495 C970,499.97 974.03,504 979,504 L1264,504 C1282.78,504 1298,519.22 1298,538 L1298,592 C1298,610.78 1313.22,626 1332,626 L1573,626 C1580.18,626 1586,631.82 1586,639 L1586,652" marker-end="url(#mk-added)" fill="none" stroke="#3fb950" stroke-width="1.5"/></g>
+<g><g class="cardsh" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))"><rect class="card card-modified" x="32" y="92" width="372" height="52" rx="10" fill="#1c2128" stroke-width="1" stroke="#d29922" stroke-opacity="0.5"/>
+<rect class="chip" x="46" y="105" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M52,114 h14" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M52,122 h14" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<circle class="glyph" fill="#9198a1" cx="57" cy="114" r="2.2"/>
+<circle class="glyph" fill="#9198a1" cx="62" cy="122" r="2.2"/></g>
+<text class="ntitle" x="82" y="123" font-size="13" font-weight="600" fill="#e6edf3">AGENTS.md</text>
+<g class="bdg bdg-neutral"><rect x="295.09" y="84" width="29.29" height="16" rx="8" fill="rgba(110,118,129,.18)" stroke="#3d444d" stroke-width="1"/><text x="309.74" y="95" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#9198a1">+7</text></g>
+<g class="bdg bdg-modified"><rect x="330.38" y="84" width="66.62" height="16" rx="8" fill="rgba(187,128,9,.15)" stroke="rgba(210,153,34,.4)" stroke-width="1"/><text x="363.69" y="95" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#d29922">CHANGED</text></g></g>
+<g class="cardsh" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))"><rect class="card card-added" x="456" y="92" width="372" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3fb950" stroke-opacity="0.55"/>
+<rect class="chip" x="470" y="110" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M476,119 h14" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M476,127 h14" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<circle class="glyph" fill="#9198a1" cx="481" cy="119" r="2.2"/>
+<circle class="glyph" fill="#9198a1" cx="486" cy="127" r="2.2"/></g>
+<text class="ntitle" x="506" y="119" font-size="13" font-weight="600" fill="#e6edf3">SYNTAX-PLAN.md</text>
+<text class="nsub" x="506" y="137" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">analysis plan + results</text>
+<g class="bdg bdg-added"><rect x="780.45" y="84" width="40.55" height="16" rx="8" fill="rgba(46,160,67,.15)" stroke="rgba(63,185,80,.4)" stroke-width="1"/><text x="800.73" y="95" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#3fb950">NEW</text></g></g>
+<g class="cardsh" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))"><rect class="card card-modified" x="456" y="206" width="180" height="52" rx="10" fill="#1c2128" stroke-width="1" stroke="#d29922" stroke-opacity="0.5"/>
+<rect class="chip" x="470" y="219" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M476,228 h14" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M476,236 h14" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<circle class="glyph" fill="#9198a1" cx="481" cy="228" r="2.2"/>
+<circle class="glyph" fill="#9198a1" cx="486" cy="236" r="2.2"/></g>
+<text class="ntitle" x="506" y="237" font-size="11.5" font-weight="600" fill="#e6edf3">SKELETON.md</text>
+<g class="bdg bdg-modified"><rect x="562.38" y="198" width="66.62" height="16" rx="8" fill="rgba(187,128,9,.15)" stroke="rgba(210,153,34,.4)" stroke-width="1"/><text x="595.69" y="209" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#d29922">CHANGED</text></g></g>
+<g class="cardsh" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))"><rect class="card card-modified" x="648" y="206" width="180" height="52" rx="10" fill="#1c2128" stroke-width="1" stroke="#d29922" stroke-opacity="0.5"/>
+<rect class="chip" x="662" y="219" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M668,228 h14" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M668,236 h14" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<circle class="glyph" fill="#9198a1" cx="673" cy="228" r="2.2"/>
+<circle class="glyph" fill="#9198a1" cx="678" cy="236" r="2.2"/></g>
+<text class="ntitle" x="698" y="237" font-size="11.5" font-weight="600" fill="#e6edf3">LIBRARY.md</text>
+<g class="bdg bdg-modified"><rect x="754.38" y="198" width="66.62" height="16" rx="8" fill="rgba(187,128,9,.15)" stroke="rgba(210,153,34,.4)" stroke-width="1"/><text x="787.69" y="209" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#d29922">CHANGED</text></g></g>
+<g class="cardsh" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))"><rect class="card card-added" x="456" y="310" width="372" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3fb950" stroke-opacity="0.55"/>
+<rect class="chip" x="470" y="328" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M476,337 h14" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M476,345 h14" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<circle class="glyph" fill="#9198a1" cx="481" cy="337" r="2.2"/>
+<circle class="glyph" fill="#9198a1" cx="486" cy="345" r="2.2"/></g>
+<text class="ntitle" x="506" y="337" font-size="13" font-weight="600" fill="#e6edf3">SYNTAX.md</text>
+<text class="nsub" x="506" y="355" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">dialect A + dialect B</text>
+<g class="bdg bdg-neutral"><rect x="710.28" y="302" width="64.17" height="16" rx="8" fill="rgba(110,118,129,.18)" stroke="#3d444d" stroke-width="1"/><text x="742.37" y="313" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#9198a1">2118 lines</text></g>
+<g class="bdg bdg-added"><rect x="780.45" y="302" width="40.55" height="16" rx="8" fill="rgba(46,160,67,.15)" stroke="rgba(63,185,80,.4)" stroke-width="1"/><text x="800.72" y="313" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#3fb950">NEW</text></g></g>
+<g class="cardsh" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))"><rect class="card card-added" x="880" y="424" width="180" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3fb950" stroke-opacity="0.55"/>
+<rect class="chip" x="894" y="442" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M901,455 l4,4 l8,-8" stroke="#9198a1" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="930" y="451" font-size="11.5" font-weight="600" fill="#e6edf3">nette/ fixture</text>
+<text class="nsub" x="930" y="469" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">dialect B</text>
+<g class="bdg bdg-added"><rect x="1012.45" y="416" width="40.55" height="16" rx="8" fill="rgba(46,160,67,.15)" stroke="rgba(63,185,80,.4)" stroke-width="1"/><text x="1032.73" y="427" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#3fb950">NEW</text></g></g>
+<g class="cardsh" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))"><rect class="card card-added" x="1072" y="424" width="180" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3fb950" stroke-opacity="0.55"/>
+<rect class="chip" x="1086" y="442" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M1093,455 l4,4 l8,-8" stroke="#9198a1" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="1122" y="451" font-size="11.5" font-weight="600" fill="#e6edf3">contributte/ fixture</text>
+<text class="nsub" x="1122" y="469" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">dialect A</text>
+<g class="bdg bdg-added"><rect x="1204.45" y="416" width="40.55" height="16" rx="8" fill="rgba(46,160,67,.15)" stroke="rgba(63,185,80,.4)" stroke-width="1"/><text x="1224.73" y="427" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#3fb950">NEW</text></g></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="1304" y="538" width="180" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3d444d"/>
+<rect class="chip" x="1318" y="556" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M1331,562 l6.5,3.5 v7 l-6.5,3.5 l-6.5,-3.5 v-7 Z" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M1324.5,565.5 l6.5,3.5 l6.5,-3.5" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M1331,569 v7" stroke="#9198a1" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="1354" y="565" font-size="11.5" font-weight="600" fill="#e6edf3">contributte/qa</text>
+<text class="nsub" x="1354" y="583" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">phpcs ruleset</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="1496" y="538" width="180" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3d444d"/>
+<rect class="chip" x="1510" y="556" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M1523,562 l6.5,3.5 v7 l-6.5,3.5 l-6.5,-3.5 v-7 Z" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M1516.5,565.5 l6.5,3.5 l6.5,-3.5" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M1523,569 v7" stroke="#9198a1" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="1546" y="565" font-size="11.5" font-weight="600" fill="#e6edf3">contributte/phpstan</text>
+<text class="nsub" x="1546" y="583" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">level 9</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="1304" y="652" width="180" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3d444d"/>
+<rect class="chip" x="1318" y="670" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M1331,676 l6.5,3.5 v7 l-6.5,3.5 l-6.5,-3.5 v-7 Z" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M1324.5,679.5 l6.5,3.5 l6.5,-3.5" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M1331,683 v7" stroke="#9198a1" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="1354" y="679" font-size="11.5" font-weight="600" fill="#e6edf3">Nette Tester</text>
+<text class="nsub" x="1354" y="697" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">via contributte/tes…</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(0,0,0,.28))" opacity="0.82"><rect class="card" x="1496" y="652" width="180" height="62" rx="10" fill="#1c2128" stroke-width="1" stroke="#3d444d"/>
+<rect class="chip" x="1510" y="670" width="26" height="26" rx="7" fill="rgba(110,118,129,.18)"/><g><path class="glyph-stroke" d="M1523,676 l6.5,3.5 v7 l-6.5,3.5 l-6.5,-3.5 v-7 Z" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M1516.5,679.5 l6.5,3.5 l6.5,-3.5" stroke="#9198a1" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M1523,683 v7" stroke="#9198a1" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="1546" y="679" font-size="11.5" font-weight="600" fill="#e6edf3">DressCode</text>
+<text class="nsub" x="1546" y="697" font-size="9.5" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">nette preset</text></g></g>
+<g><g><rect class="lpill" x="440" y="270" width="91" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="485.5" y="281" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">read before PHP</text></g>
+<g><rect class="lpill" x="542.5" y="172.5" width="84.01" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="584.5" y="183.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">layout + tooling</text></g>
+<g><rect class="lpill" x="390.37" y="233" width="56.3" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="418.52" y="244" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">evidence</text></g>
+<g><rect class="lpill" x="662.69" y="275" width="54.62" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="690" y="286" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">dialect A</text></g>
+<g><rect class="lpill" x="963.5" y="390.5" width="100.51" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="1013.75" y="401.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">dialect A examples</text></g>
+<g><rect class="lpill" x="811.75" y="397" width="100.51" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="862" y="408" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">dialect B examples</text></g>
+<g><rect class="lpill" x="1226.71" y="521" width="54.62" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="1254.02" y="532" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">make qa</text></g>
+<g><rect class="lpill" x="1394.88" y="512.5" width="79.25" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="1434.5" y="523.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">make phpstan</text></g>
+<g><rect class="lpill" x="1229.98" y="572.83" width="64.69" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="1262.32" y="583.83" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">make tests</text></g>
+<g><rect class="lpill" x="1094.76" y="496.5" width="53.49" height="15" rx="7.5" fill="#0d1117" stroke="#21262d" stroke-width="1"/><text class="ltext ltext-added" x="1121.5" y="507.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#3fb950">make cs</text></g></g>
+</svg>
