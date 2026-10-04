@@ -2,7 +2,6 @@
 
 > Extracted from every PHP file in 164 Contributte repositories and 34 Nette repositories (8,581 files) on 2026-09-28.
 > Every rule below was measured, not guessed. Percentages are over `src/` of current-era repositories unless stated.
-> Companion plan with the full inventory and method: [SYNTAX-PLAN.md](SYNTAX-PLAN.md).
 
 ## 0. How to use this document
 
