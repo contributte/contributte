@@ -1,6 +1,8 @@
 # SYNTAX.md — How to write PHP like f3l1x (Contributte) and dg (Nette)
 
-> Extracted from every PHP file in 164 Contributte repositories and 34 Nette repositories (8,581 files) on 2026-09-28.
+> Extracted from every PHP file in 164 Contributte repositories and 34 Nette repositories (8,581 files) on 2026-09-28,
+> then extended with dg's personal repositories, phpsyntax/phpsyntax, nette/agent-plugins, nette/latte-tools,
+> f3l1x/codestyler-site and f3l1x/forge (about 1,750 more files; the section 3 header lists them).
 > Every rule below was measured, not guessed. Percentages are over `src/` of current-era repositories unless stated.
 
 ## 0. How to use this document
@@ -11,7 +13,7 @@ classes, Nette Tester) but disagree on nearly every layout detail. **Pick one di
 | You are writing in… | Dialect | Enforced by |
 |---|---|---|
 | any `contributte/*`, `nettrine/*`, `apitte/*` repository whose `ruleset.xml` extends `contributte/qa` (123 of 163), or a project built on Contributte skeletons | **A — f3l1x** | `contributte/qa` (phpcs + Slevomat), `contributte/phpstan` (level 9 in most, 8 in apitte/openapi; strict rules). Check the repo's `<exclude>`s and phpstan level before applying a rule. |
-| any `nette/*`, `latte/*`, `tracy/*` repository, or a project built on `nette/web-project` | **B — dg** | Nette Coding Standard: released `nette/coding-standard ^3` (`ecs`) in 16 of 18 CI workflows, DressCode `nette` preset (stricter superset) in tester/command-line; `nette/code-checker`; PHPStan level 8 |
+| any `nette/*`, `latte/*`, `tracy/*` repository, dg's personal repositories (`dg/*`, dibi, texy, DressCode, PhpSyntax), or a project built on `nette/web-project` | **B — dg** | Nette Coding Standard: released `nette/coding-standard ^3` (`ecs`) in 16 of 18 nette/* CI workflows, DressCode `nette` preset (stricter superset) in tester/command-line and in dg's newest personal repositories; `nette/code-checker`; PHPStan level 8 |
 
 If nothing tells you which, default to **A** for Contributte work and **B** for Nette work. Section 1 is the cheat
 sheet of the differences; sections 2 and 3 are the complete dialect descriptions; section 4 is the checklist.
@@ -27,35 +29,38 @@ constructor promotion. The guide decides only when the repository is silent.
 | Topic | A — f3l1x (Contributte) | B — dg (Nette) |
 |---|---|---|
 | First line | `<?php declare(strict_types = 1);` (spaces around `=`), 99.8% | `<?php declare(strict_types=1);` (no spaces), 100% |
-| File docblock | none | `/** This file is part of the X (url) / Copyright (c) YEAR David Grudl (https://davidgrudl.com) */` in framework packages; none in apps and new tools |
+| File docblock | none | `/** This file is part of the X (url) / Copyright (c) YEAR David Grudl (https://davidgrudl.com) */` in framework packages, DressCode, PhpSyntax, ai-access, dibi, texy; none in apps, tests and dg's other 2025–26 libraries (imap, fio-mcp, google-services, …) |
 | Blank lines: `use` block → class | 1 | 2 |
 | Blank line after class `{` and before class `}` | yes, always (99.4%) | never |
 | Blank lines between methods | exactly 1 (99.7%) | exactly 2 (97.7%) |
 | Blank lines between properties | exactly 1 | 0 or 1 (1 before a documented member) |
-| Class docblock | rare (17%), tags only (`@property-read stdClass $config`, `@template`) | on every class, one-sentence description ending with a period (84%) |
+| Class docblock | rare (17%), tags only (`@property-read stdClass $config`, `@template`) | on every class, one-sentence description ending with a period (84%); dg's 2026 tools add explanatory paragraphs (61% multi-sentence in DressCode) |
 | Global classes | imported: `use stdClass;`, `use Throwable;`, `use LogicException;` | fully qualified: `\stdClass`, `\Throwable`, `\LogicException` |
-| Global functions | bare (`count($a)`), no `use function` | imported once per file: `use function count, is_array, sprintf;` |
-| Sibling namespace | full import per class | `use Nette;` then `Nette\Utils\Strings::...` in older code; per-class import in 2026 code |
+| Global functions | bare (`count($a)`), no `use function` | the calls PHP compiles specially imported once per file (`use function count, is_array, sprintf;`), others bare; nette/utils lists every function a file calls |
+| Sibling namespace | full import per class | `use Nette;` then `Nette\Utils\Strings::...` in older code; per-class import in 2026 code, grouped `use A\{B, C};` from two imports in DressCode, PhpSyntax and the rule packages |
 | Constants | `UPPER_SNAKE` (enforced) | `PascalCase` (`Strings::TrimCharacters`); `UPPER` only as deprecated aliases |
-| `new Foo` without args | `new Foo()` (enforced) | `new Foo` (enforced, no parentheses) |
+| `new Foo` without args | `new Foo()` (enforced) | `new Foo` (enforced, no parentheses); chained `(new Foo)->bar()`, with arguments `new Foo($x)->bar()` on PHP 8.4 |
 | Arrow function | `fn ($x) => …` (space, enforced) | `fn($x) => …` (no space, enforced) |
 | Trailing comma, multi-line array | required | required |
 | Trailing comma, multi-line call / parameter list | optional, mostly absent in old code, present in 2025+ code | required |
 | Multi-line ctor with promoted params | `)` newline `{` | `) {` on the same line |
 | Multi-line method signature | `)` newline `{` | `): type` newline `{` |
 | Nullable | `?T` (93%) | `?T` for one type, `A\|B\|null` for unions, null last |
-| Exception messages | `sprintf('Service "%s" not found', $name)`; no interpolation (enforced) | `"Service '$name' not found."` interpolation for plain variables; `sprintf("… '%s'.", expr)` for expressions and throughout nette/di |
-| Exception base classes | own `LogicalException` / `RuntimeException` per library in `Exception/` | `Nette\InvalidStateException`, `Nette\InvalidArgumentException`, … from `exceptions.php` |
+| Exception messages | `sprintf('Service "%s" not found', $name)`; no interpolation (enforced) | `"Service '$name' not found."` interpolation for plain variables; `sprintf("… '%s'.", expr)` for expressions and throughout nette/di; dg's 2026 tools put identifiers in backticks (`` "Invalid version `$version`." ``) |
+| Exception base classes | own `LogicalException` / `RuntimeException` per library in `Exception/` | `Nette\InvalidStateException`, `Nette\InvalidArgumentException`, … from `exceptions.php`; dg's personal code: SPL plus its own root (`FioException`, `DG\Imap\Exception`), never the Nette set |
 | `match` | practically unused (about a dozen in 1,935 files); `switch`/`if` | used freely (205 in 779 files), `match (true)` for dispatch |
-| Enums | none in libraries (0) | rare (15); constants in a `final class` preferred |
-| `readonly class` | none | `final readonly class` for value objects |
+| Enums | none in libraries (0) | rare in nette/* (15), constants in a `final class` preferred; the default for closed sets in dg's 2026 tools (18, one `enums.php` per namespace, a few with methods) |
+| `readonly class` | none | `final readonly class` for value objects (nette/*, DressCode 29); dg's libraries use `final class` with `public readonly` promoted properties (0 `readonly class`) |
+| `final` | not the default (25%) | ~38% in nette/* (follow the package); 95–98% in dg's 2026 tools, 72% in his 2025–26 libraries |
+| `static fn` | on closures without `$this` in 2024+ code | never in nette/* (7), DressCode, PhpSyntax; every `$this`-free closure in fio-mcp and google-services; follow the file |
+| Named arguments | flag literals only (`forceArrays: true`) | flag literals, skipped optional parameters, constructors with many optional parameters (`new Usage(inputTokens: …)`); attributes always named |
 | Numeric separators | forbidden (`1000000`) | used from 7 digits (`1_000_000`) |
 | Method docblock layout | description, blank ` *` line, tags | description, no blank line, `@param  type  $x` with two spaces |
 | PHPStan | level 9 in most libraries (8 in apitte/openapi) + strict rules; inline `// @phpstan-ignore-*` or `ignoreErrors` in `phpstan.neon` (44% of repos) | level 8; `ignoreErrors` in `phpstan.neon` with a reason comment; no inline ignores |
-| Member order | consts → props → ctor → public → protected → private → magic (enforced) | traits → consts → props → ctor → methods in any order (helpers next to their caller) |
-| Tests | `Toolkit::test(function (): void { … });` in `tests/Cases/*.phpt` | `test('title', function () { … });` in `tests/<Dir>/Class.aspect.phpt` for new files (30% of the suite; the rest are flat `Assert::` scripts) |
-| Commit subject | `Area: imperative lowercase phrase` (`Composer: require PHP 8.2`) | `Class: present-tense sentence` (`Finder: exclude() uses the same mask grammar as find()`) or lowercase past tense (`added Type::fromValue()`, `requires PHP 8.2`) |
-| Dev entry point | `Makefile` (`make qa cs csf phpstan tests`) | `composer phpstan`, `composer tester` |
+| Member order | consts → props → ctor → public → protected → private → magic (enforced) | traits → consts → props → ctor → methods grouped by subject, general before special, helpers after their caller |
+| Tests | `Toolkit::test(function (): void { … });` in `tests/Cases/*.phpt` | `test('title', function () { … });` in `tests/<Dir>/Class.aspect.phpt` for new files (30% of the nette/* suite, 72–87% in dg's 2025–26 code; the rest are flat `Assert::` scripts) |
+| Commit subject | `Area: imperative lowercase phrase` (`Composer: require PHP 8.2`) | `Class: present-tense sentence` (`Finder: exclude() uses the same mask grammar as find()`) or lowercase past tense (`added Type::fromValue()`, `requires PHP 8.2`); dg's agent skill teaches past tense only |
+| Dev entry point | `Makefile` (`make qa cs csf phpstan tests`) | `composer phpstan`, `composer tester`; CI style job `ecs` in nette/*, `dresscode check` in dg's newest repositories |
 
 ---
 
@@ -75,7 +80,10 @@ constructor promotion. The guide decides only when the repository is silent.
   **test files obey every rule below too.**
 - Consequences of strict rules at level 9 that shape the code: only real booleans in conditions (`if ($x !== null)`,
   never `if ($x)` on a nullable object, never `if (count($a))`), no `empty()`, no `==`, no short ternary `?:`,
-  `in_array(..., true)`, no implicit array creation, no dynamic property or method names.
+  `in_array(..., true)`, no implicit array creation, no dynamic property or method names. `empty()` has no phpcs
+  sniff: only the strict rules reject it, so a repository without `phpstan.neon` can contain it (codestyler-site, 6
+  uses); do not copy it. The `contributte` preset in codestyler-site's `resources/presets.json` is not an authority
+  (class braces 0/0, `DisallowReference` missing): `contributte/qa/ruleset.xml` is.
 
 ### 2.2 File anatomy
 
@@ -1328,21 +1336,75 @@ Toolkit::test(function (): void {
 
 ## 3. Dialect B — dg / Nette
 
+Corpus. Built first from the 34 `nette/*` (with `latte/*`, `tracy/*`) repositories, then extended with dg's own code:
+his 2026 tools `dg/dresscode` and `phpsyntax/phpsyntax` (~640 authored files, ~100k lines); his 2025–26 libraries
+`dg/{ai-access, google-services, fio-mcp, pohoda-mcp, imap, bypass-finals, php-extensions-finder}`, the Adminer
+plugins and `dg/dresscode-rules-{nette, deegee, symfony, laravel}` (149 library and 182 test files); his long-lived
+libraries `dg/{dibi, texy, ftp-deployment, composer-cleaner, MySQL-dump, twitter-php, rss-php}` (227 PHP and 151
+`.phpt` files); the agent skills and hook scripts of `nette/agent-plugins` (dg's prose for models plus 20 PHP files);
+and `nette/latte-tools` (154 files, 143 of them a Twig port). `f3l1x/codestyler-site` (21 files, bot-committed) and
+`f3l1x/forge` (173 files in six eras) were read for section 2 and 3.19. Below, "nette/* packages" means the framework
+repositories, "dg's 2026 tools" DressCode and PhpSyntax, "dg's libraries" the personal repositories. Where they
+disagree a rule names both with counts; write what the repository you are in does, and its `dresscode.neon`, when
+present, decides.
+
 ### 3.1 Toolchain
 
 - Nette Coding Standard: CI in 16 of 18 repositories runs the released `nette/coding-standard ^3` (`ecs`,
   php-cs-fixer + Slevomat, created with `composer create-project` into `temp/coding-standard`, `php
   temp/coding-standard/ecs check`) plus `nette/code-checker --strict-types` over `src` and `tests`; tester and
   command-line already run DressCode (`dresscode.neon` with `presets: [nette]`, which the unreleased
-  `nette/coding-standard` 4.0-dev wraps). Write code that passes DressCode's `nette` preset — it is the stricter
-  superset — and run whichever tool the repository's workflow names. Also enforced and easy to trip: a closure whose
-  body is a single `return expr;` must be `fn(...) => expr` (both tools); an unused catch variable is an error
-  (`catch (\Throwable)`); `self::` for the class's own name; parentheses when `&&`/`||` are mixed
-  (`explicit-operator-precedence`); `==` is reported even with a comment (`strict-comparison`, warning); a chain link
-  that returns a different object steps one indentation level deeper; with `php: 8.4` `(new Foo)->bar()` is flagged
-  as useless parentheses.
-- PHPStan level 8 (never 9), no strict-rules package, `nette/phpstan-rules` for Nette-aware precision;
-  `phpstan.neon` analyses `src` only, every `ignoreErrors` entry carries a `# reason` comment and an `identifier`.
+  `nette/coding-standard` 4.0-dev wraps). dg's newest personal repositories run a DressCode job instead of `ecs`
+  (dresscode, fio-mcp, google-services, pohoda-mcp, bypass-finals, the `dresscode-rules-*` packages: `composer
+  create-project dresscode/dresscode temp/dresscode dev-master`, then `php temp/dresscode/bin/dresscode check` on PHP
+  8.4); dibi, texy, ftp-deployment, twitter-php, rss-php, ai-access and imap still run `ecs ^3`. Write code that passes
+  DressCode's `nette` preset — it is the stricter superset — and run whichever tool the repository's workflow names.
+  Also enforced and easy to trip: a closure whose body is a single `return expr;` must be `fn(...) => expr` (both
+  tools); an unused catch variable is an error (`catch (\Throwable)`); `self::` for the class's own name; parentheses
+  when `&&`/`||` are mixed (`explicitOperatorPrecedence`); `==` is reported unless its line carries `// intentionally
+  ==` (`strictComparison`); an `@` is reported unless its line carries `// @ reason` (`noErrorSuppression`, in the
+  current build); a chain link that returns a different object steps one indentation level deeper; with `php: 8.4`
+  `(new Foo($x))->bar()` is rewritten to `new Foo($x)->bar()` (`uselessParenthesesAroundNew`), while the argument-less
+  `(new Foo)->bar()` is accepted and is what dg writes (365 vs 30 `new Foo()->bar()` in his 2026 tools).
+- Lineage: the standard "corresponds to PSR-12 Extended Coding Style with two main exceptions", tabs and PascalCase
+  constants (`nette/agent-plugins` `plugins/nette-dev/docs/contributing/coding-standard.md`); the current `nette`
+  preset is PER Coding Style plus the Nette layout (`src/Presets/Nette.php`). What this guide does not settle is
+  PSR-12 / PER. `Nette\PhpGenerator\Printer` encodes it as defaults (tab, `$wrapLength = 120`, two blank lines
+  between methods) except `$declareOnOpenTag = false`: set it to `true` when generating dialect B files.
+- There is no `deegee` preset: the built-in presets are `perCs`, `psr12`, `nette` and `symfony`, and
+  `dresscode-rules-deegee` is upgrade data for Dibi and Texy. Rule names here follow the current DressCode
+  (camelCase: `orderedMembers`, `uselessElse`); earlier 2026 builds and some `dresscode.neon` files spell them
+  kebab-case (`ordered-members`). Repositories add project rules on top of the preset (`groupImport: {minImports:
+  2}`, the `optimizedCalls` group, `overrideAttributeRequired: keep`, `modernization`): read `dresscode.neon` first.
+- The `nette` preset also enforces, beyond what this section names: `yoda: forbidden`, `notEqualsNotation`,
+  `incrementForAddOne`, `symbolicLogicalOperators` (`and` → `&&`), `noShortBoolCasts` (`!!$x`), `combinedIssets`,
+  `combinedUnsets`, `combinedAssignmentForRepeatedTarget`, `nullCoalescingForNullTernary`, `noIsNull`, `noSettype`,
+  `noDirnameOfFile`, `noAliasFunctions`, `noConversionFunctions`, `noDeprecatedFunctions`, `noDirectInvokeCalls`,
+  `noCallUserFunc`, `noGlobalStatements`, `noInnerFunctions`, `noAlternativeSyntax`, `noContinueInSwitch`,
+  `noBacktickOperators`, `noHashComments`, `noImplicitBackslashes`, `complexStringVariable`,
+  `noTrailingWhitespaceInString`, `noInvisibleCharacters`, `nativeNameCasing`, `getClassNotation` (`$x::class`),
+  `kindInClassName`, `visibilityRequired {interfaceMethod: forbidden}`, `propertyPhpdocRequired` (a comment above a
+  property is a `/** */`), `propertyPhpdocSingleline`, `promotedPropertyAnnotationPosition`, `forbiddenPhpdocLines`
+  (`Constructor.`, `X getter.`), `annotationCasing`, `phpdocTypeNotation {arrayNotation: keep}` (both `T[]` and
+  `array<T>` stay), `explicitAssertion` (`assert($x instanceof Y)`, not an inline `@var`), `uselessFunctionPhpdoc`,
+  `uselessStringConcat`, `noManualEmptyStringTests`, `uselessSameNamespaceImport`, `unusedImports`, `strictCall`,
+  `noDuplicateAssignments`, `noStaticThis`, `nowdocWithoutInterpolation`, `heredocIndentation`, `attributeAfterPhpdoc`,
+  `neverForThrowingFunction`, `commaSpacing {alignment: tabs}`.
+- It does **not** enforce, although this guide states them as dg's habits: a line length (there is no `lineLength`
+  rule; 140 is only the width at which `multilineArray` (130), `multilineCondition` and `multilineSignature` break), a
+  trailing comma after the last `match` arm (`trailingComma {matchArm: keep}`), `use function` imports
+  (`importNotation` only merges them into one statement; the set comes from the project's `optimizedCalls` group),
+  docblock layout (`@param` spacing, no blank line before tags), group use, `static fn`, `#[\Override]`, typed
+  constants, `empty()`, `switch` where `match` fits, test file naming.
+- PHPStan level 8 (never 9; dg's skill: "Levels higher than 8 are not worth pursuing"), no strict-rules package,
+  `nette/phpstan-rules` for Nette-aware precision; `phpstan.neon` analyses `src` in nette/* (dg's 2026 tools add
+  `tests` and `bin/` or `docs/reference`, fio-mcp `server.php`, ai-access `examples`), every `ignoreErrors` entry
+  carries a `# reason` comment and an `identifier` (dibi and texy still have entries without a reason: legacy).
+  Resolution ladder (`nette/agent-plugins` `phpstan-analysis` skill): refactor, then phpDoc, then `assert()`
+  (sparingly), then a commented `ignoreErrors` entry, then the baseline (`includes: - phpstan-baseline.neon`, last
+  resort, kept minimal); never `@phpstan-ignore`. One entry is one phenomenon (`identifier:` + `message:` + `count:`,
+  which needs `path:`, not `paths:`); never suppress `phpDoc.parseError`, `argument.templateType` or anything under
+  `tests/types/`; no `positive-int`/`non-empty-string`-style types. Judge the run by its exit code.
 - `composer phpstan` = `phpstan analyse`, `composer tester` = `tester tests -s`. No Makefile.
 - Tests are style-checked with the same standard as `src`.
 
@@ -1415,31 +1477,55 @@ final class Json
    migrations; do not write it.
 2. Framework packages carry the license docblock on lines 3–6 (text per project: `This file is part of the Nette
    Framework (https://nette.org)`, `… the Latte (https://latte.nette.org)`, `… the Tracy (https://tracy.nette.org)`,
-   `… the Nette Tester.`; second line `Copyright (c) YEAR David Grudl (https://davidgrudl.com)`). Applications,
-   skeletons and new tools (mcp-inspector, xray, web-project, assets) have none. Copy the header of the repository
+   `… the Nette Tester.`; second line `Copyright (c) YEAR David Grudl (https://davidgrudl.com)`, YEAR being the
+   project's birth year in every file). dg's 2026 tools carry it too, as `<Name>, <descriptor> (<url>)`: `This file
+   is part of the PhpSyntax, a lossless syntax tree for PHP (https://phpsyntax.deegee.dev)` (155 of 158 `src` files,
+   the rest generated) and `… the DressCode, a coding style and upgrade tool for PHP (https://dresscode.run)` (325 of
+   327); so do ai-access (68 of 68), dibi (54 of 54) and texy (90 of 91). Applications, skeletons, mcp-inspector, xray,
+   web-project, assets and dg's other 2025–26 libraries (imap, bypass-finals, google-services, fio-mcp, pohoda-mcp,
+   `dresscode-rules-*`) have none, nor do tests, examples and generated data files. Copy the header of the repository
    you are in.
 3. Blank lines: one between `declare` and the docblock, one before and after `namespace`, none inside the `use`
    block, **two** between the `use` block (or `namespace`) and the class docblock.
 4. `use` block, in this order with no blank lines between kinds: class imports alphabetically (case-insensitive,
    `use Nette;` first because shortest), then **one** `use function a, b, c;` line (alphabetical, comma-separated,
-   however long; 400-character lines are normal), then one `use const A, B;` line. Import the functions PHP can
-   optimise (`count`, `strlen`, `is_*`, `in_array`, `sprintf`, `implode`, `array_*`, `preg_*`, …) — the newest code
-   imports every native function it calls. Group use `use Foo\{A, B};` only where a repository already does it.
+   however long; 400-character lines are normal), then one `use const A, B;` line. Import with `use function` only
+   the calls PHP compiles specially (`count`, `strlen`, `in_array`, `is_*`, `array_key_exists`, `sprintf`,
+   `array_slice`, `ord`/`chr`, `defined`, `dirname`, `strval`); every other native call stays bare (`substr`,
+   `preg_match`, `implode`, `array_map`, `strtolower`, `str_contains`, `array_any`). That is the set DressCode's
+   `optimizedCalls` group imports (`nameFallback {optimizedFunction: qualified}`, set per project in `dresscode.neon`,
+   not by the `nette` preset): DressCode imports 29 distinct functions and leaves 2,004 native calls bare, texy's whole
+   `src` imports 10, fio-mcp imports none. nette/utils files list every function they call (the golden `Json` above
+   imports `json_*`): in such a file add new calls to the existing line; never extend a file to every call. In the
+   global namespace nothing is imported (`nette/agent-plugins` hooks: 0 of 17 files).
+   Group use: nette/* writes one class per line (`use Foo\{A, B};` only where a repository already does it);
+   DressCode, PhpSyntax and the `dresscode-rules-*` packages group two or more imports of one namespace (`use
+   PhpSyntax\{Node, Token};`, a lone class `use PhpSyntax\Token;`; 823 group statements in 275 of 327 DressCode
+   files, 0 namespaces with two single imports) through `groupImport: {minImports: 2}` in their `dresscode.neon`.
 5. Global classes are **not** imported: write `\stdClass`, `\Closure`, `\Throwable`, `\LogicException`,
    `\ReflectionClass`, `\Generator`, `\DateTimeInterface` in code (582 vs about 40 imports: `use Attribute;` in
    attribute classes, `use Stringable;` throughout nette/forms — follow the package). Sibling packages are reached
    through the root import `use Nette;` and written `Nette\Utils\Strings::…`, `Nette\InvalidStateException` (99 of
    203 core files); partial imports `use Nette\DI;` → `new DI\Compiler` are common. 2026 tools import each class
-   individually instead; both are accepted, follow the file. Aliases are rare and only shorten long namespaces
-   (`use Nette\PhpGenerator as Php;`, `use Latte\Runtime as LR;`).
+   individually instead; both are accepted, follow the file. dg's libraries apply the same root import to their own
+   package (`use Dibi;` in 30 of 54 dibi files, `use Texy;` 33 of 91, `use AIAccess;` 22). Aliases are rare and only
+   shorten long namespaces (`use Nette\PhpGenerator as Php;`, `use Latte\Runtime as LR;`). Exceptions to `\Foo`: a
+   namespaced CLI script imports its global classes (`phpsyntax/bin/phpsyntax:11-23`), a file without a namespace
+   writes them bare, and composer-cleaner and twitter-php import `stdClass` (follow the file); google-services writes
+   `#[\Attribute(\Attribute::TARGET_METHOD)]` without importing.
 6. Global functions are bare (never `\count()`).
 7. Several declarations per file are allowed for exception families (`src/<Pkg>/exceptions.php`), enums
    (`enums.php`), compatibility shims (`compatibility.php`, `compatibility-intf.php`) and namespaced functions
-   (`functions.php`), each declaration separated by two blank lines; composer autoload is `classmap: ["src/"]` plus
-   `psr-4`.
-8. Tabs everywhere (PHP, Latte, NEON, PHTML). Markdown code samples use 4 spaces only in docs. Line length: no hard
-   limit (DressCode reports at 140); 92% of lines are ≤ 80, long `throw` lines of 130–180 columns are normal;
-   wrap chains and ternaries by feel at 100–120.
+   (`functions.php`), each declaration separated by two blank lines (DressCode accepts one or two,
+   `betweenDeclarations: [1, 2]`; ai-access's `exceptions.php` uses one); composer autoload is `classmap: ["src/"]`
+   plus `psr-4`. dg's 2026 tools put each namespace's enums in its own `enums.php` and exceptions in its own
+   `exceptions.php` (`src/Console/exceptions.php`, `src/Analyses/enums.php`); ftp-deployment and google-services keep
+   one exception per file.
+8. Tabs everywhere (PHP, Latte, NEON, PHTML; the agent skill adds JS, HTML, CSS). Markdown code samples use 4 spaces
+   only in docs. Line length: no hard limit and no check (DressCode's 140 only decides where arrays, conditions and
+   signatures break); 92% of lines are ≤ 80 in nette/* and dg's classic libraries, 83–85% in his 2026 code; long
+   `throw` lines of 130–180 columns are normal; wrap chains and ternaries by feel at 100–120. Docblock and comment
+   prose wraps at about 120 columns (1–3% of DressCode/PhpSyntax docblock lines exceed it).
 
 ### 3.3 Class layout
 
@@ -1489,10 +1575,13 @@ class Paginator
 
 1. Class `{` on its own line; **no blank line after it and none before the closing `}`** (0 of 955 types). Empty
    body is `{` newline `}`.
-2. Member order (DressCode `ordered-members`): trait `use` lines (then one blank line) → constants (public,
+2. Member order (DressCode `orderedMembers`): trait `use` lines (then one blank line) → constants (public,
    protected, private) → properties (public, protected, private) → **two blank lines** → constructor → methods.
-   Methods are **not** sorted by visibility: a private helper sits right below the public method that calls it;
-   `getIterator()` last in iterable classes.
+   Methods are **not** sorted by visibility. dg's rules for their order (`php-coding-standards` skill), earlier wins:
+   keep methods on one subject together and never split such a group; general before special (a variant right after
+   the plain form); a helper after the method that needs it, after the whole group when several do, or at the end.
+   `getIterator()` last in iterable classes. When editing, leave existing methods where they are: reordering buries
+   the real change in the diff.
 3. **Exactly two blank lines between methods** (97.7%; one blank line only inside interfaces). Between constants
    or properties of one group: 0 blank lines; one blank line before a member that has a docblock or attribute, and
    between visibility groups.
@@ -1504,9 +1593,14 @@ class Paginator
    constants, never `final const`.
 5. Modifier order `final public function`, `public static function`, `abstract public function`. `final` on
    individual methods freezes invariants in extensible base classes (`final public function getRequest()`).
-6. Interface methods carry **no `public`** and one blank line between them (33 of 38 core interfaces); newest
-   packages write `public function` — follow the file.
-7. Section banners in long classes (≥ 400 lines), lowercase, with dg's signature, two blank lines before and after:
+6. Interface methods carry **no `public`** and one blank line between them: 33 of 38 core interfaces, 26 of 26
+   methods in ai-access, all of PhpSyntax's; dg's standard states it as a rule ("The visibility of methods is not
+   specified for interfaces because they are always public", `coding-standard.md`; repeated in `php-coding-standards`)
+   and the current `nette` preset reports it (`visibilityRequired {interfaceMethod: forbidden}`). DressCode's own
+   interfaces still write `public function` (`src/Reporter.php`): drop it when the file is next touched.
+7. Section banners in long classes (≥ 400 lines in nette/*; dibi puts them in classes from ~100 lines, pohoda-mcp
+   in its 640-line files, texy in its 600+ line renderers), lowercase, with dg's signature, two blank lines before and
+   after:
 
    ```php
 	/********************* interface IPresenter ****************d*g**/
@@ -1514,8 +1608,14 @@ class Paginator
 
 8. Properties are typed, defaults inline, `public` for configuration and DTO/AST data (`public ?string $directory =
    null;`, `Debugger::$maxDepth`, Latte nodes), `private` for state, `protected` only on explicit extension points.
-   No `SmartObject` in new classes (11 of 261 files, all old magic-property classes); `use Nette\StaticClass;` as the
-   first line of a static utility class.
+   No `SmartObject` in new classes (11 of 261 files, all old magic-property classes); dg's `nette-utils` skill
+   says "For new code prefer PHP 8.4 property hooks". Measured use of the PHP 8.4 property features: 0 in nette/* and
+   in dg's libraries (even the four packages requiring PHP 8.4); heavy in PhpSyntax's parser nodes (80 hand-written
+   `get =>` hooks such as `public string $text { get => Printer::printText($this); }`, 510 generated `set =>` hooks,
+   interface properties `public ?Token $openParen { get; }`, 4 asymmetric `public private(set)` /
+   `public protected(set)`). Write a hook where a read computes or a write has a consequence, otherwise a plain
+   typed property. `use Nette\StaticClass;` as the first line of a static utility class (packages depending on
+   nette/utils).
 
 ### 3.4 Declarations and naming
 
@@ -1524,7 +1624,12 @@ class Paginator
   attributes, helpers and most DI extensions (11 of 18) are `final`; follow the package for the rest. Public building
   blocks meant to be
   extended stay open: `Presenter`, `Control`, `Component`, `Form`, `Route`, `Engine`, `Logger`, `Debugger`,
-  `Assert`, `TestCase`, `Strings`, `Arrays`, `Container`, `Compiler`, every Latte tag/expression node.
+  `Assert`, `TestCase`, `Strings`, `Arrays`, `Container`, `Compiler`, every Latte tag/expression node. dg's 2026 tools
+  make every concrete class `final` (PhpSyntax 140 of 148, DressCode 311 of 318; open are abstract bases documented as
+  the extension point and the exceptions callers extend), his 2025–26 libraries 72% (ai-access 83%, `dresscode-rules-*`
+  10 of 10; open: exceptions, MCP tool classes, mutable DTOs), his classic libraries much less (dibi 2 of 60,
+  ftp-deployment 0 of 17, texy 37 of 90). The ~38% describes nette/* only; in a new tool make concrete classes
+  `final`.
 - **No kind in the name** (enforced by the standard): no `I` prefix, no `Abstract` prefix, no `Interface`/`Trait`
   suffix. Interfaces are capability nouns/adjectives: `Response`, `Renderable`, `Authenticator`, `Storage`,
   `Mailer`, `Router`, `Loader`, `Policy`, `Schema`, `Adapter`, `HtmlStringable`. Implementations use a concrete
@@ -1532,19 +1637,31 @@ class Paginator
   nouns (`Definition`, `Node`, `Component`, `CompilerExtension`). Traits: `StaticClass`, `SmartObject`,
   `TagParserData`, `*Aware` (`NameAware`, `CommentAware`). Kept deliberately with `I`: `IPresenter`,
   `IPresenterFactory`, `IRequest`, `IResponse`, `IIdentity`, `IComponent`, `IContainer`, `IBarPanel`, `ILogger`;
-  reference them as they are.
+  reference them as they are. dg's libraries accept `Base` on an `@internal` shared abstract (`BaseChat` in ai-access),
+  never `Abstract`. Class names are nouns or noun phrases carrying specificity and generality (`ArrayIterator`); PHP
+  attributes are exempt (`php-coding-standards`). An interface or base class sits one namespace above its
+  implementations (`Foo\Network` next to `Foo\Networks\*`), not inside it.
 - Renames keep BC with `interface_exists(IOld::class);` two blank lines after the new interface and a
   `compatibility-intf.php` block: `if (false) { /** @deprecated use X */ interface IOld extends New {} } elseif
   (!interface_exists(IOld::class)) { class_alias(New::class, IOld::class); }`.
 - `@internal` marks "public for technical reasons": `/** @internal */` above `final class Helpers`, or as the last
   tag of a method docblock. Never `#[Internal]`.
-- Enums: rare (15 in 779 files), PascalCase cases, string-backed for wire values (`enum SameSite: string`), pure for
-  flags, no methods, may live in `enums.php`; a fixed set is otherwise a constant group in a final class
-  (`ContentType`, `Token` types). `final readonly class` for immutable value objects (`Type`, `Token`, `Position`,
-  `IPAddress`).
+- Enums: nette/* packages: rare (15 in 779 files), string-backed for wire values (`enum SameSite: string`), pure for
+  flags, may live in `enums.php`; a fixed set is otherwise a constant group in a final class (`ContentType`, `Token`
+  types). dg's 2026 tools: the default form of a closed set (18 enums against 6 constant groups), pure for states and
+  choices (`Tristate::Yes/No/Maybe`, `Stage`, `Space`), `string`-backed only where configuration or the wire spells
+  the value (`enum Group: string`); all in one `enums.php` per namespace with the license docblock, two blank lines
+  between enums, a sentence docblock per enum and a lowercase fragment per case where the name is not enough. In
+  both, PascalCase cases (keyword-like names are fine: `SymbolKind::Function`, `Default`), and an enum may carry a few
+  small methods derived from `$this` (3 of 18 in the 2026 tools: `Risk::describeRefused()` with `match ($this)`; texy
+  `ListType::isOrdered()`; google-services `AccessLevel::includes()`). A wire enum in an API client gets a catch-all
+  case (`FinishReason::Unknown`). `final readonly class` for immutable value objects in nette/* (`Type`, `Token`,
+  `Position`, `IPAddress`) and DressCode (29); dg's libraries write `final class` with `public readonly` promoted
+  properties instead (0 `readonly class`).
 - Static utility classes are named plural: `Helpers`, `PhpHelpers`, `NodeHelpers`, `HtmlHelpers`, `Filters`,
   `Passes`, `Tasks`, `Validators`, `Strings`, `Arrays`, `Callback`, `Json` (with `use Nette\StaticClass;` or a
-  `final public function __construct() { throw new \LogicException; }` guard).
+  `final public function __construct() { throw new \LogicException; }` guard). Packages without nette/utils write
+  `final class Helpers` with public static methods and no guard (DressCode, PhpSyntax, `NodeHelpers` in texy).
 - Abbreviations: two letters uppercase (`IO`, `DI`, `IP`, `OK`: `IOException`, `DIExtension`, `IPAddress`), three or
   more PascalCase/camelCase (`Json`, `Html`, `Url`, `Http`, `getHtml()`).
 - Methods camelCase; `get`/`set`/`is`/`has`/`add`/`remove`/`create`/`parse`/`print`/`render`/`format`/`validate`/
@@ -1553,9 +1670,19 @@ class Paginator
   (`setVariadic(bool $state = true)`, `required(bool $state = true)`). DSL-style fluent methods without `set`
   prefix in Schema/DI (`->default()`, `->required()`, `->castTo()`, `->tag()`, `->lazy()`). Internal DI hook methods
   prefixed `do` (`doRegisterExcludedClasses`). Static constructors: `from()`, `fromString()`, `fromReflection()`,
-  `fromParts()`, `create()`, `parse()`, `el()`; never `of()`.
-- Variables short and idiomatic: `$res`, `$tmp`, `$s`, `$m` (regex matches), `$e`, `$rc`/`$rm`/`$rp` (reflection),
-  `$dolly` (the clone in `with*()`), `$def`, `$pos`, `$k => $v`, `$i`.
+  `fromParts()`, `create()`, `parse()`, `el()`; never `of()`. dg's rules for agents (`php-coding-standards`): a
+  method is an action, never a bare noun (`getProvider()`, not `provider()`); exceptions are static factories
+  (`fromFile()`), conversions (`toArray()`), interface methods (`jsonSerialize()`) and domain-echoing fluent APIs.
+  Boolean queries are `is*`/`has*`/`can*`; a boolean property is named by the state (`$active`), never `$isActive`.
+  The 2026 tools add: `get*` returns what belongs to the object (may be `null`), `find*` searches and returns `null`
+  for not found, `check*` returns `void` and throws, never answers; `try*` is rare there (1 in DressCode); immutable
+  data has no `set*`.
+- Identifiers, comments and messages are English, whatever language the conversation is in (`php-coding-standards`);
+  declared names (classes, methods, properties, parameters) avoid abbreviations "unless the full name is too long".
+  Local variables in nette/* are short and idiomatic: `$res`, `$tmp`, `$s`, `$m` (regex matches), `$e`,
+  `$rc`/`$rm`/`$rp` (reflection), `$dolly` (the clone in `with*()`), `$def`, `$pos`, `$k => $v`, `$i`. dg's 2026
+  tools spell them out (`$result`, `$expression`, `$parameter`, `$openParen`; `$res`, `$tmp`, `$s`, `$rc`, `$def`,
+  `$dolly` 0 each) and keep only `$i`, `$m`, `$e`, `$k`/`$v`, `$stmts`, `$args`: follow the file.
 - Events are public arrays `onXxx` documented `/** @var array<callable(static): void>  Occurs when … */`.
 - Namespaces mirror directories under `src/`: `Nette\Utils`, `Nette\DI\{Compiler,Config,Definitions,Extensions}`,
   integration code in `Nette\Bridges\<Package><Target>` (`ApplicationDI`, `FormsLatte`, `HttpTracy`, `SecurityHttp`,
@@ -1583,7 +1710,8 @@ class Paginator
    code); `protected readonly` where subclasses need them; `public` (mutable) for AST nodes and command objects;
    `public readonly` for value objects. A promoted list is **always multi-line** with a trailing comma, even for
    one parameter, and the constructor closes `) {` on the same line; the empty body is `{` newline `}`.
-2. Every other multi-line signature ends `): Type` on its own line and puts `{` on the next line. Single-line
+2. A multi-line constructor without promotion closes `) {` as well (ftp-deployment, twitter-php). Every other
+   multi-line signature ends `): Type` on its own line and puts `{` on the next line. Single-line
    signatures (≤ ~117 columns) keep `{` on the next line too. `#[\SensitiveParameter]` on its own line before the
    parameter forces the multi-line form.
 3. Classic assignment constructors remain in classes with initialisation logic (`Cache`, `Selection`, `Route`,
@@ -1605,22 +1733,38 @@ class Paginator
 - Nullable: `?T` for one type (never `T|null` for a single type: 0 hits); `A|B|null` with `null` **last** for
   unions (`string|Stringable|null $label = null`, `string|int|\DateTimeInterface|null`); `false` also last
   (`static|false`). Defaults `?T $x = null`; implicit nullable never.
-- Return types always, including `: void`; **fluent setters and withers return `static`** (`: static` 526 vs
-  `: self` 77); `: self` only for named constructors on final/readonly value objects; `: never` for methods that
-  always throw or exit (`terminate()`, `redirectUrl()`, `error()`, `throwUnexpectedException()`).
-- Immutable objects: `with*(): static` cloning into `$dolly` (`$dolly = clone $this; $dolly->url = $url; return
-  $dolly;`); mutable counterparts have setters.
-- Named arguments label boolean/flag literals only: `in_array($x, $list, strict: true)`, `getComponent($name,
-  throw: false)`, `microtime(as_float: true)`, `class_exists($c, autoload: false)`, `var_export($x, return:
-  true)`, `previous: $e`; never for ordinary positional data.
+- Return types always, including `: void` (magic `__clone`/`__destruct` carry none); **fluent setters and withers
+  return `static`** in nette/* (`: static` 526 vs `: self` 77); `: self` only for named constructors on
+  final/readonly value objects; `: never` for methods that always throw or exit (`terminate()`, `redirectUrl()`,
+  `error()`, `throwUnexpectedException()`). dg's 2026 tools and libraries: a chaining setter returns `static`
+  (`Token::setText(): static`), a `with*()` of a final immutable class returns `self` (`Style::withIndent(): self`),
+  as do named constructors (27 `static function … : self`, 0 `: static` in DressCode) and own-type navigation
+  (`getNext(): ?self`).
+- Immutable objects: `with*()` cloning into `$dolly` in nette/* (`$dolly = clone $this; $dolly->url = $url; return
+  $dolly;`; `$dolly` 0 times in dg's personal code, which clones into `$clone`); mutable counterparts have setters.
+- Named arguments label flag literals: `in_array($x, $list, strict: true)`, `getComponent($name, throw: false)`,
+  `microtime(as_float: true)`, `class_exists($c, autoload: false)`, `var_export($x, return: true)`, `previous: $e`;
+  not when the method name says it already (`setReadonly(true)`, `php-coding-standards`). They also skip optional
+  parameters in front (`limit: 2`, `offset: $offset`, `range: $node->range` in texy; `report($token, $message,
+  trivia: $comment, fixable: false)` in DressCode, where 78% of 615 named arguments are not booleans) and carry the
+  values of constructors with several optional or same-typed parameters (`new Usage(inputTokens: …, outputTokens:
+  …)`, `new Config(presets: [...], rules: $rules)`); ai-access prefers typed named parameters to option arrays
+  (`setOptions(?int $maxOutputTokens = null, ?float $temperature = null): static`). Required leading arguments stay
+  positional; a call with one obvious argument is never named. Attribute arguments beyond the first are always
+  named.
 - First-class callables `foo(...)` are preferred over `[$this, 'foo']`: `'n:href' => LinkNode::create(...)`,
   `$this->factory = $factory(...)`, `array_map(strval(...), $x)`.
 - Conditional return docs for `bool $throw` parameters: `@return ($throw is true ? T : ?T)`.
 - Regex delimiters `#…#` (or `~…~`), `D` modifier when anchoring with `$`, `x` mode with inline `#` comments for
   long patterns; native `preg_*` in libraries (`Nette\Utils\Strings::match` is for user code).
-- Attributes: `#[\Deprecated('use X')]` (PHP 8.4, used unguarded), `#[Attribute(Attribute::TARGET_METHOD)]` with
-  `use Attribute;` imported in attribute classes, `#[Requires(methods: 'POST')]`, `#[Persistent]`, `#[Language('SQL')]`
-  on parameters, `#[\SensitiveParameter]`, `#[\AllowDynamicProperties]`; `#[\Override]` never.
+- Attributes: `#[\Deprecated('use X')]` (PHP 8.4, used unguarded in nette/*; dg's personal code has none: his 2026
+  tools have deprecated nothing yet, bypass-finals, supporting PHP < 8.4, writes `@deprecated use X`),
+  `#[Attribute(Attribute::TARGET_METHOD)]` with `use Attribute;` imported in attribute classes, `#[Requires(methods:
+  'POST')]`, `#[Persistent]`, `#[Language('SQL')]` on parameters, `#[\SensitiveParameter]`,
+  `#[\AllowDynamicProperties]`; `#[\Override]` never (0 everywhere; repositories that enable DressCode's `modernization`
+  group switch it off with `overrideAttributeRequired: keep`). Project attributes read by a registry go between the
+  docblock and the class, one argument per line with a trailing comma once they do not fit (`#[RuleInfo(` /
+  `'dresscode/arraySpacing',` / `Stage::Formatting,` / `description: '…',` / `)]`).
 
 ### 3.7 Docblocks and comments
 
@@ -1644,24 +1788,45 @@ class Paginator
    (official standard; 39 vs 9); `@internal`, `@deprecated`, `@template`, `@implements` follow the description
    directly. Tag order: `@property*`, `@method`,
    `@template`, `@extends`/`@implements`, `@internal`/`@deprecated`. Usage examples in `<code>` blocks, never
-   fences.
+   fences. A class docblock does not repeat the method list or implementation details, and never opens "Class that …"
+   (`php-doc` skill). dg's 2026 tools differ: 99% of declarations documented, the first sentence says what the class
+   is and further sentences give the contract, invariant or what it deliberately does not do (61% of DressCode class
+   docblocks have several sentences, 70 run six lines or more); docblocks are Markdown, every call, variable, keyword
+   and literal in backticks, `<code>` 0 times; `@method`/`@property` tags follow the description directly (38 of 38 in
+   PhpSyntax). Follow the file.
 2. ~60% of public methods have a docblock: a one-line summary starting with a verb (`Returns`, `Adds`, `Checks`,
    `Creates`, `Sets`, `Converts`, `Removes`, `Finds`, `Parses`), ending with a period; trivial getters, `print()`,
    `getIterator()`, `__construct` and overrides usually have none. **No blank line between the description and the
-   tags.** Tag order: `@template`, `@param`, `@return`, `@throws`, then `@internal`/`@deprecated`.
+   tags.** Tag order: `@template`, `@param`, `@return`, `@throws`, then `@internal`/`@deprecated`. dg's `php-doc`
+   skill adds: skip the docblock when the signature says it all ("getters, setters, simple delegations"; old setters
+   such as `Paginator::setPage()` keep their `Sets …` line, a new setter is documented only for what the signature
+   does not say); American English (`color`, `behavior`); stock phrases `Returns X, or null if …`, `Checks whether …`,
+   `Converts X to Y.`, `Finds …`, `Parses …`; a predicate states the condition it tests, never "Returns true when …".
+   dg's 2026 tools open half their method docblocks with a noun phrase or `Whether …` (`Whether the token is the first
+   on its line.`; 66% in DressCode) and document non-obvious private helpers too (44% of DressCode's private methods).
 3. `@param` uses **two spaces** after the tag and two spaces between type and name (`@param  string[]  $options`),
    an optional description after two more spaces (81%; routing/tester/mcp-inspector partly use one space); every
-   other tag uses one space (`@return`, `@throws`, `@var`, `@deprecated`). Only `@param`/`@return`
-   that add information (arrays, generics, callables, shapes, conditional types); a docblock repeating the native
-   type is never written.
+   other tag uses one space (`@return`, `@throws`, `@var`, `@deprecated`); a description after the type of `@return`
+   or `@var` follows two spaces (`@return string[]  language codes`, `php-doc`). dg's 2026 tools write
+   `@throws X  description` with two spaces too (25 of 26) and a one-line `/** @param T $x */` with one. Only
+   `@param`/`@return` that add information (arrays, generics, callables, shapes, conditional types); a docblock
+   repeating the native type is never written, but a `@param` that needs a description repeats the scalar type so the
+   description keeps its column (`@param  string  $as  column alias`, 24 lines in dibi, texy, ftp-deployment).
 4. Property docblocks are one line: `/** @var array<string, int>  service name => index */` (description after two
    spaces), or a plain description `/** minute in seconds */`. Constants may carry a one-line description docblock.
-5. Type notation: `list<T>` for lists, `array<K, V>` for maps, `T[]` in older code (both kept), `array{file:
-   string, line: int}` shapes, `callable(Node): bool`, `\Closure(mixed): mixed`, `class-string<T>`, `literal-string`,
-   `int<0, max>`, `array-key`; `?T` in docs for single nullable, `X|Y|null` for unions.
+   In DressCode a docblock on a property, constant, case or promoted parameter is a lowercase fragment without a
+   period (129 of 131); PhpSyntax documents public properties as sentences. Follow the file.
+5. Type notation: `list<T>` for lists, `array<K, V>` for maps, `T[]` in older code (both kept, also by the preset),
+   `array{file: string, line: int}` shapes, `callable(Node): bool`, `\Closure(mixed): mixed`, `class-string<T>`,
+   `literal-string`, `int<0, max>`, `array-key`; `?T` in docs for single nullable, `X|Y|null` for unions. dg's
+   `phpstan-analysis` skill teaches `T[]` for simple element types ("shortest notation"), `array<A|B>` for union
+   elements, `list<T>`/`array<K, T>` when keys matter; the measured newer code leans to `list<T>`: both pass, follow
+   the file. `list<T>` fits a `@return` that always has keys 0..n-1; for a `@param` it is too strict unless the body
+   reads `$arr[0]` (`php-doc`).
 6. `@throws Nette\IOException if the file cannot be read` documents public contracts (interfaces, public API),
    description lowercase after one space. `@deprecated use X` (lowercase "use", no period; 91 vs 28 `Use`). `@internal` on helpers.
-   `@phpstan-*` tags: essentially never (2 `@phpstan-type` in the whole framework); `@inheritDoc`: never;
+   `@phpstan-*` tags: essentially never (2 `@phpstan-type` in the whole framework; dg's 2026 tools write
+   `@phpstan-assert-if-true` on a boolean query whose truth fills a nullable property, 8 times); `@inheritDoc`: never;
    `@author`/`@package`/`@since`: never (forbidden).
 7. Line comments: `//` only, **lowercase start, no trailing period**, terse, explaining why: `// removes xD800-xDFFF,
    x110000 and higher`, `// back compatibility`, `// intentionally ==`. Trailing comments after code are normal
@@ -1669,6 +1834,14 @@ class Paginator
    reason: `@mkdir($dir); // @ - directory may already exist`, `@fopen(...); // @ is escalated to exception`.
    Phase comments in lifecycle code are UPPERCASE (`// STARTUP`, `// SIGNAL HANDLING`). Fall-through in `switch`
    is marked `// break omitted`. Commented-out code has no space (`//$this->configurator->setDebugMode(...)`).
+   The `@` reason is now checked: DressCode's `noErrorSuppression` accepts only a same-line comment starting `// @`
+   (dibi's `// intentionally @` does not count), and `strictComparison` accepts `// intentionally ==` (dg's standard
+   page words it `// == to accept null`). A comment never cites a bug, issue or PR ("fixes #123", "workaround for bug
+   X"); it states a general reason (`php-coding-standards`). A deliberate departure from a DressCode rule is `//
+   dresscode:ignore <rule> -- <reason>` on its own line (7 in the 2026 tools: `// dresscode:ignore
+   arrayFunctionForForeach -- a loop is faster than array_any() on this hot path`); PHPStan inline ignores stay
+   forbidden. Library code keeps comments lowercase; texy (46% uppercase), ftp-deployment and the agent-plugins hook
+   scripts write sentence-case rationale comments, some with a period: follow the file.
 
 ### 3.8 Control flow and expressions
 
@@ -1690,18 +1863,29 @@ class Paginator
 ```
 
 1. Braces always; `elseif` (never `else if`); `else`/`elseif` after `return`/`throw` is **kept** (DressCode
-   `useless-else: keep`): validation ladders are `if … throw; elseif … throw;`. Early `return`/`continue` guards
+   `uselessElse: keep`): validation ladders are `if … throw; elseif … throw;`. Early `return`/`continue` guards
    coexist. When any branch of an `if`/`elseif`/`else` or `try`/`catch` chain is split into paragraphs by a blank
-   line, put one blank line before **every** closing `}` of that chain (DressCode `betweenBranches: paragraphed`;
-   525 such lines in `src`, 353 added by dg since mid-2025); otherwise no blank line. The same applies to `switch`
-   cases (`betweenCases: paragraphed`).
+   line, nette/* puts one blank line before **every** closing `}` of that chain (DressCode `betweenBranches:
+   paragraphed` in the build measured here; 525 such lines in `src`, 353 added by dg since mid-2025); otherwise no
+   blank line. The same applies to `switch` cases (`betweenCases: paragraphed`). The current `nette` preset narrows the
+   requirement to `lastSetApart`: a blank line before the `}` of a branch whose last statement is itself set apart by
+   a blank line (typically `return`/`throw` after a paragraph), other branches as they are; the paragraphed form passes
+   it too. dg's `ecs` libraries follow neither (dibi, texy, ftp-deployment: 0 of 59 such chains; at most a blank before
+   `} elseif`/`} else` after a `return`). Write what the repository's DressCode asks; in nette/* default to the
+   paragraphed form; in an `ecs` repository do not reformat existing chains.
 2. Blank lines inside methods: after a closing `}` of a block before the next statement (87%); **no blank line
    before `return` after a plain statement** (`$x = …;` directly followed by `return $x;` in 95%); blank line
-   before `return` after a block (85%); none after `{` or before `}`; none between `match` arms.
+   before `return` after a block (85% in nette/*, dibi 105 of 105, `dresscode-rules-*` 14 of 14; but ftp-deployment 1 of
+   18, google-services 4 of 55: not enforced, follow the file); none after `{` or before `}`; none between `match`
+   arms.
 3. Assignment inside conditions is idiomatic: `if ($error = json_last_error())`, `while ($token = $this->next())`,
    `elseif ($prop = …)`.
 4. Strict comparisons; `==` only with `// intentionally ==`; `!$x instanceof Y` without parentheses; `isset()` and
-   `??` over `array_key_exists()`; `empty()` sparingly; `in_array(..., strict: true)`; never Yoda, never `is_null`.
+   `??` over `array_key_exists()`; `is_array($response['data'] ?? null)` over `isset(…) && is_array(…)`; `empty()`
+   sparingly (dibi, texy keep more); `in_array(..., strict: true)`; never Yoda, never `is_null`. `str_starts_with()`,
+   `str_ends_with()`, `str_contains()` replace the retired `Strings::startsWith()`/`endsWith()`/`contains()`;
+   `array_any()`/`array_find()`/`array_all()` replace a searching `foreach` in PHP 8.4 code (131 calls in the 2026
+   tools; a profiled hot loop stays, marked with `// dresscode:ignore arrayFunctionForForeach -- …`).
 5. `??`, `??=` (`$this->engine ??= $this->createEngine();`), `?->`, short ternary `?:` (allowed and used),
    `?? throw new Nette\InvalidStateException('Request is not set.')` for nullable getters,
    `?: throw`, `default => throw` in `match`, `fn() => throw …`. Short-circuit statements as control flow:
@@ -1722,14 +1906,24 @@ class Paginator
 8. Closures: a closure whose body is a single `return expr;` **must** be an arrow function `fn($x) => expr`
    (enforced by both `ecs` and DressCode; `fn(` with no space, also enforced); `function (int $x) use ($y): bool {`
    (space after `function`) only for closures with statements, by-reference `use (&$x)` or `void` side effects.
-   Never `static fn`/`static function` (7 in the whole framework). Closure parameters are often untyped in short
-   callbacks.
+   `static fn`/`static function`: not in nette/* (7 in the whole framework), DressCode, PhpSyntax (0, although 1,955 of
+   their closures do not use `$this`), ai-access, pohoda-mcp or the rule packages; texy uses it for a returned or
+   stored closure (4); fio-mcp and google-services make every closure that does not touch `$this` `static` (24 of 24).
+   No preset enforces it (`staticClosure` is outside them): in nette/* do not add it, elsewhere follow the file.
+   Closure parameters are often untyped in short callbacks.
 9. Casts with a space `(string) $x`, `(int)` not `intval()`; `!$x` without space; `new Foo` **without parentheses**
    when there are no arguments (`new static`, `(new NodeTraverser)->traverse(...)`, `throw new
-   Nette\ShouldNotHappenException;`); `new class ($x) extends Foo {` with a space after `class`.
+   Nette\ShouldNotHappenException;`, also as a parameter default: `Http\Client $http = new Http\CurlClient`); `new
+   class ($x) extends Foo {` with a space after `class`. Chaining on a fresh object: `(new Foo)->bar()` without
+   arguments (365 in the 2026 tools; dg's libraries wrap all 375 of theirs, most below PHP 8.4); with arguments the
+   PHP 8.4 form `new Foo($x)->bar()` (68 in the 2026 tools; DressCode rewrites `(new Foo($x))->bar()` at `php: 8.4`);
+   `new Foo()->bar()` with empty parentheses appears mostly in readme and examples (30). Below PHP 8.4 keep `(new
+   Foo($x))->bar()`.
 10. Destructuring `[$a, $b] = …`, `foreach ($x as [$k, $v])`; by-reference APIs where PHP needs them
     (`&getIterator()`, `foreach ($items as &$item)`); `static $fn;` function-local statics for lazy state;
     `false && yield;` for an empty generator; `(function (Node ...$args) {})(...$items);` to type-check array items.
+    Narrow a type with `assert($x instanceof Y)`, not an inline `/** @var Y $x */` (`explicitAssertion`; 67 in
+    DressCode `src`); inline `@var` stays for generic and array-shape types.
 11. `try`/`catch (\Throwable $e)` (never `\Exception`), `catch (\ReflectionException)` without variable when
     unused, `try { … } catch (\Throwable $e) { cleanup; throw $e; }`, `try`/`finally` for locks; an intentionally
     empty catch omits the variable: `catch (\Throwable) {` newline `}` (DressCode reports an unused `$e`).
@@ -1748,12 +1942,16 @@ class Paginator
    (`"{$this->getName()}"`). `sprintf("… '%s' …", expr)` — format in double quotes so the single-quoted identifier
    needs no escaping — when an argument is a call or expression, for number formats, and throughout nette/di whose
    messages are sprintf-based (107 vs 10 interpolated; 152 `throw new X(sprintf(` in the framework). Follow the
-   package. Concatenation
+   package. dg's personal code interpolates even more (libraries 76 interpolated vs 7 `sprintf` throws, DressCode 115
+   vs 3). Concatenation
    ` . ` with spaces, `.` leading continuation lines.
 2. Multi-line text is nowdoc `<<<'XX'` (dg's delimiter), indented, closing marker at code level and immediately
-   followed by `,` or `;` when it is an argument.
+   followed by `,` or `;` when it is an argument. Text for humans or models gets `<<<'TEXT'` (MCP instructions, CLI
+   help in `phpsyntax/bin/phpsyntax`).
 3. Arrays `[]`; one item per line when the array does not fit in ~130 columns, otherwise inline; **trailing comma in
-   every multi-line array, argument list, parameter list and `match`** (~100%); no `=>` alignment (only trailing
+   every multi-line array, argument list, parameter list and `match`** (~100%; 281 of 281 multi-line `match` in the
+   2026 tools; the preset requires it for arrays, arguments and parameters only, `match` is habit), never in a one-line
+   list; no `=>` alignment (only trailing
    `//` comments in lookup tables are column-aligned); "tables" of short strings may pack several items per line.
 4. Numeric literals with separators from 7 digits (`1_000_000`, `31_557_600`, `10_000`); octal `0o600`; binary
    `0b0001`.
@@ -1769,19 +1967,31 @@ class Paginator
    `Nette\ShouldNotHappenException` ("Houston, we have a problem."), `Nette\OutOfRangeException`,
    `Nette\UnexpectedValueException`, `Nette\MemberAccessException` (extends `\Error`). Standalone packages (Latte,
    Tracy, Tester, command-line) throw SPL `\LogicException` / `\RuntimeException` / `\InvalidArgumentException` /
-   `\Exception` fully qualified.
+   `\Exception` fully qualified. dg's personal code never throws the Nette set, even where it depends on nette/utils:
+   SPL for programmer errors (`\InvalidArgumentException`, `\LogicException`, `\OutOfRangeException`; `throw new
+   \LogicException;` for an impossible branch) and its own root for conditions the caller handles (`FioException`,
+   `DG\Imap\Exception`, `Gmail\Exception`, DressCode's `ConfigurationException`); an API client splits its tree by
+   recovery strategy (3.16). MySQL-dump throws bare `\Exception` by design.
 2. Package exceptions are collected in one `exceptions.php`: a marker `interface Exception` (Latte), then classes
    with one-sentence docblocks and empty bodies (`class ServiceCreationException extends
    Nette\InvalidStateException`, `class CompileException extends \Exception implements Exception`), two blank lines
-   between them. Never `final`, no `Error` suffix, no static factories (except `SmtpException::fromReply()`,
-   `DriverException::from()`), data as promoted `readonly` params (`private readonly ?string $sqlState`,
-   `readonly ?Position $position`), HTTP semantics via `protected $code = Http\IResponse::S404_NotFound;`.
-3. Messages: English sentence, **ends with a period** (81%; always in new code), identifiers in single quotes,
-   interpolated for plain variables and properties, `sprintf` when an argument is an expression (see 3.9):
-   `"Service '$name' already exists."`, `"Invalid filter name '$name'."`, `"Cannot add cases '$name', because it
-   already exists."`, `'Logging directory is not specified.'`; wrong types report `get_debug_type($x) . ' given'`;
-   arity checks use `__METHOD__ . "() expects 2 parameters, $count given."`; config paths use
-   `"\u{a0}›\u{a0}"` separators. Multi-value messages use `sprintf(` with one argument per line and a trailing
+   between them. Never `final` in nette/* (dg's 2026 tools make internal exceptions `final`: `UsageException`,
+   `ParseException`; the ones callers catch stay open), no `Error` suffix, no static factories (except
+   `SmtpException::fromReply()`, `DriverException::from()`), data as promoted `readonly` params (`private readonly
+   ?string $sqlState`, `readonly ?Position $position`; `public readonly int $status` plus a predicate such as
+   `isRefused()` in dg's libraries), HTTP semantics via `protected $code = Http\IResponse::S404_NotFound;`. The
+   class docblock is one natural sentence about the problem, never "Exception that is thrown when …"; stock phrasing
+   `does not exist`, `failed to`, `cannot`, `is not supported` (`The file does not exist.`, `php-doc` skill).
+3. Messages: English sentence, **ends with a period** (81% in nette/*; 89–94% in DressCode, PhpSyntax, dibi, texy;
+   71% in dg's 2025–26 libraries with imap at 0 of 17; 39% in ftp-deployment), identifiers in single quotes,
+   interpolated for plain variables and properties, `sprintf` when an argument is an expression (see 3.9). Write the
+   period; a message ending in a forwarded value (`": $value"`, `"SQLSTATE[...]: ..."`) has none, nor do DressCode
+   rule diagnostics. dg's 2026 tools put identifiers in Markdown backticks instead of quotes (155 of 261 messages,
+   single quotes 2), e.g. `` "Invalid version `$version` of package `$package`." ``, and pass code values through
+   `Helpers::formatCode()`. Examples: `"Service '$name' already exists."`, `"Invalid filter name '$name'."`, `"Cannot
+   add cases '$name', because it already exists."`, `'Logging directory is not specified.'`; wrong types report
+   `get_debug_type($x) . ' given'`; arity checks use `__METHOD__ . "() expects 2 parameters, $count given."`; config
+   paths use `"\u{a0}›\u{a0}"` separators. Multi-value messages use `sprintf(` with one argument per line and a trailing
    comma. Previous exceptions: `, 0, $e)` or `previous: $e`.
 4. `throw` as an expression (`?? throw`, `?: throw`, `default => throw`, `fn() => throw`) and `throw new X;` without
    parentheses when there are no arguments.
@@ -1791,7 +2001,8 @@ class Paginator
 
 - **Static utility classes** (`final class Strings { use Nette\StaticClass; public static function …`) with `self::`
   calls (2,320 `self::` vs 104 `static::`); `static::` mostly where subclass override is intended (and in a few
-  final classes such as `FileSystem`).
+  final classes such as `FileSystem`). In dg's 2026 tools a private helper that does not use `$this` is `private
+  static` and called through `self::` (63% of DressCode's private methods, 51% of PhpSyntax's; not enforced).
 - **Tiny interfaces** (1–5 methods) only where several implementations exist; capability discovery by `instanceof`
   (`BulkReader`, `BulkWriter`).
 - **Public typed properties instead of getters** on data holders: Latte nodes, Tracy `Value`, `Logger` config,
@@ -1863,7 +2074,7 @@ www/index.php   bin/   log/   temp/   tests/bootstrap.php
    `phpstan.neon` level 8 for `app` and `bin`; the skeleton ships no `bin/` scripts. Library CLI tools
    (`latte/bin/latte-lint`, `neon/bin/neon-lint`) start `#!/usr/bin/env php` + `<?php declare(strict_types=1);`,
    probe both `vendor/autoload.php` locations and fail with `fwrite(STDERR, "Install packages using Composer.\n");
-   exit(1);`.
+   exit(1);`. dg's own CLI tools: 3.20.
 
 ### 3.13 Tests (Nette Tester, dg style)
 
@@ -1875,7 +2086,7 @@ www/index.php   bin/   log/   temp/   tests/bootstrap.php
 // The Nette Tester command-line runner can be
 // invoked through the command: ../vendor/bin/tester .
 
-if (@!include __DIR__ . '/../vendor/autoload.php') {
+if (@!include __DIR__ . '/../vendor/autoload.php') { // @ - the autoloader is missing before composer install
 	echo 'Install Nette Tester using `composer install`';
 	exit(1);
 }
@@ -1930,23 +2141,33 @@ test('missing key throws', function () use ($arr) {
 1. Files are `.phpt`, named `Subject.aspect.phpt` (63%: `Arrays.isList.phpt`, `Debugger.enable().error.phpt`,
    `Connection.exceptions.postgre.phpt`), `Subject.phpt`, or `Class.method().phpt` when the file tests one method;
    directories mirror `src/` (`tests/Utils/`, `tests/Compiler/`, dotted `Bridges.DI/`, `Forms.Latte/`). No namespace
-   in test files (96%). Test-local classes (`class Foo`, `interface Iface`, `class TestPresenter`) are declared in
-   the file, loosely typed, separated by two blank lines.
+   in test files (96%; ai-access's `tests/Support/` helper classes use `namespace Tests\Support;`). dg's 2026 tools
+   name files after the subject (`Token.phpt`, `.aspect` only when one subject has several files) under a directory
+   named after the root namespace (`tests/PhpSyntax/…`, `tests/DressCode/Rules/…`); texy uses kebab-case feature
+   names (`block-code.phpt`, 71 of 77), the agent-plugins hook tests are named after their scripts (`lint-php.phpt`).
+   Test-local classes (`class Foo`, `interface Iface`, `class TestPresenter`) are declared in the file, loosely typed,
+   separated by two blank lines.
 2. Header: `<?php declare(strict_types=1);`, blank, optional `/** * Test: Nette\Utils\Strings::match() */` docblock
-   (old files; newest repositories omit it), blank, `use` lines (`use Tester\Assert;` sorted among them), one blank
-   line (DressCode; older files have two), `require __DIR__ . '/../bootstrap.php';` (plain `require`, never
-   `require_once`), **two blank lines**, body. Annotations in the docblock: `@phpExtension mbstring`, `@phpVersion 8.4`, `@dataProvider?
-   ../databases.ini`, `@exitCode   255`, `@httpCode   500`, `@outputMatch`, `@outputMatchFile expected/x.expect`.
-3. `test()` is provided by Tester (`Environment::setupFunctions()`), never redefined: `test('lowercase description',
-   function () use ($x) { … });` — title required, lowercase, no period, may embed `method()` names; **two blank
-   lines between `test()` blocks**; companions `testException('title', function () { … }, X::class, 'msg')`,
-   `setUp(function () { … })`, `tearDown(...)`. Older files are flat top-level `Assert::` scripts with
-   `// section` comments after two blank lines; `Tester\TestCase` classes are practically extinct (run as
-   `$test = new XTest; $test->run();`, `new X` without parentheses).
+   (1,413 nette/* files, texy 76 of 77; newest repositories omit it: schema, assets, tester, dg's 2026 tools and
+   2025–26 libraries 0 of 257; the `nette-tester` skill spells it `TEST:`, which no measured file does: write
+   `Test:`; DressCode-era files may open with a prose docblock saying what the file covers), blank, `use` lines (`use
+   Tester\Assert;` sorted among them), one blank line (DressCode; older files have two), `require __DIR__ .
+   '/../bootstrap.php';` (plain `require`, never `require_once`), **two blank lines**, body. Annotations in the
+   docblock: `@phpExtension mbstring`, `@phpVersion 8.4`, `@dataProvider? ../databases.ini`, `@exitCode   255`,
+   `@httpCode   500`, `@outputMatch`, `@outputMatchFile expected/x.expect`.
+3. `test()` is provided by Tester (`Environment::setupFunctions()`), never redefined in a new bootstrap (dibi and
+   texy still define `function test(string $title, Closure $function): void { $function(); }`: leave it there, do not
+   copy it): `test('lowercase description', function () use ($x) { … });` — title required, lowercase, no period, may
+   embed `method()` names; no comment above a `test()` call, the title is the comment (`nette-tester` skill); **two
+   blank lines between `test()` blocks**; companions `testException('title', function () { … }, X::class, 'msg')`,
+   `setUp(function () { … })`, `tearDown(...)` (0 in dg's 2026 tools, which assert exceptions inside `test()`). Older
+   files are flat top-level `Assert::` scripts with `// section` comments after two blank lines; `Tester\TestCase`
+   classes are practically extinct (run as `$test = new XTest; $test->run();`, `new X` without parentheses).
 4. Assertions expected-first: `Assert::same`, `Assert::null($x)` (not `same(null, …)`), `Assert::true/false`,
    `Assert::type(Foo::class, $x)`, `Assert::count`, `Assert::equal` for object graphs (`(object) [...]`),
    `Assert::match('%a%:%d% %A%', $s)` with Tester patterns, `Assert::matchFile(__DIR__ . '/expected/x.php', $out)`
-   for snapshots, `Assert::error(fn() => …, E_USER_DEPRECATED, 'msg')`, `Assert::noError`, `Assert::with(Class::class,
+   for snapshots (never `Assert::contains()` for generated output, which passes on broken output: `nette-tester`
+   skill), `Assert::error(fn() => …, E_USER_DEPRECATED, 'msg')`, `Assert::noError`, `Assert::with(Class::class,
    function () { … })` for private access. `Assert::exception(fn() => …, Class::class, 'message',)` multi-line with
    trailing comma; closure with statements uses `function () { … }` and puts the remaining arguments on the closing
    line. Expected multi-line text is nowdoc `<<<'XX'`.
@@ -1984,23 +2205,35 @@ test('missing key throws', function () use ($arr) {
   {"Nette\\": "src"}}` (+ `"files"` for `functions.php`); no `autoload-dev`, no `prefer-stable`, no `sort-packages`;
   `"scripts": {"phpstan": "phpstan analyse", "tester": "tester tests -s"}`; `extra.branch-alias.dev-master:
   "4.1-dev"` (no `.x`); `extra.nette.di-extensions` for auto-discovered extensions.
+  dg's personal repositories differ: one author (`David Grudl`, `https://davidgrudl.com`), no emoji except the
+  2026 tools and rule packages (`🌳 PhpSyntax: …`, `👔 DressCode: …`), `homepage` only on an own domain
+  (`https://dresscode.run`), license `MIT` (2026 tools, fio-mcp, pohoda-mcp), `["BSD-3-Clause"]` or the Nette triple;
+  `"php"` as `"8.4 - 8.6"` (2026 tools), `"8.2 - 8.5"` (dibi, texy) or `">=8.2"`; `classmap: ["src/"]` (run `composer
+  dump-autoload` after adding a class); dibi and texy add `replace` for the old `dg/` name.
 - **readme.md** (lowercase): banner image link, five shields.io/poser badges each on its own line, Setext-underlined
   sections `Introduction`, `Installation` ("The recommended way to install is via Composer:" + compatibility
   sentence "Nette Utils 4.1 is compatible with PHP 8.2 to 8.5."), `Usage`, `[Support Me](https://github.com/sponsors/dg)`
   with the "Buy me a coffee" image; sections separated by ` <!---->`; feature lists as `✅ [Arrays](…)<br>`; docs live
   on doc.nette.org, not in the repo. **license.md** (lowercase) with the BSD/GPL dual text. No Makefile, no
-  `.editorconfig`, no CHANGELOG, no `.docs/`.
+  `.editorconfig`, no CHANGELOG, no `.docs/`. dg's personal libraries keep their documentation in the repository
+  (readme usage sections, `docs/`, runnable `examples/`), use 2–5 badges and no ` <!---->` except twitter-php,
+  ai-access and bypass-finals; the 2026 tools add long keyword-style section titles and a "Limits" section; fio-mcp and
+  pohoda-mcp are documented in Czech; google-services uses `README.md` with ATX headings.
 - **AGENTS.md** in most repos (`# To My Agents!`), stating conventions ("Every file starts with
   `declare(strict_types=1);`; everything typed; `readonly` for immutable properties; tabs; two blank lines between
-  methods; Nette Coding Standard; document the shut-up operator"); agent-facing `docs/internals/*.md`.
+  methods; Nette Coding Standard; document the shut-up operator"); agent-facing `docs/internals/*.md`. dg's 2026
+  tools and libraries use fixed sections (Documentation, Project overview, Essential commands, Conventions, Working
+  rules, Traps or Deliberate decisions) and point to `docs/internals.md` as "the source of truth"; quotations in 3.21.
 - **.gitattributes** column-aligned with `export-ignore` for `.github/`, `AGENTS.md`, `docs/`, `tests/`, `ncs.*`,
   `phpstan*.neon`, plus `*.php* diff=php`, `*.sh text eol=lf`. **.gitignore**: `/vendor`, `/composer.lock`,
   `tests/lock`, `/tests/output`, `/tests/tmp`.
-- **phpstan.neon** (tabs): `level: 8`, `paths: - src`, `excludePaths` for compatibility files, `bootstrapFiles`,
-  `ignoreErrors` entries as `- # reason` + `identifier:` (+ `message:`, `path:`, `count:`).
+- **phpstan.neon** (tabs): `level: 8`, `paths: - src` (2026 tools add `tests`), `excludePaths` for compatibility
+  files, `bootstrapFiles`, `ignoreErrors` entries as `- # reason` + `identifier:` (+ `message:`, `path:`, `count:`).
 - **Workflows**: `.github/workflows/{tests,coding-style,static-analysis}.yml`, self-contained, 4-space YAML,
   `on: [push, pull_request]`, snake_case job ids (`nette_cc`, `nette_cs`, `code_coverage`, `lowest_dependencies`),
-  `actions/checkout@v6`, `shivammathur/setup-php@v2`.
+  `actions/checkout@v6`, `shivammathur/setup-php@v2`. In dg's newest repositories `coding-style.yml` holds a
+  `dresscode` job instead of `nette_cs`, and the 2026 tools diff generated docs in CI (`composer reference` +
+  `git diff --exit-code docs/reference`) and run `composer verify-examples`.
 - **Versioning**: `master` tracks the next version (`4.1-dev`); one long-lived branch per released minor (`v4.0`,
   `v3.2`); tags `vX.Y.Z` (+ `v3.3.0-RC`); release commit `Released version 3.1.6` (only the version constant), then
   `opened 4.1-dev` (composer alias). BC breaks are flagged in the commit subject, not in a changelog.
@@ -2010,23 +2243,32 @@ test('missing key throws', function () use ($arr) {
   grammar as find()`, `Arrays::renameKey() fixed incorrect replacement for existing new keys [Closes #230]`,
   `Html: added fragment() and add()`); tool prefixes lowercase (`tests:`, `composer:`, `readme:`, `phpstan.neon:`,
   `coding style:`, bare `cs`) except `CI:`; markers `(BC break)`, `[Closes #N]` (capital C, one bracket per issue), `[security]`,
-  `WIP`; no trailing period, no emoji, no body except long prose bodies in 2026 work.
+  `WIP`; no trailing period, no emoji, no body except long prose bodies in 2026 work. dg's `commit-messages` skill
+  teaches models a narrower form: lowercase **past tense** only ("the commit describes what happened, so the git log
+  reads as a chronological history"), `Subject: description` where it clarifies the area (`Filters: added
+  escapeHtml()`), under 70 characters, English, `wip` in lower case, routine subjects `vendor`, `cs`, `typos`,
+  deprecations as `[method] deprecated`, a body only when the "why" is not obvious. The measured log also has the
+  present-tense `Class: sentence` form and `WIP`/`[WIP]`; both pass, the past tense is the safer choice.
 
 ### 3.15 Do not (dg)
 
 - No spaces in `declare(strict_types = 1)`; no `declare` on its own line; no blank line after class `{`; no single
   blank line between methods; no blank lines between `use` groups.
-- No `use stdClass;`/`use Throwable;` (write `\stdClass`); no `\count()`; no per-line `use function`.
-- No `I`/`Abstract`/`Interface`/`Trait` in names; no `UPPER_SNAKE` constants in new code; no typed constants;
-  no `#[\Override]`; no `static fn`/`static function`; no `new Foo()` with empty parentheses; no `fn ($x)` with a
-  space; no `(int)$x` without a space.
+- No `use stdClass;`/`use Throwable;` (write `\stdClass`); no `\count()`; no per-line `use function`; no `use
+  function` for calls PHP does not compile specially in a new file.
+- No `I`/`Abstract`/`Interface`/`Trait` in names; no bare-noun method names; no `$isActive` properties; no
+  `UPPER_SNAKE` constants in new code; no typed constants; no `#[\Override]`; no `public` on interface methods; no
+  `static fn`/`static function` in nette/*; no `new Foo()` with empty parentheses; no `(new Foo($x))->bar()` on PHP
+  8.4; no `fn ($x)` with a space; no `(int)$x` without a space.
 - No `sprintf` for plain variables (outside nette/di); no braced `{$var}` where `$var` suffices; no new messages
-  without a period; no `Foo::bar():` prefixes in messages; no exception static factories.
+  without a period (except a forwarded `: $value`); no `Foo::bar():` prefixes in messages; no exception static
+  factories; no Nette exceptions in dg's personal packages.
 - No `@param string $x` restating a native type; no blank line between a method description and its tags (class
   docblocks keep one before `@property`/`@method`); no `@author`,
   `@since`, `@package`, `@inheritDoc`, `@phpstan-*`, `@return $this`/`@return static` docblocks; no "Class that …"
-  summaries; no docblocks on trivial getters; no uppercase-starting or period-terminated `//` comments; no `@`
-  without a same-line reason.
+  summaries; no docblocks on trivial getters or setters; no uppercase-starting or period-terminated `//` comments in
+  library code; no `@` without a same-line `// @ reason`; no comments citing bugs, issues or PRs; no non-English
+  identifiers or comments.
 - No `else` removal for its own sake; no Yoda; no `is_null`; no `else if`; no `switch` where `match` fits; no
   `list()`, `array()`, `goto` (one commented exception); no aligned `=>`/`=`.
 - No `SmartObject`/`@property` on new classes; no `inject*()`/`#[Inject]` in concrete app presenters (constructor
@@ -2034,9 +2276,170 @@ test('missing key throws', function () use ($arr) {
   no captured `$e` in an empty catch;
   no `private` on subclass hooks (`protected`); no `final` on the main extension points.
 - No PHPStan inline ignores; no strict-rules; no Makefile, `.editorconfig`, `ruleset.xml`, CHANGELOG, `.docs/`.
-- No test namespaces; no `require_once` for bootstrap; no test docblocks in new repos; no redefined `test()`;
-  no `Test`-suffixed `.phpt` names; no PHPUnit.
+- No test namespaces; no `require_once` for bootstrap; no test docblocks in new repos; no redefined `test()` in a
+  new bootstrap; no comment above a `test()` call; no `TEST:`; no `Test`-suffixed `.phpt` names; no PHPUnit.
 - No imperative capitalised commit subjects (`Add feature`); no conventional-commit types; no `Co-Authored-By`.
+
+### 3.16 API clients (dialect B)
+
+dg's 2025–26 clients (ai-access, google-services, fio-mcp, imap, pohoda-mcp) share none of 2.12.1's shape.
+
+- Layout: capability interfaces and shared value classes at the top (`ai-access/src/{Chat,Batch,Embedding,Http}/`),
+  one directory per provider with the same file set (`src/Provider/<Name>/{Client,Chat,ChatResponse,Batch}.php`);
+  single-service libraries stay flat (`fio-mcp/src/{FioClient,Transaction,Statement}.php`, `imap/src/{Mailbox,
+  Message,Connection}.php`); google-services `src/<Service>/{Manager,McpTools,<Dto>}.php`. The role is the last word
+  of the name (`Client`, `Manager`, `Response`).
+- Transport is one injected seam with a default: an `Http\Client` interface with a single `fetch(...)` method
+  (`ai-access/src/Http/Client.php`), `private readonly Http\Client $httpClient = new Http\CurlClient,` in every
+  provider constructor (`Provider/Claude/Client.php:29`), retries, caching and logging as decorators of the same
+  interface (`RetryClient`, `CachingClient`, `ObservableClient`). A small library injects a `?\Closure $http`
+  returning `[status, body]` (`FioClient::__construct()`). No PSR-18, no Guzzle.
+- Options are typed nullable named parameters on the provider's own class, merged into the wire array with the wire
+  names mapped inline (`Claude\Chat::setOptions(?int $maxOutputTokens = null, …): static`,
+  `Provider/Claude/Chat.php:42-62`); no options arrays. Default models are constructor arguments and per-call
+  arguments win: `$model ??= $this->chatModel ?? throw new AIAccess\LogicException('No chat model given and the
+  client has no default one.');`.
+- Responses wrap the decoded array and parse lazily (`final class ChatResponse implements Chat\Response`,
+  `getFinishReason(): FinishReason` through `match` with `default => FinishReason::Unknown`). Entities are `final
+  class` with `public readonly` promoted properties, the payload kept in `public readonly array $raw = []`, built by
+  `: self` constructors named for the source (`fromJson()`, `fromXml()`, `fromArray()`, `parse()`, `connect()`) with
+  named arguments (`fio-mcp/src/Transaction.php`, 19 properties). Objects a caller fills (google-services
+  `Calendar\Event`) have `public` properties, not setters.
+- Lists are generators (`listBatches(): \Generator`, `iterable` in the interface); a stream is `?\Closure $onChunk`
+  on the same `fetch()`. JSON passes one helper (`Helpers::decodeJson()` with `JSON_THROW_ON_ERROR`).
+- Exceptions follow what the caller can do: ai-access `ServiceException` with `ApiException`,
+  `CommunicationException`, `UnexpectedResponseException`, `TooManyRoundsException`, plus `LogicException extends
+  \LogicException` for caller mistakes (`ai-access/src/exceptions.php`); fio-mcp `FioException`, `TransportException`
+  (outcome unknown) and `HttpException` with `public readonly int $status` and `isRefused()`.
+- Tests never touch the network: `FakeHttpClient implements Http\Client, \Countable` (`ai-access/tests/Support/`),
+  JSON fixtures captured from the real services (`fixture('claude/chat')`), an injected closure (`createClient()` in
+  `fio-mcp/tests/FioClient.phpt`), a scripted socket dialogue (`imap/tests/bootstrap.php`); `final` classes are
+  mocked after `DG\BypassFinals::enable()`.
+
+### 3.17 MCP servers
+
+fio-mcp, google-services and pohoda-mcp (`mcp/sdk ^0.8`; 51 `#[McpTool]` methods).
+
+1. `server.php` at the root: the header, `// stdout carries the JSON-RPC stream, a PHP warning printed there would
+   break it`, `ini_set('display_errors', 'stderr');`, an autoload that works standalone and as a dependency (`require
+   is_file(__DIR__ . '/vendor/autoload.php') ? __DIR__ . '/vendor/autoload.php' : __DIR__ . '/../../autoload.php';`,
+   `fio-mcp/server.php:6-9`), then `use` (a script imports after `require`), `getenv()` settings and one chain
+   `Server::builder()->setServerInfo(…)->setInstructions($instructions)->setContainer($container)
+   ->setReferenceHandler(new McpToolCallGuard(new ReferenceHandler($container)))->setDiscovery(__DIR__ . '/src',
+   ['.'], namePatterns: ['*Tools.php'])->build()`, ending `$server->run(new StdioTransport);`. A fatal misconfiguration
+   goes to STDERR and `exit(1)` from a `static function (string $message): never` (`google-services/server.php:27-30`).
+2. Tools are public methods of a plain (not `final`) `McpTools` class per service, which takes a factory closure and
+   resolves credentials on the first call (`$this->manager ??= …`). Between docblock and signature: `#[McpTool(name:
+   'fio_list_transactions', title: '…', annotations: new ToolAnnotations(readOnlyHint: true, openWorldHint: true))]`;
+   parameters carry `#[Schema(minimum: 1, maximum: 1000)]`, `format: 'date'`, `enum: […]`. Names are `snake_case`,
+   prefixed with the service when a server has several (`gmail_create_draft`); google-services adds
+   `#[Access(AccessLevel::Write)]`.
+3. The docblock is the description sent to the model: an imperative summary (`List movements on the Fio account`),
+   one `@param ?string $dateFrom  First day, YYYY-MM-DD` per parameter (one space after the tag, type restated: 244
+   of 244 lines), `@return array{…}`; a blank ` *` before the tags is allowed. "Tool names, descriptions, and JSON
+   schemas all consume the agent's context - keep them tight" (`google-services/AGENTS.md`).
+4. Tool bodies do not catch: `McpToolCallGuard implements ReferenceHandlerInterface` converts in a documented
+   first-match-wins order (`ToolCallException` rethrown, domain and `\InvalidArgumentException` messages forwarded,
+   any other `\Throwable` wrapped with class, file and line). Messages for the model are long and name the remedy.
+5. Tests pin names, titles, annotations and schemas (`tests/McpTools.phpt`, "Update it after adding a tool."), cover
+   every guard branch and call tools as plain methods with a fake factory. Extras: `.mcp.json.example`, `.mcp.json`
+   ignored, instructions in `<<<'TEXT'`, pohoda-mcp's `nameCasing {variable: keep}` override for tool parameters.
+
+### 3.18 DressCode rule packages
+
+`dg/dresscode-rules-{nette, symfony, laravel}` (two or three rules plus an `Extension` each) and the data-only
+`-deegee`.
+
+- A rule is `final class XRule extends NodeRule`: a multi-paragraph class docblock (what it rewrites, then
+  "Reported and left: …"), then `#[RuleInfo('laravel/casts-method-for-casts-property', Stage::Structure,
+  description: '…', group: RuleGroup::Modernization, requires: ['laravel/framework' => '>=11.0'])]`
+  (`dresscode-rules-laravel/src/CastsMethodForCastsPropertyRule.php`); `getVisitedTypes(): array`; `enter(Node|Token
+  $node, RuleContext $context): void` opening with a guard (`if (!$node instanceof ClassNode || …) { return; }`),
+  refusals as `match (true)` arms, `$context->report($node, $message, fixable: false)`.
+- Grouped imports (`use PhpSyntax\{Node, Parser, Printer, Token};`), a root import for foreign classes (`use
+  Illuminate;`, `private const Model = Illuminate\Database\Eloquent\Model::class;`), PHP 8.4 functions unimported
+  (`array_any`), `(new Parser)->parseFragment(…)`. `dresscode.neon` adds `groups: [modernization, deprecations]`,
+  `groupImport: {minImports: 2}` and `overrideAttributeRequired: keep`.
+- Diagnostics have identifiers in backticks, a capital start and no period. Upgrade data are NEON
+  (`upgrading/<library>.neon`, `since 5.0.2:` sections newest first, `replaced-members`, `replaced-calls`,
+  `forbidden-*`); a `forbidden-*` sentence "is English, completes `… is forbidden:` and says what to write instead:
+  lower case unless it begins with a name, its code in backticks as in the rest of the message, no period or double
+  quotes, at most 160 characters" (`dresscode-rules-nette/AGENTS.md:49-57`).
+- Tests are data: `tests/fixtures/<rule>/<case>.{code,expected,violations}` run by `tests/rules.phpt` through
+  `DressCode\Testing\RuleTester`; library samples in `tests/samples/` run by `tests/upgrading.phpt`.
+
+### 3.19 Ported and legacy code
+
+Ported code keeps its upstream style. `nette/latte-tools` `src/Twiggy` (143 of 154 files) is Twig 3.2.1 under
+`LatteTools\Twiggy\`: Twig's `/* This file is part of Twig. … */` header, `\count()` calls (156 in 28 files),
+`*Interface`/`Abstract*` names, untyped properties, one `*Error` class per file, Yoda and `==`, `sprintf('… "%s" …')`
+messages, bracketed `namespace X { }` blocks (`Extension/CoreExtension.php:13`); the Nette standard normalises only
+`declare` and braces there. Do not reformat a ported tree and do not copy its habits into the dg-authored files
+beside it. Those files have their own inherited shape: `LattePrinter.php` derives from nikic/php-parser's printer and
+keeps its untyped `pXxx()` signatures and capitalised section comments; the converters expose one `convert(string
+$code): string` built from private `void` passes, each opened by a `// before => after` comment, and are tested by
+fixture pairs (`tests/fixtures-twig/**/<case>.twig` + `.latte`, `Assert::match()` in `tests/TwigTest.php`).
+
+Legacy eras are not models. `f3l1x/forge` holds 172 PHP files from six eras: PHP 5 plugins with 4-space indent,
+`@author` and `NULL` (76), early Contributte on `ninjify/qa` (10), copies of the 2019–20 `nette/sandbox` with the
+three-line header (36), third-party blobs; only 37 files (`php/*`, `nette/Http`) are dialect A, and those fail the
+current qa ruleset (173 errors in 19 files). In dg's repositories the same holds for latte-tools' tooling (`phpstan
+^0.12` level 5, `actions/checkout@v2`), MySQL-dump (UPPER constants, `@author` header) and dibi's `Event` (11 UPPER
+constants without a PascalCase twin): when you touch such a constant add the twin and the `#[\Deprecated]` alias
+together, and bring repository files to 3.14 only when the repository is otherwise being reworked.
+
+### 3.20 CLI tools
+
+- The executable is thin. ftp-deployment's `deployment` is three lines (`#!/usr/bin/env php`, `<?php`, `require
+  __DIR__ . '/src/deployment.php';`); `src/deployment.php` declares `strict_types`, probes `../vendor/autoload.php`
+  then `../../../autoload.php` and ends `$runner = new CliRunner; die($runner->run());`. `dresscode/bin/dresscode`
+  ends `exit((new DressCode\Console\Application)->run($argv));` and fails on STDERR with exit code 2 ("… is not
+  installed; …"); `phpsyntax/bin/phpsyntax` is one namespaced script of functions with the license docblock.
+- `CliRunner::run(): ?int` returns the exit code (`return 1;` when `loadConfig()` yields `null`); the 2026 tools
+  document 0 clean, 1 findings, 2 failure.
+- Arguments go through `Nette\CommandLine\Parser` with the help as an indented nowdoc `<<<'XX'` that opens with a
+  blank line, a title underlined with dashes and `Usage:`/`Options:` blocks; positional arguments as `['config' =>
+  [Parser::RealPath => true]]`; `$cmd->isEmpty()` prints `$cmd->help()`; options read as `$options['--test']`
+  (`ftp-deployment/src/Deployment/CliRunner.php`).
+- `setupPhp()`: `set_time_limit(0)`, an error handler turning warnings into `\ErrorException`,
+  `set_exception_handler(function (\Throwable $e): void { …; exit(1); })`, SIGINT through `pcntl_signal()` and
+  `pcntl_async_signals(true)`; a second run is refused by `flock($lock, LOCK_EX | LOCK_NB)`. Error-prone natives go
+  through a `Safe` class (`@method static` list plus `__callStatic()` turning warnings and `false` into
+  `ServerException`).
+- Root-level converter scripts (`latte-tools/php-to-latte.php input.php [output.latte]`) are plain scripts with one
+  `require` and a `<<<'XX'` usage text; the shebang and STDERR form of 3.12.5 is for `bin/` tools in packages.
+
+### 3.21 What dg tells agents
+
+dg's prose for models lives in `nette/agent-plugins` (skills under `plugins/nette-dev/skills/` and
+`plugins/nette/skills/`; hooks that run `php -l`, `latte-lint`, `neon-lint`, jsonlint, eslint and `ecs fix` after every
+edit) and in the `AGENTS.md` of his repositories. Its rules are folded into 3.1–3.15; the key lines verbatim:
+
+- Every personal `AGENTS.md` (11 of 12 2025–26 libraries, dibi, texy, ftp-deployment, …): "# To My Agents!" / "It
+  is my fervent wish that this file guide every AI coding agent working with code in this repository."
+- `plugins/nette-dev/docs/contributing/coding-standard.md`: "The easiest way to do this is to imitate the existing
+  code. The goal is to make all the code look as if it were written by one person."
+- `plugins/nette-dev/skills/php-coding-standards/SKILL.md`: "Write all code, comments, and variables in English only
+  (even if communicating with the user in Czech)"; "Never let a method name be a bare noun - a method is an action:
+  `getProvider()`, not `provider()`."; "Leave existing methods where they are - reordering them buries the real change
+  in the diff"; "Don't add comments referencing specific bug fixes, issues, or tickets".
+- `plugins/nette-dev/skills/php-doc/SKILL.md`: "**Never duplicate signature information without adding value.**";
+  "Always American English (color, not colour; behavior, not behaviour)".
+- `plugins/nette-dev/skills/phpstan-analysis/SKILL.md`: "**Never use `@phpstan-ignore` annotations** - keep
+  checker-specific directives out of source code; ignore in `phpstan.neon` instead."; "**Take the verdict from the
+  exit code, never from grepping the output.**"
+- `plugins/nette-dev/skills/commit-messages/SKILL.md`: "Use past tense for verbs ("added", "fixed", not "add",
+  "fix") - the commit describes what happened, so the git log reads as a chronological history".
+- `plugins/php-fixer/skills/php-auto-fixer/SKILL.md`: "Always add `use` statements in the same Edit as the code that
+  references them, or add the code first and the `use` second." (the hook's `ecs fix` deletes unused imports).
+- `plugins/nette/skills/nette-tester/SKILL.md`: "**A test that executes no assertion is an error**"; "Do not add
+  comments before `test()` calls - the description parameter serves this purpose".
+- `dg/dresscode/AGENTS.md` and `phpsyntax/AGENTS.md`: "Comments only where the code itself is not enough; never
+  restate what the code shows; density follows the surrounding file."; "One commit per unit, message lowercase, past
+  tense, `subject: description` when it clarifies the area. Linear history."
+
+The fixer hook runs the released `ecs` with the plugin's own `ncs.php`, never the repository's `dresscode.neon`: in a
+DressCode repository run `dresscode check` yourself before committing.
 
 ---
 
@@ -2060,20 +2463,30 @@ test('missing key throws', function () use ($arr) {
 ### 4.2 Before committing in dialect B (Nette)
 
 1. `composer phpstan` and `composer tester` are green; code-checker `--strict-types` passes; `php
-   temp/coding-standard/ecs check` (or `dresscode check` where `dresscode.neon` exists) passes.
+   temp/coding-standard/ecs check` (or `dresscode check` where `dresscode.neon` exists, as in dg's newest
+   repositories) passes; PHPStan judged by its exit code, no `@phpstan-ignore`.
 2. First line `<?php declare(strict_types=1);`; license docblock if the repository has one; two blank lines before
-   the class and between methods; no blank line inside class braces; `use Nette;` + `use function …` one line.
-3. Class docblock sentence with a period; `@param  T  $x` two-space form; no docblock that repeats types.
-4. `final` for new internal classes (follow the package elsewhere); PascalCase constants with deprecated UPPER
-   aliases; no kind in names; two-letter abbreviations uppercase.
+   the class and between methods; no blank line inside class braces; `use Nette;` or per-class imports (grouped where
+   `dresscode.neon` sets `groupImport`) + one `use function …` line for the calls PHP compiles specially.
+3. Class docblock sentence with a period; `@param  T  $x` two-space form; no docblock that repeats types or only
+   names a setter; English, American spelling; no comment citing an issue.
+4. `final` for new internal classes (every concrete class in a new tool; follow the package elsewhere); PascalCase
+   constants with deprecated UPPER aliases; no kind in names; two-letter abbreviations uppercase; methods are verbs,
+   booleans `is*`/`has*`/`can*`; no `public` on interface methods; enums for closed sets where the repository has
+   `enums.php`.
 5. Promoted `private readonly` ctor with trailing comma and `) {`; other multi-line signatures `): T` + `{`.
-6. `"Message '$x'."` interpolation, period at the end; `Nette\InvalidStateException` family; `?? throw`.
-7. Leading operators on wrapped lines; trailing commas everywhere; `new Foo;`; `fn($x)` for every single-expression
-   closure; `match`; `catch (\Throwable)` without `$e` when unused; blank line before every `}` of a paragraphed
-   `if`/`else` chain.
-8. Tests `Subject.aspect.phpt`, `test('lowercase title', function () {…});`, two blank lines between tests,
-   `Assert::same($expected, $actual)`.
-9. Commit `added X` / `Class: sentence`, `(BC break)`, `[Closes #N]`.
+6. `"Message '$x'."` interpolation, period at the end (backticks for identifiers in DressCode-style code);
+   `Nette\InvalidStateException` family in nette/*, SPL or the package's own root in dg's personal packages; `??
+   throw`.
+7. Leading operators on wrapped lines; trailing commas everywhere; `new Foo;`, `(new Foo)->bar()`, `new
+   Foo($x)->bar()` on PHP 8.4; `fn($x)` for every single-expression closure, `static fn` only where the file already
+   uses it; named arguments for flags and skipped optional parameters; `match`; `catch (\Throwable)` without `$e` when
+   unused; `@` only with `// @ reason`; branch blank lines as the repository's DressCode asks (in nette/* a blank line
+   before every `}` of a paragraphed `if`/`else` chain).
+8. Tests `Subject.aspect.phpt`, `test('lowercase title', function () {…});` with no comment above it, two blank lines
+   between tests, `Assert::same($expected, $actual)`; `Test:` (not `TEST:`) only where the suite has the docblock.
+9. Commit `added X` / `Class: sentence`, `(BC break)`, `[Closes #N]`; past tense is the form dg's skill teaches.
+10. API clients, MCP servers, rule packages and CLI tools follow 3.16–3.20; ported trees keep their own style (3.19).
 
 ### 4.3 Converting between dialects
 
@@ -2081,7 +2494,7 @@ test('missing key throws', function () use ($arr) {
 |---|---|---|
 | declare | remove spaces | add spaces |
 | class body | drop the blank lines inside braces; two blank lines between methods | add blank lines inside braces; one blank line between methods |
-| imports | replace `use stdClass;` with `\stdClass`; add `use function`; consider `use Nette;` | import global classes; drop `use function`; expand `Nette\X` to imports |
+| imports | replace `use stdClass;` with `\stdClass`; add `use function` for the calls PHP compiles specially; consider `use Nette;` | import global classes; drop `use function`; expand `Nette\X` to imports |
 | constants | `FOO_BAR` → `FooBar` (keep deprecated alias) | `FooBar` → `FOO_BAR` |
 | `new Foo()` | `new Foo` | `new Foo()` |
 | `fn ($x)` | `fn($x)` | `fn ($x)` |
@@ -2089,7 +2502,10 @@ test('missing key throws', function () use ($arr) {
 | messages | `sprintf('… "%s"', $x)` → `"… '$x'."` for plain variables; keep `sprintf("… '%s'.", expr)` for expressions | `"… '$x'."` → `sprintf('… "%s"', $x)` |
 | exception roots | `LogicalException` → `\LogicException` / `Nette\InvalidArgumentException` / `Nette\NotSupportedException`; `RuntimeException` → `Nette\InvalidStateException` / `Nette\IOException` | reverse (keep logic vs runtime) |
 | fluent return | `: self` → `: static` | `: static` → `: self` |
-| closures | one-expression closure → `fn()`; drop unused `$e` in catch | keep `fn ()` with a space |
+| closures | one-expression closure → `fn()`; drop unused `$e` in catch; drop `static` in nette/* (keep it where the repository writes it) | keep `fn ()` with a space; add `static` where `$this` is unused (2024+ code) |
+| interfaces | drop `public` from interface methods | follow the repository |
+| `final` | add to new concrete classes in a new tool; follow the package in nette/* | remove where 2.4 leaves classes open |
+| named arguments | keep for flags, skipped optional parameters and long constructors | keep only for flags |
 | functions | add `use function a, b;` for optimisable calls | drop `use function` |
 | docblocks | add class sentence; `@param  T  $x`; remove the blank line before method tags (keep it before `@property`/`@method`) | drop prose; one space; blank line before tags |
 | tests | `Toolkit::test` → `test('title', …)`; rename to `Class.aspect.phpt` | `test()` → `Toolkit::test` with `// comment`; move under `tests/Cases` |
@@ -2115,3 +2531,10 @@ Dialect B: `nette/utils/src/Utils/{Json,Callback,Arrays,Strings}.php`, `nette/ut
 `nette/tracy/src/Tracy/Debugger/Debugger.php`, `nette/tester/src/Framework/{Assert,functions}.php`,
 `nette/utils/tests/Utils/Arrays.get().phpt`, `nette/utils/tests/bootstrap.php`, `nette/di/tests/Compiler/extension.schema.phpt`,
 `nette/web-project/app/**`, `nette/utils/{composer.json,readme.md,AGENTS.md}`.
+
+dg's newer code: `dg/dresscode/src/{Runner,enums,exceptions}.php`,
+`dg/dresscode/src/Rules/Namespaces/NameFallbackRule.php`, `dg/dresscode/src/Presets/Nette.php`,
+`phpsyntax/phpsyntax/src/{Token,Node}.php`, `dg/ai-access/src/Http/Client.php`,
+`dg/ai-access/src/Provider/Claude/{Client,Chat,ChatResponse}.php`, `dg/fio-mcp/{server.php,src/McpToolCallGuard.php}`,
+`dg/dresscode-rules-laravel/src/CastsMethodForCastsPropertyRule.php`, `dg/ftp-deployment/src/Deployment/CliRunner.php`,
+`nette/agent-plugins/plugins/nette-dev/skills/{php-coding-standards,php-doc,commit-messages,phpstan-analysis}/SKILL.md`.
