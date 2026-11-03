@@ -1,0 +1,3 @@
+.PHONY: dev
+dev:
+	@true

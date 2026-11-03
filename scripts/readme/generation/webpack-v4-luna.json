@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0",
+  "id": "webpack-skeleton-gpt56-luna-v4",
+  "repository": "/tmp/opencode/webpack-skeleton-pr992",
+  "revision": "3016aea65daf27eea408e0a688ef6ab516fb9d80",
+  "readme": "README.md",
+  "readmeSha256": "c36d5b988796f4baec899070b129ad15df2da2dd6418d3d800deed1c303ca8cc",
+  "profile": "skeleton",
+  "prompt": "scripts/readme/generation/prompt-v4.md",
+  "promptVersion": "4",
+  "model": "9router/cx/gpt-5.6-luna",
+  "variant": "high",
+  "timeoutSeconds": 600,
+  "runs": 1,
+  "output": "/tmp/opencode/spec-driven-docs-generation-v4"
+}

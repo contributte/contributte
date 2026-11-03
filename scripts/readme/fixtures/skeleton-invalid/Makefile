@@ -1,0 +1,3 @@
+.PHONY: init
+init:
+	@true
