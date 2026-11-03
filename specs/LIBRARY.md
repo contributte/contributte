@@ -166,7 +166,7 @@ make qa
   "homepage": "https://github.com/contributte/{package}",
   "authors": [
     {
-      "name": "Milan Felix Sulc",
+      "name": "Milan Felix Šulc",
       "homepage": "https://f3l1x.io"
     }
   ],
@@ -175,9 +175,9 @@ make qa
   },
   "require-dev": {
     "contributte/qa": "^0.4.0",
-    "contributte/phpstan": "^0.1.0",
-    "mockery/mockery": "^1.6.0",
-    "nette/tester": "^2.5.0"
+    "contributte/phpstan": "^0.2.0",
+    "contributte/tester": "^0.4.0",
+    "mockery/mockery": "^1.6.0"
   },
   "autoload": {
     "psr-4": {
@@ -249,9 +249,9 @@ tests:
 .PHONY: coverage
 coverage:
 ifdef GITHUB_ACTION
-	vendor/bin/tester -s -p phpdbg --colors 1 -C --coverage coverage.xml --coverage-src src tests/Cases
+	vendor/bin/tester -s -p php --colors 1 -C --coverage coverage.xml --coverage-src src tests/Cases
 else
-	vendor/bin/tester -s -p phpdbg --colors 1 -C --coverage coverage.html --coverage-src src tests/Cases
+	vendor/bin/tester -s -p php --colors 1 -C --coverage coverage.html --coverage-src src tests/Cases
 endif
 ```
 
@@ -299,6 +299,8 @@ parameters:
 - **Scan paths**: `src` and `.docs` directories
 
 ## Coding Standards
+
+The PHP syntax, naming, layout and testing conventions themselves are described in [SYNTAX.md](SYNTAX.md) (dialect A); read it before writing code.
 
 ### ruleset.xml
 
@@ -378,7 +380,7 @@ jobs:
     name: "Nette Tester"
     uses: contributte/.github/.github/workflows/nette-tester.yml@master
     with:
-      php: "8.4"
+      php: "8.3"
 
   test82:
     name: "Nette Tester"
@@ -567,6 +569,8 @@ final class ExampleTest extends TestCase
 ### .editorconfig
 
 ```ini
+# EditorConfig is awesome: http://EditorConfig.org
+
 root = true
 
 [*]
@@ -575,18 +579,12 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 indent_style = tab
-indent_size = 4
+indent_size = tab
+tab_width = 4
 
-[*.{yml,yaml}]
+[{*.json,*.yml,*.yaml,*.md}]
 indent_style = space
 indent_size = 2
-
-[*.md]
-trim_trailing_whitespace = false
-
-[*.neon]
-indent_style = tab
-indent_size = 4
 ```
 
 ## Git Configuration
